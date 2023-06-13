@@ -3,9 +3,20 @@ import pygame
 import CONSTANTS as C
 from Player import Player
 
-# Import pygame.locals for easier access to key coordinates
-# Updated to conform to flake8 and black standards
+# create a dictionary to store key presses for player 1 and player 2
+key_presses_1 = {
+    "up": pygame.K_w,
+    "down": pygame.K_s,
+    "left": pygame.K_a,
+    "right": pygame.K_d,
+}
 
+key_presses_2 = {
+    "up": pygame.K_UP,
+    "down": pygame.K_DOWN,
+    "left": pygame.K_LEFT,
+    "right": pygame.K_RIGHT,
+}
 
 from pygame.locals import (
     K_UP,
@@ -27,7 +38,7 @@ pygame.init()
 screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
 
 # Instantiate player. Right now, this is just a rectangle.
-player = Player()
+player = Player(key_presses_1)
 
 # Variable to keep the main loop running
 running = True
@@ -47,7 +58,7 @@ while running:
             running = False
 
     clock = pygame.time.Clock()
-    dt = clock.tick(60) # limit fps to 30
+    dt = clock.tick(60) # limit fps to 60
     pressed_keys = pygame.key.get_pressed()
     player.gravity()
     player.update(pressed_keys, dt)
