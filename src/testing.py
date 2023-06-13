@@ -1,6 +1,7 @@
 # Import the pygame module
 import pygame
 
+
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
 
@@ -27,15 +28,15 @@ class Player(pygame.sprite.Sprite):
         self.surf = pygame.Surface((75, 25))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect()
-    def update(self, pressed_keys):
+    def update(self, pressed_keys, dt):
         if pressed_keys[K_UP]:
-            self.rect.move_ip(0, -10)
+            self.rect.move_ip(0, -3 * dt)
         if pressed_keys[K_DOWN]:
-            self.rect.move_ip(0, 5)
+            self.rect.move_ip(0, 2 * dt)
         if pressed_keys[K_LEFT]:
-            self.rect.move_ip(-5, 0)
+            self.rect.move_ip(-2 * dt, 0)
         if pressed_keys[K_RIGHT]:
-            self.rect.move_ip(5, 0)
+            self.rect.move_ip(2 * dt, 0)
          # Keep player on the screen
         if self.rect.left < 0:
             self.rect.left = 0
@@ -46,7 +47,7 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
     def gravity(self):
-        self.rect.move_ip(0,5) # how fast player falls
+        self.rect.move_ip(0,20) # how fast player falls
 
 # Initialize pygame
 pygame.init()
@@ -73,9 +74,12 @@ while running:
         # Check for QUIT event. If QUIT, then set running to false.
         elif event.type == QUIT:
             running = False
+
+    clock = pygame.time.Clock()
+    dt = clock.tick(60) # limit fps to 30
     pressed_keys = pygame.key.get_pressed()
     player.gravity()
-    player.update(pressed_keys)
+    player.update(pressed_keys, dt)
   
     # Fill the screen with black
     screen.fill((0, 0, 0))
