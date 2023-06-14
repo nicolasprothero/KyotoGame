@@ -17,7 +17,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, keyBinds):
         super(Player, self).__init__()
         self.keyBinds = keyBinds
-        self.surf = pygame.image.load("assets/images/capy.jpeg")
+        self.surf = pygame.image.load("assets/img/capy.jpeg")
         self.surf = pygame.transform.scale(self.surf, (76, 76)) # scale image down
         self.rect = self.surf.get_rect()
     
