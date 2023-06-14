@@ -35,8 +35,9 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
         self.keyBinds = keyBinds
         self.surf = pygame.image.load("src/capy.jpeg")
-        self.surf = pygame.transform.scale(self.surf, (50, 50)) # scale image down
+        self.surf = pygame.transform.scale(self.surf, (76, 76)) # scale image down
         self.rect = self.surf.get_rect()
+    
     def update(self, pressed_keys, dt):
         if pressed_keys[self.keyBinds["up"]]:
             self.rect.move_ip(0, -3 * dt)
@@ -55,5 +56,6 @@ class Player(pygame.sprite.Sprite):
             self.rect.top = 0
         if self.rect.bottom >= C.SCREEN_HEIGHT:
             self.rect.bottom = C.SCREEN_HEIGHT
+
     def gravity(self):
         self.rect.move_ip(0,C.GRAVITY) # how fast player falls
