@@ -4,6 +4,7 @@ from tkinter import Menu
 import pygame
 import CONSTANTS as C
 from Player import Player
+from Level import Level
 
 # create a dictionary to store key presses for player 1 and player 2
 key_presses_1 = {
@@ -40,6 +41,8 @@ pygame.init()
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 
 screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
+
+level = Level(C.LEVEL_MAP, screen)
 
 pygame.display.set_caption("game")
 icon = pygame.image.load("src/capy.jpeg")
@@ -138,6 +141,8 @@ def run_game():
         # Fill the screen with black
         screen.fill((255, 255, 255))
 
+        level.run()
+
         # Draw the player on the screen
         screen.blit(player.surf, player.rect)
         screen.blit(player2.surf, player2.rect)
@@ -163,5 +168,4 @@ def pause_menu():
                 running = False
         pygame.display.flip()
 
-        
 run_menu()
