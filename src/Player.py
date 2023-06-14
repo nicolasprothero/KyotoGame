@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 import CONSTANTS as C
 from pygame.locals import (
     K_UP,
@@ -12,6 +13,22 @@ from pygame.locals import (
 
 # define constants for the screen width and height
 
+class Player(pygame.sprite.Sprite):
+    def __init__(self, keyBinds, x, y):
+        # velocity and acceleration are vectors
+        self.vel = np.array[0.0, 0.0]
+        self.accel = np.array[0.0, 0.0]
+        self.pos = np.array[x, y]
+        self.gravity = np.array[0.0, 0.5] # set value
+        super(Player, self).__init__()
+        self.keyBinds = keyBinds
+        self.surf = pygame.image.load("src/capy.jpeg")
+        self.surf = pygame.transform.scale(self.surf, (50, 50)) # scale image down
+        self.rect = self.surf.get_rect()
+
+    def move_up(self, dt):
+        self.vel += np.array([0, -1])
+        self.accel += np.array([0, -1])
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, keyBinds):
