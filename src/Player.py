@@ -17,7 +17,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
 
-        self.surf = pygame.image.load("src/capy.jpeg")
+        self.surf = pygame.image.load("capy.jpeg")
         self.surf = pygame.transform.scale(self.surf, (50, 50)) # scale image down
         self.rect = self.surf.get_rect()
     def update(self, pressed_keys, dt):
