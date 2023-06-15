@@ -196,11 +196,12 @@ class Game():
                         if(current_selection == "quit"):
                             self.game_running = False
                             self.paused = False
+                            
                             self.menu_running = True
                         
-            self.draw_text("RESUME", resume_text_color, 25, C.SCREEN_WIDTH/2, 250)
-            self.draw_text("SETTINGS", settings_text_color, 25, C.SCREEN_WIDTH/2, 400)
-            self.draw_text("RETURN TO MENU", quit_text_color, 25, C.SCREEN_WIDTH/2, 550)
+            self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, 250)
+            self.draw_text("SETTINGS", settings_text_color, 35, C.SCREEN_WIDTH/2, 400)
+            self.draw_text("RETURN TO MENU", quit_text_color, 35, C.SCREEN_WIDTH/2, 550)
             pygame.display.flip()
 
     def options_menu(self):
@@ -272,7 +273,8 @@ class Game():
             
             self.screen.fill((0, 0, 0))
             self.draw_text("PRE GAME MENU", (255, 255, 255), 90, C.SCREEN_WIDTH/2, 150)
-            self.draw_text("PLAY", start_text_color, 50, C.SCREEN_WIDTH/2, 450)
-            self.draw_text("PRACTICE", (130,130,130), 50, C.SCREEN_WIDTH/2, 550)
-            self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 650)
+            self.draw_text("PLAY", start_text_color, 50, C.SCREEN_WIDTH/2, 400)
+            self.draw_text("PRACTICE", (130,130,130), 50, C.SCREEN_WIDTH/2, 500)
+            self.draw_text("ARMORY", (130,130,130), 50, C.SCREEN_WIDTH/2, 600)
+            self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 700)
             pygame.display.flip()
