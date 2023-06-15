@@ -45,16 +45,17 @@ class Game():
         self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
 
         pygame.display.set_caption("game")
-        icon = pygame.image.load("assets/images/capy.jpeg")
+        icon = pygame.image.load("assets/img/capy.jpeg")
         pygame.display.set_icon(icon)
 
         self.menu_running = True
         self.game_running = False
         self.paused = False
+        self.options_running = False
+        self.pregame_running = False
 
     def draw_text(self, text, color, size, x, y):
-        text_font = pygame.font.get_default_font()
-        font = pygame.font.Font(text_font, size)
+        font = pygame.font.Font("assets/fonts/ThaleahFat.ttf", size)
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
         text_rect.center = (x, y)
@@ -62,6 +63,8 @@ class Game():
             
     def run_menu(self):
         current_selection = "start"
+        
+        self.menu_running = True
         
         while self.menu_running:
             if(current_selection == "start"):
@@ -96,7 +99,9 @@ class Game():
                     elif event.key == K_RETURN:
                         if(current_selection == "start"):
                             self.menu_running = False
-                            self.run_game()
+                            self.pregame_menu()
+                        if(current_selection == "settings"):
+                            self.options_menu()
                         elif(current_selection == "quit"):
                             self.menu_running = False
                 # Check for QUIT event. If QUIT, then set running to false.
@@ -104,10 +109,10 @@ class Game():
                     self.menu_running = False
             
             self.screen.fill((0, 0, 0))
-            self.draw_text("THE GAME WITH RANDOM WEAPONS", (255, 255, 255), 50, C.SCREEN_WIDTH/2, 75)
-            self.draw_text("START", start_text_color, 50, C.SCREEN_WIDTH/2, 400)
-            self.draw_text("SETTINGS", settings_text_color, 50, C.SCREEN_WIDTH/2, 550)
-            self.draw_text("QUIT", quit_text_color, 50, C.SCREEN_WIDTH/2, 700)
+            self.draw_text("SWOASE ESAOWS", (255, 255, 255), 90, C.SCREEN_WIDTH/2, 150)
+            self.draw_text("START", start_text_color, 50, C.SCREEN_WIDTH/2, 450)
+            self.draw_text("OPTIONS", settings_text_color, 50, C.SCREEN_WIDTH/2, 550)
+            self.draw_text("QUIT", quit_text_color, 50, C.SCREEN_WIDTH/2, 650)
             pygame.display.flip()
 
     def run_game(self):
@@ -116,7 +121,7 @@ class Game():
         player2 = Player(key_presses_2, (C.SCREEN_WIDTH - 50, 0), self.screen)
 
         # Setup the level
-        level = Level(C.LEVEL_MAP, self.screen, "assets/images/DefaultBackground.webp")
+        level = Level(C.LEVEL_MAP, self.screen, "assets/img/DefaultBackground.webp")
         
         self.game_running = True
         # Main loop
@@ -143,7 +148,6 @@ class Game():
             # Draw the player on the screen
             self.screen.blit(player.image, player.pos)
             self.screen.blit(player2.image, player2.pos)
-            
             
             self.draw_text("IN LIFE EVEN WHEN TOLD NOT TO, SWOASE.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
 
@@ -197,4 +201,78 @@ class Game():
             self.draw_text("RESUME", resume_text_color, 25, C.SCREEN_WIDTH/2, 250)
             self.draw_text("SETTINGS", settings_text_color, 25, C.SCREEN_WIDTH/2, 400)
             self.draw_text("RETURN TO MENU", quit_text_color, 25, C.SCREEN_WIDTH/2, 550)
+            pygame.display.flip()
+
+    def options_menu(self):
+        
+        self.options_running = True
+
+        while self.options_running:
+            # for loop through the event queue
+            for event in pygame.event.get():
+                # Check for KEYDOWN event
+                if event.type == KEYDOWN:
+                    # If the Esc key is pressed, then exit the main loop
+                    if event.key == K_ESCAPE:
+                            self.options_running = False
+                # Check for QUIT event. If QUIT, then set running to false.
+                elif event.type == QUIT:
+                    self.options_running = False
+            
+            self.screen.fill((100, 100, 100))
+            self.draw_text("OPTIONS", (255, 255, 255), 75, C.SCREEN_WIDTH/2, 100)
+            self.draw_text("Nathan Wand occasionally smells like cheese.", (255, 255, 255), 40, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
+            pygame.display.flip()
+            
+    def pregame_menu(self):
+        current_selection = "play"
+        
+        self.pregame_running = True
+        
+        while self.pregame_running:
+            if(current_selection == "play"):
+                start_text_color = (170, 255, 0)
+                settings_text_color = (255, 255, 255)
+                quit_text_color = (255, 255, 255)
+            elif(current_selection == "practice"):
+                start_text_color = (255, 255, 255)
+                settings_text_color = (170, 255, 0)
+                quit_text_color = (255, 255, 255)
+            elif(current_selection == "quit"):
+                start_text_color = (255, 255, 255)
+                settings_text_color = (255, 255, 255)
+                quit_text_color = (170, 255, 0)
+            # for loop through the event queue
+            for event in pygame.event.get():
+                # Check for KEYDOWN event
+                if event.type == KEYDOWN:
+                    # If the Esc key is pressed, then exit the main loop
+                    if event.key == K_ESCAPE:
+                        self.pregame_running = False
+                        self.run_menu()
+                    elif event.key == K_w or event.key == K_UP:
+                        if(current_selection == "quit"):
+                            current_selection = "play"
+                    elif event.key == K_s or event.key == K_DOWN:
+                        if(current_selection == "play"):
+                            current_selection = "quit"
+                    elif event.key == K_RETURN:
+                        if(current_selection == "play"):
+                            self.pregame_running = False
+                            self.run_game()
+                        # elif(current_selection == "practice"):
+                            # self.menu_running = False
+                        elif(current_selection == "quit"):
+                            self.pregame_running = False
+                            self.run_menu()
+                # Check for QUIT event. If QUIT, then set running to false.
+                elif event.type == QUIT:
+                    self.pregame_running = False
+                    self.run_menu()
+            
+            self.screen.fill((0, 0, 0))
+            self.draw_text("PRE GAME MENU", (255, 255, 255), 90, C.SCREEN_WIDTH/2, 150)
+            self.draw_text("PLAY", start_text_color, 50, C.SCREEN_WIDTH/2, 450)
+            self.draw_text("PRACTICE", (130,130,130), 50, C.SCREEN_WIDTH/2, 550)
+            self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 650)
             pygame.display.flip()
