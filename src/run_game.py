@@ -41,8 +41,7 @@ pygame.init()
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 
 screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
-
-level = Level(C.LEVEL_MAP, screen)
+level = Level(C.LEVEL_MAP, screen, "src/DefaultBackground.webp")
 
 pygame.display.set_caption("game")
 icon = pygame.image.load("src/capy.jpeg")
@@ -137,10 +136,8 @@ def run_game():
         
         player2.gravity()
         player2.update(pressed_keys, dt)
-    
-        # Fill the screen with black
-        screen.fill((255, 255, 255))
 
+        # Run the Level
         level.run()
 
         # Draw the player on the screen
