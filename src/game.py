@@ -141,7 +141,10 @@ class Game():
             player2.move(pressed_keys)
             player.updatePos()
             player2.updatePos()
-        
+            # set screen title to player.isOnGround, position
+            pygame.display.set_caption("game | onGround: " + str(player.isOnGround) + " | canDoubleJump: " + str(player.hasDoubleJump))
+            if player.hasDoubleJump == True:
+                pygame.display.set_caption("hi")
             # Run the Level
             level.run()
 
