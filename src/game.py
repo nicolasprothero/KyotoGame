@@ -4,6 +4,7 @@ from tkinter import Menu
 import pygame
 import CONSTANTS as C
 from Player import Player
+from Level import Level
 
 # create a dictionary to store key presses for player 1 and player 2
 key_presses_1 = {
@@ -109,8 +110,11 @@ class Game():
 
     def run_game(self):
         # Instantiate player. Right now, this is just a rectangle.
-        player = Player(key_presses_1)
-        player2 = Player(key_presses_2)
+        player = Player(key_presses_1, 0, 0)
+        player2 = Player(key_presses_2, 0, 0)
+
+        # Setup the level
+        level = Level(C.LEVEL_MAP, self.screen, "assets/images/DefaultBackground.webp")
         
         self.game_running = True
         # Main loop
@@ -133,8 +137,8 @@ class Game():
             player2.gravity()
             player2.update(pressed_keys, dt)
         
-            # Fill the screen with black
-            self.screen.fill((255, 255, 255))
+            # Run the Level
+            level.run()
 
             # Draw the player on the screen
             self.screen.blit(player.surf, player.rect)
