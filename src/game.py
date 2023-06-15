@@ -120,14 +120,6 @@ class Game():
         player = Player(key_presses_1, (0, 0), self.screen)
         player2 = Player(key_presses_2, (C.SCREEN_WIDTH - 50, 0), self.screen)
 
-        for event in pygame.event.get():
-            if event.type == pygame.VIDEORESIZE:
-                current_width, current_height = event.w, event.h
-                scaling_factor_width = current_width / C.SCREEN_WIDTH
-                scaling_factor_width = current_height / C.SCREEN_HEIGHT
-
-        scaled_screen = pygame.transform.scale(self.screen, (current))
-
         # Setup the level
         level = Level(C.LEVEL_MAP, self.screen, "assets/img/DefaultBackground.webp")
         
