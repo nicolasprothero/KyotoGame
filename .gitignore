@@ -1,2 +1,7 @@
 .DS_Store
 .__pycache__
+note.txt
+local_testing/
+src/__pycache__/
+
+
