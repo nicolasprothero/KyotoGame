@@ -196,11 +196,12 @@ class Game():
                         if(current_selection == "quit"):
                             self.game_running = False
                             self.paused = False
+                            
                             self.menu_running = True
                         
-            self.draw_text("RESUME", resume_text_color, 25, C.SCREEN_WIDTH/2, 250)
-            self.draw_text("SETTINGS", settings_text_color, 25, C.SCREEN_WIDTH/2, 400)
-            self.draw_text("RETURN TO MENU", quit_text_color, 25, C.SCREEN_WIDTH/2, 550)
+            self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, 250)
+            self.draw_text("SETTINGS", settings_text_color, 35, C.SCREEN_WIDTH/2, 400)
+            self.draw_text("RETURN TO MENU", quit_text_color, 35, C.SCREEN_WIDTH/2, 550)
             pygame.display.flip()
 
     def options_menu(self):
