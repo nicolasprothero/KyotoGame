@@ -121,7 +121,7 @@ class Game():
                 elif event.type == QUIT:
                     self.menu_running = False
             
-            self.screen.fill((53, 43, 49))
+            self.screen.fill((48, 44, 46))
             # create a surface object, image is drawn on it.
             title_img = pygame.image.load("assets/img/title.png")
             title_img = pygame.transform.scale(title_img,(700,200))
@@ -177,19 +177,19 @@ class Game():
         
         self.paused = True
         while self.paused:
-            pygame.draw.rect(self.screen, (53, 43, 49), pygame.Rect(C.SCREEN_WIDTH/2 - 250, C.SCREEN_HEIGHT/2 - 250, 500, 500))
+            pygame.draw.rect(self.screen, (48, 44, 46), pygame.Rect(C.SCREEN_WIDTH/2 - 250, C.SCREEN_HEIGHT/2 - 250, 500, 500))
             # Check for QUIT event. If QUIT, then set running to false.    
             if(current_selection == "resume"):
                 resume_text_color = self.color_select
-                settings_text_color = (255, 255, 255)
-                quit_text_color = (255, 255, 255)
+                settings_text_color = self.color_default
+                quit_text_color = self.color_default
             elif(current_selection == "settings"):
-                resume_text_color = (255, 255, 255)
+                resume_text_color = self.color_default
                 settings_text_color = self.color_select
-                quit_text_color = (255, 255, 255)
+                quit_text_color = self.color_default
             elif(current_selection == "quit"):
-                resume_text_color = (255, 255, 255)
-                settings_text_color = (255, 255, 255)
+                resume_text_color = self.color_default
+                settings_text_color = self.color_default
                 quit_text_color = self.color_select
             # for loop through the event queue
             for event in pygame.event.get():
@@ -243,9 +243,9 @@ class Game():
                 elif event.type == QUIT:
                     self.options_running = False
             
-            self.screen.fill((100, 100, 100))
-            self.draw_text("OPTIONS", (255, 255, 255), 75, C.SCREEN_WIDTH/2, 100)
-            self.draw_text("Nathan Wand occasionally smells like cheese.", (255, 255, 255), 40, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
+            self.screen.fill((48, 44, 46))
+            self.draw_text("OPTIONS", self.color_default, 75, C.SCREEN_WIDTH/2, 100)
+            self.draw_text("Nathan Wand occasionally smells like cheese.", self.color_default, 40, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
             pygame.display.flip()
             
     def pregame_menu(self):
@@ -256,15 +256,9 @@ class Game():
         while self.pregame_running:
             if(current_selection == "play"):
                 start_text_color = self.color_select
-                settings_text_color = (255, 255, 255)
-                quit_text_color = (255, 255, 255)
-            elif(current_selection == "practice"):
-                start_text_color = (255, 255, 255)
-                settings_text_color = self.color_select
-                quit_text_color = (255, 255, 255)
+                quit_text_color = self.color_default
             elif(current_selection == "quit"):
-                start_text_color = (255, 255, 255)
-                settings_text_color = (255, 255, 255)
+                start_text_color = self.color_default
                 quit_text_color = self.color_select
             # for loop through the event queue
             for event in pygame.event.get():
@@ -298,7 +292,7 @@ class Game():
                     self.pregame_running = False
                     self.run_menu()
             
-            self.screen.fill((53, 43, 49))
+            self.screen.fill((48, 44, 46))
             self.draw_text("PRE GAME MENU", self.color_default, 90, C.SCREEN_WIDTH/2, 150)
             self.draw_text("PLAY", start_text_color, 50, C.SCREEN_WIDTH/2, 400)
             self.draw_text("PRACTICE", (130,130,130), 50, C.SCREEN_WIDTH/2, 500)
