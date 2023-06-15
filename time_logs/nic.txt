@@ -1,3 +1,3 @@
 06/14:
 06/15: 9:10AM - 11:00AM : Added pregame menu, fixed pause screen
-6/15: 12:00PM - 
+6/15: 12:00PM - 5:00PM : Added sound effects in menu, easier color changing, image as title, tried to fix player file but didn't work so I reverted
