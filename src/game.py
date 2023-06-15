@@ -44,8 +44,8 @@ class Game():
 
         self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.RESIZABLE)
 
-        pygame.display.set_caption("game")
-        icon = pygame.image.load("assets/img/capy.jpeg")
+        pygame.display.set_caption("SWOASE ON SWOASE")
+        icon = pygame.image.load("assets/img/capy.png")
         pygame.display.set_icon(icon)
         
         self.select_sound = pygame.mixer.Sound("assets/sound/Select.wav")
@@ -56,6 +56,9 @@ class Game():
         self.paused = False
         self.options_running = False
         self.pregame_running = False
+        
+        self.color_select = (150, 207, 133)
+        self.color_default = (245, 245, 212)
 
     def draw_text(self, text, color, size, x, y):
         font = pygame.font.Font("assets/fonts/ThaleahFat.ttf", size)
@@ -71,17 +74,17 @@ class Game():
         
         while self.menu_running:
             if(current_selection == "start"):
-                start_text_color = (170, 255, 0)
-                settings_text_color = (255, 255, 255)
-                quit_text_color = (255, 255, 255)
+                start_text_color = self.color_select
+                settings_text_color = self.color_default
+                quit_text_color = self.color_default
             elif(current_selection == "settings"):
-                start_text_color = (255, 255, 255)
-                settings_text_color = (170, 255, 0)
-                quit_text_color = (255, 255, 255)
+                start_text_color = self.color_default
+                settings_text_color = self.color_select
+                quit_text_color = self.color_default
             elif(current_selection == "quit"):
-                start_text_color = (255, 255, 255)
-                settings_text_color = (255, 255, 255)
-                quit_text_color = (170, 255, 0)
+                start_text_color = self.color_default
+                settings_text_color = self.color_default
+                quit_text_color = self.color_select
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
@@ -118,8 +121,13 @@ class Game():
                 elif event.type == QUIT:
                     self.menu_running = False
             
-            self.screen.fill((0, 0, 0))
-            self.draw_text("SWOASE ESAOWS", (255, 255, 255), 90, C.SCREEN_WIDTH/2, 150)
+            self.screen.fill((53, 43, 49))
+            # create a surface object, image is drawn on it.
+            title_img = pygame.image.load("assets/img/title.png")
+            title_img = pygame.transform.scale(title_img,(700,200))
+            self.screen.blit(title_img, (C.SCREEN_WIDTH/2-350, 100))
+            
+            
             self.draw_text("START", start_text_color, 50, C.SCREEN_WIDTH/2, 450)
             self.draw_text("OPTIONS", settings_text_color, 50, C.SCREEN_WIDTH/2, 550)
             self.draw_text("QUIT", quit_text_color, 50, C.SCREEN_WIDTH/2, 650)
@@ -168,22 +176,21 @@ class Game():
         current_selection = "resume"
         
         self.paused = True
-        
         while self.paused:
-            pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(C.SCREEN_WIDTH/2 - 250, C.SCREEN_HEIGHT/2 - 250, 500, 500))
+            pygame.draw.rect(self.screen, (53, 43, 49), pygame.Rect(C.SCREEN_WIDTH/2 - 250, C.SCREEN_HEIGHT/2 - 250, 500, 500))
             # Check for QUIT event. If QUIT, then set running to false.    
             if(current_selection == "resume"):
-                resume_text_color = (170, 255, 0)
+                resume_text_color = self.color_select
                 settings_text_color = (255, 255, 255)
                 quit_text_color = (255, 255, 255)
             elif(current_selection == "settings"):
                 resume_text_color = (255, 255, 255)
-                settings_text_color = (170, 255, 0)
+                settings_text_color = self.color_select
                 quit_text_color = (255, 255, 255)
             elif(current_selection == "quit"):
                 resume_text_color = (255, 255, 255)
                 settings_text_color = (255, 255, 255)
-                quit_text_color = (170, 255, 0)
+                quit_text_color = self.color_select
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
@@ -248,17 +255,17 @@ class Game():
         
         while self.pregame_running:
             if(current_selection == "play"):
-                start_text_color = (170, 255, 0)
+                start_text_color = self.color_select
                 settings_text_color = (255, 255, 255)
                 quit_text_color = (255, 255, 255)
             elif(current_selection == "practice"):
                 start_text_color = (255, 255, 255)
-                settings_text_color = (170, 255, 0)
+                settings_text_color = self.color_select
                 quit_text_color = (255, 255, 255)
             elif(current_selection == "quit"):
                 start_text_color = (255, 255, 255)
                 settings_text_color = (255, 255, 255)
-                quit_text_color = (170, 255, 0)
+                quit_text_color = self.color_select
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
@@ -291,8 +298,8 @@ class Game():
                     self.pregame_running = False
                     self.run_menu()
             
-            self.screen.fill((0, 0, 0))
-            self.draw_text("PRE GAME MENU", (255, 255, 255), 90, C.SCREEN_WIDTH/2, 150)
+            self.screen.fill((53, 43, 49))
+            self.draw_text("PRE GAME MENU", self.color_default, 90, C.SCREEN_WIDTH/2, 150)
             self.draw_text("PLAY", start_text_color, 50, C.SCREEN_WIDTH/2, 400)
             self.draw_text("PRACTICE", (130,130,130), 50, C.SCREEN_WIDTH/2, 500)
             self.draw_text("ARMORY", (130,130,130), 50, C.SCREEN_WIDTH/2, 600)
