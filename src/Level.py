@@ -18,7 +18,7 @@ class Level:
                 x = col_index * TILE_SIZE
                 y = row_index * TILE_SIZE
                 if col == 'X':
-                    tile = Tile((x,y), TILE_SIZE, 'src/DefaultTile.png')
+                    tile = Tile((x,y), TILE_SIZE, 'assets/images/DefaultTile.png')
                     self.Tile.add(tile)
 
 

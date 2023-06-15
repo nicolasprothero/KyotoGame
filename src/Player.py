@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 import CONSTANTS as C
 from pygame.locals import (
     K_UP,
@@ -11,15 +12,33 @@ from pygame.locals import (
 )
 
 # define constants for the screen width and height
-
+    
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, keyBinds):
+    def __init__(self, keyBinds, x, y):
         super(Player, self).__init__()
         self.keyBinds = keyBinds
-        self.surf = pygame.image.load("src/capy.jpeg")
+        
+        self.surf = pygame.image.load("assets/images/capy.jpeg")
         self.surf = pygame.transform.scale(self.surf, (76, 76)) # scale image down
         self.rect = self.surf.get_rect()
+        self.pos = np.array([x, y])
+        self.vel = np.array([0, 0])
+        self.acc = np.array([1, C.GRAVITY]) # x component to the right, y component down
+
+
+    def update(self, pressed_keys, dt):
+        # check which key is pressed, update velocity and acceleration
+        if pressed_keys[self.keyBinds["up"]]:
+            self.vel[1] -= 1
+        if pressed_keys[self.keyBinds["down"]]:
+            self.vel[1] += 1
+        if pressed_keys[self.keyBinds["left"]]:
+            self.vel[0] -= 1
+        if pressed_keys[self.keyBinds["right"]]:
+            self.vel[0] += 1
+        
+
     
     def update(self, pressed_keys, dt):
         if pressed_keys[self.keyBinds["up"]]:
