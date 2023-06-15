@@ -14,7 +14,7 @@ from pygame.locals import (
 class Player(pygame.sprite.Sprite):
     def __init__(self, keyBinds, pos, surface):
         self.keyBinds = keyBinds
-        self.image = pygame.image.load("src/capy.jpeg")
+        self.image = pygame.image.load("assets/images/capy.jpeg")
         self.image = pygame.transform.scale(self.image, (76, 76)) # scale image down
         # convert pos to pair of float
         pos = (float(pos[0]), float(pos[1]))

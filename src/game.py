@@ -45,7 +45,7 @@ class Game():
         self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
 
         pygame.display.set_caption("game")
-        icon = pygame.image.load("src/capy.jpeg")
+        icon = pygame.image.load("assets/images/capy.jpeg")
         pygame.display.set_icon(icon)
 
         self.menu_running = True

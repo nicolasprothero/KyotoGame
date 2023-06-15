@@ -2,4 +2,6 @@
 .__pycache__
 note.txt
 local_testing/
-src/__pycache__/
+# ignore all from src/__pycache__
+src/__pycache__/*
+
