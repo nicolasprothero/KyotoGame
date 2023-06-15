@@ -57,7 +57,7 @@ class Game():
         self.options_running = False
         self.pregame_running = False
         
-        self.color_select = (150, 207, 133)
+        self.color_select = (200, 64, 115)
         self.color_default = (245, 245, 212)
 
     def draw_text(self, text, color, size, x, y):
