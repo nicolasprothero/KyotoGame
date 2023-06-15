@@ -272,7 +272,8 @@ class Game():
             
             self.screen.fill((0, 0, 0))
             self.draw_text("PRE GAME MENU", (255, 255, 255), 90, C.SCREEN_WIDTH/2, 150)
-            self.draw_text("PLAY", start_text_color, 50, C.SCREEN_WIDTH/2, 450)
-            self.draw_text("PRACTICE", (130,130,130), 50, C.SCREEN_WIDTH/2, 550)
-            self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 650)
+            self.draw_text("PLAY", start_text_color, 50, C.SCREEN_WIDTH/2, 400)
+            self.draw_text("PRACTICE", (130,130,130), 50, C.SCREEN_WIDTH/2, 500)
+            self.draw_text("ARMORY", (130,130,130), 50, C.SCREEN_WIDTH/2, 600)
+            self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 700)
             pygame.display.flip()
