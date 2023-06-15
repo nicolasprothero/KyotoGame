@@ -40,7 +40,7 @@ class Game():
         # Create the screen object
         # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 
-        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
+        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.RESIZABLE)
 
         pygame.display.set_caption("game")
         icon = pygame.image.load("assets/images/capy.jpeg")
@@ -112,6 +112,14 @@ class Game():
         # Instantiate player. Right now, this is just a rectangle.
         player = Player(key_presses_1, 0, 0)
         player2 = Player(key_presses_2, 0, 0)
+
+        for event in pygame.event.get():
+            if event.type == pygame.VIDEORESIZE:
+                current_width, current_height = event.w, event.h
+                scaling_factor_width = current_width / C.SCREEN_WIDTH
+                scaling_factor_width = current_height / C.SCREEN_HEIGHT
+
+        scaled_screen = pygame.transform.scale(self.screen, (current))
 
         # Setup the level
         level = Level(C.LEVEL_MAP, self.screen, "assets/images/DefaultBackground.webp")
