@@ -47,6 +47,9 @@ class Game():
         pygame.display.set_caption("game")
         icon = pygame.image.load("assets/img/capy.jpeg")
         pygame.display.set_icon(icon)
+        
+        self.select_sound = pygame.mixer.Sound("assets/sound/Select.wav")
+        self.select_sound.set_volume(0.3)
 
         self.menu_running = True
         self.game_running = False
@@ -89,20 +92,27 @@ class Game():
                     elif event.key == K_w or event.key == K_UP:
                         if(current_selection == "settings"):
                             current_selection = "start"
+                            pygame.mixer.Sound.play(self.select_sound)
                         elif(current_selection == "quit"):
                             current_selection = "settings"
+                            pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_s or event.key == K_DOWN:
                         if(current_selection == "start"):
                             current_selection = "settings"
+                            pygame.mixer.Sound.play(self.select_sound)
                         elif(current_selection == "settings"):
                             current_selection = "quit"
+                            pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_RETURN:
                         if(current_selection == "start"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             self.menu_running = False
                             self.pregame_menu()
                         if(current_selection == "settings"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             self.options_menu()
                         elif(current_selection == "quit"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             self.menu_running = False
                 # Check for QUIT event. If QUIT, then set running to false.
                 elif event.type == QUIT:
@@ -183,17 +193,23 @@ class Game():
                     elif event.key == K_w or event.key == K_UP:
                         if(current_selection == "settings"):
                             current_selection = "resume"
+                            pygame.mixer.Sound.play(self.select_sound)
                         elif(current_selection == "quit"):
                             current_selection = "settings"
+                            pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_s or event.key == K_DOWN:
                         if(current_selection == "resume"):
                             current_selection = "settings"
+                            pygame.mixer.Sound.play(self.select_sound)
                         elif(current_selection == "settings"):
                             current_selection = "quit"
+                            pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_RETURN:
                         if(current_selection == "resume"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             self.paused = False
                         if(current_selection == "quit"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             self.game_running = False
                             self.paused = False
                             
@@ -253,17 +269,21 @@ class Game():
                         self.run_menu()
                     elif event.key == K_w or event.key == K_UP:
                         if(current_selection == "quit"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             current_selection = "play"
                     elif event.key == K_s or event.key == K_DOWN:
                         if(current_selection == "play"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             current_selection = "quit"
                     elif event.key == K_RETURN:
                         if(current_selection == "play"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             self.pregame_running = False
                             self.run_game()
                         # elif(current_selection == "practice"):
                             # self.menu_running = False
                         elif(current_selection == "quit"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             self.pregame_running = False
                             self.run_menu()
                 # Check for QUIT event. If QUIT, then set running to false.
