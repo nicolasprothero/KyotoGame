@@ -39,9 +39,9 @@ class Player(pygame.sprite.Sprite):
     def updatePos(self):
         self.pos += self.vel
         # deccelerate horizontally
-        self.vel[0] *= 0.90
+        self.vel[0] *= 0.85
         # add gravity
-        self.vel[1] += 0.7
+        self.vel[1] += 0.85
         # check if player is out of bounds
 
         # ceiling
