@@ -31,6 +31,8 @@ from pygame.locals import (
     QUIT,
 )
 
+clock = pygame.time.Clock()
+
 class Game():
     def __init__(self):
         # Initialize pygame
@@ -42,7 +44,7 @@ class Game():
         self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
 
         pygame.display.set_caption("game")
-        icon = pygame.image.load("assets/images/capy.jpeg")
+        icon = pygame.image.load("src/capy.jpeg")
         pygame.display.set_icon(icon)
 
         self.menu_running = True
@@ -109,9 +111,8 @@ class Game():
 
     def run_game(self):
         # Instantiate player. Right now, this is just a rectangle.
-        player = Player(key_presses_1)
-        player2 = Player(key_presses_2)
-        
+        player = Player(key_presses_1, (0, 0), self.screen)
+        player2 = Player(key_presses_2, (C.SCREEN_WIDTH - 50, 0), self.screen)
         self.game_running = True
         # Main loop
         while self.game_running:
@@ -124,21 +125,20 @@ class Game():
                     if event.key == K_ESCAPE:
                         self.pause_menu()
 
-            clock = pygame.time.Clock()
-            dt = clock.tick(60) # limit fps to 60
+            clock.tick(60) # limit fps to 60
             pressed_keys = pygame.key.get_pressed()
-            player.gravity()
-            player.update(pressed_keys, dt)
-            
-            player2.gravity()
-            player2.update(pressed_keys, dt)
+            player.move(pressed_keys)
+            player2.move(pressed_keys)
+            player.updatePos()
+            player2.updatePos()
         
             # Fill the screen with black
             self.screen.fill((255, 255, 255))
 
             # Draw the player on the screen
-            self.screen.blit(player.surf, player.rect)
-            self.screen.blit(player2.surf, player2.rect)
+            self.screen.blit(player.image, player.pos)
+            self.screen.blit(player2.image, player2.pos)
+            
             
             self.draw_text("IN LIFE EVEN WHEN TOLD NOT TO, SWOASE.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
 
