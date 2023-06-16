@@ -28,6 +28,7 @@ from pygame.locals import (
     K_s,
     K_RETURN,
     K_ESCAPE,
+    K_SPACE,
     KEYDOWN,
     QUIT,
 )
@@ -41,13 +42,20 @@ class Game():
 
         # Create the screen object
         # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
-
         self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.RESIZABLE)
+        
+        # Instantiate player. Right now, this is just a rectangle.
+        self.player = Player(key_presses_1, "assets/img/character.png", (200, 100), self.screen)
+        self.player2 = Player(key_presses_2, "assets/img/character2.png", (C.SCREEN_WIDTH - 300, 100), self.screen)
+        
+        pygame.mouse.set_visible(False)
 
         pygame.display.set_caption("SWOASE ON SWOASE")
         icon = pygame.image.load("assets/img/capy.png")
         pygame.display.set_icon(icon)
         
+        self.level = Level(C.LEVEL_MAP, self.screen, "assets/img/DefaultBackground.png")
+
         self.select_sound = pygame.mixer.Sound("assets/sound/Select.wav")
         self.select_sound.set_volume(0.3)
 
@@ -57,8 +65,10 @@ class Game():
         self.options_running = False
         self.pregame_running = False
         
-        self.color_select = (200, 64, 115)
-        self.color_default = (245, 245, 212)
+        self.color_menu = (40, 40, 40)
+        self.color_dos = (77, 77, 77)
+        self.color_select = (255, 77, 112)
+        self.color_default = (245, 244, 228)
 
     def draw_text(self, text, color, size, x, y):
         font = pygame.font.Font("assets/fonts/ThaleahFat.ttf", size)
@@ -121,7 +131,7 @@ class Game():
                 elif event.type == QUIT:
                     self.menu_running = False
             
-            self.screen.fill((48, 44, 46))
+            self.screen.fill(self.color_menu)
             # create a surface object, image is drawn on it.
             title_img = pygame.image.load("assets/img/title.png")
             title_img = pygame.transform.scale(title_img,(700,200))
@@ -134,16 +144,17 @@ class Game():
             pygame.display.flip()
 
     def run_game(self):
-        # Instantiate player. Right now, this is just a rectangle.
-        player = Player(key_presses_1, (0, 0), self.screen)
-        player2 = Player(key_presses_2, (C.SCREEN_WIDTH - 50, 0), self.screen)
-
-        # Setup the level
-        level = Level(C.LEVEL_MAP, self.screen, "assets/img/DefaultBackground.webp")
-        
+        # Setup the level        
         self.game_running = True
         # Main loop
         while self.game_running:
+            
+            clock.tick(60) # limit fps to 60
+            pressed_keys = pygame.key.get_pressed()
+            self.player.move(pressed_keys)
+            self.player2.move(pressed_keys)
+            self.player.updatePos()
+            self.player2.updatePos()
             
             # for loop through the event queue
             for event in pygame.event.get():
@@ -152,23 +163,24 @@ class Game():
                     # If the Esc key is pressed, then exit the main loop
                     if event.key == K_ESCAPE:
                         self.pause_menu()
+                    elif event.key == K_w:
+                        self.player.jump()
+                    elif event.key == K_UP:
+                        self.player2.jump()
+                    elif event.key == K_RETURN:
+                        self.player2.dash(pressed_keys)
+                    elif event.key == K_SPACE:
+                        self.player.dash(pressed_keys)
 
-            clock.tick(60) # limit fps to 60
-            pressed_keys = pygame.key.get_pressed()
-            player.move(pressed_keys)
-            player2.move(pressed_keys)
-            player.updatePos()
-            player2.updatePos()
-            # set screen title to player.isOnGround, position
-            pygame.display.set_caption("game | onGround: " + str(player.isOnGround) + " | canDoubleJump: " + str(player.hasDoubleJump))
-            if player.hasDoubleJump == True:
-                pygame.display.set_caption("hi")
             # Run the Level
-            level.run()
+            self.level.run()
+            
+            self.check_collisions()
 
             # Draw the player on the screen
-            self.screen.blit(player.image, player.pos)
-            self.screen.blit(player2.image, player2.pos)
+            self.screen.blit(self.player.image, self.player.pos)
+            self.screen.blit(self.player2.image, self.player2.pos)
+            
             
             self.draw_text("IN LIFE EVEN WHEN TOLD NOT TO, SWOASE.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
 
@@ -180,7 +192,7 @@ class Game():
         
         self.paused = True
         while self.paused:
-            pygame.draw.rect(self.screen, (48, 44, 46), pygame.Rect(C.SCREEN_WIDTH/2 - 250, C.SCREEN_HEIGHT/2 - 250, 500, 500))
+            pygame.draw.rect(self.screen, self.color_dos, pygame.Rect(C.SCREEN_WIDTH/2 - 250, C.SCREEN_HEIGHT/2 - 250, 500, 500))
             # Check for QUIT event. If QUIT, then set running to false.    
             if(current_selection == "resume"):
                 resume_text_color = self.color_select
@@ -246,7 +258,7 @@ class Game():
                 elif event.type == QUIT:
                     self.options_running = False
             
-            self.screen.fill((48, 44, 46))
+            self.screen.fill(self.color_dos)
             self.draw_text("OPTIONS", self.color_default, 75, C.SCREEN_WIDTH/2, 100)
             self.draw_text("Nathan Wand occasionally smells like cheese.", self.color_default, 40, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
             pygame.display.flip()
@@ -295,10 +307,17 @@ class Game():
                     self.pregame_running = False
                     self.run_menu()
             
-            self.screen.fill((48, 44, 46))
+            self.screen.fill(self.color_menu)
             self.draw_text("PRE GAME MENU", self.color_default, 90, C.SCREEN_WIDTH/2, 150)
             self.draw_text("PLAY", start_text_color, 50, C.SCREEN_WIDTH/2, 400)
             self.draw_text("PRACTICE", (130,130,130), 50, C.SCREEN_WIDTH/2, 500)
             self.draw_text("ARMORY", (130,130,130), 50, C.SCREEN_WIDTH/2, 600)
             self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 700)
             pygame.display.flip()
+            
+    def check_collisions(self):
+        #if pygame.sprite.spritecollide(self.player, self.level.tile_group, False, pygame.sprite.collide_mask):
+        if self.player.mask.overlap(self.player2.mask, (self.player.pos[0] - self.player2.pos[0], self.player.pos[1] - self.player2.pos[1])):
+            pygame.display.set_caption("COLLISION DETECTED")
+        else:
+            pygame.display.set_caption("COLLISION NOT")
