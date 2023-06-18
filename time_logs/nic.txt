@@ -1,0 +1,7 @@
+06/14:
+
+06/15: 9:10AM - 11:00AM : Added pregame menu, fixed pause screen
+6/15: 12:00PM - 6:00PM : Added sound effects in menu, easier color changing, image as title, tried to fix player file but didn't work so I reverted, ok I fixed the plwd
+6/15: 11:30PM - 12:40: Started on player and environment/player collision. Got player on player sprite mask collision working
+
+6/16: 1:45PM - : Edited some player collision, edited some of the game colors.

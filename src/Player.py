@@ -12,38 +12,58 @@ from pygame.locals import (
 )
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, keyBinds, pos, surface):
+    def __init__(self, keyBinds, img, pos, surface):
         self.keyBinds = keyBinds
-        self.image = pygame.image.load("assets/img/capy.jpeg")
-        self.image = pygame.transform.scale(self.image, (76, 76)) # scale image down
+        self.image = pygame.image.load(img).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (50, 70)) # scale image down
         # convert pos to pair of float
         pos = (float(pos[0]), float(pos[1]))
         surface.blit(self.image, pos)
         self.rect = self.image.get_rect()
         self.pos = np.array(pos) # (x_pos, y_pos)
         self.vel = np.array([0.0, 0.0]) # (x_vel, y_vel)
+        
+        self.FastFall = False
+        self.isOnGround = False
+        self.hasDoubleJump = True
+        self.hasDash = True
+        
+        self.facingRight = True
+        
+        self.mask = pygame.mask.from_surface(self.image)
 
-    def move(self, pressed_keys):
-
-        # only jump if on the ground
-        if self.pos[1] >= C.SCREEN_HEIGHT - self.image.get_height():
-            if pressed_keys[self.keyBinds["up"]]:
-                self.vel[1] -= 15
+    def move(self, pressed_keys):  
         if pressed_keys[self.keyBinds["down"]]:
-            self.vel[1] += 1
+            self.FastFall = True
+            self.vel[1] += 1.5
         if pressed_keys[self.keyBinds["left"]]:
-            self.vel[0] -= 1
+            if self.facingRight:
+                self.image = pygame.transform.flip(self.image, True, False)
+                self.facingRight = False
+            self.vel[0] -= 1.5
         if pressed_keys[self.keyBinds["right"]]:
-            self.vel[0] += 1
+            if not self.facingRight:
+                self.image = pygame.transform.flip(self.image, True, False)
+                self.facingRight = True
+            self.vel[0] += 1.5
+
+
+        # reset fast fall if player hits the ground
+        if self.pos[1] >= C.SCREEN_HEIGHT - self.image.get_height():
+            self.FastFall = False
+        
 
     def updatePos(self):
         self.pos += self.vel
         # deccelerate horizontally
         self.vel[0] *= 0.85
         # add gravity
-        self.vel[1] += 0.85
-        # check if player is out of bounds
+        self.vel[1] += 0.9
+        # fast fall
+        if self.FastFall:
+            self.vel[1] += 2.0
 
+        # check if player is out of bounds
         # ceiling
         if self.pos[1] <= 0:
             self.pos[1] = 0 + 1
@@ -52,6 +72,10 @@ class Player(pygame.sprite.Sprite):
         if self.pos[1] >= C.SCREEN_HEIGHT - self.image.get_height():
             self.pos[1] = C.SCREEN_HEIGHT - self.image.get_height()
             self.vel[1] = 0
+            self.isOnGround = True
+            self.hasDoubleJump = True
+            self.hasDash = True
+            
             
         if self.pos[0] <= 0:
             self.pos[0] = 0
@@ -60,5 +84,22 @@ class Player(pygame.sprite.Sprite):
             self.pos[0] = C.SCREEN_WIDTH - self.image.get_width()
             self.vel[0] = 0
         
-
-
+    def jump(self):
+        if self.isOnGround:
+            self.vel[1] -= 15
+            self.isOnGround = False
+        elif self.hasDoubleJump:
+            self.vel[1] = 0
+            self.vel[1] -= 15
+            self.hasDoubleJump = False
+            self.isOnGround = False
+            
+    def dash(self, pressed_keys):
+        if not self.isOnGround and self.hasDash:
+            if pressed_keys[self.keyBinds["left"]]:
+                self.hasDash = False
+                self.vel[0] -= 20
+            if pressed_keys[self.keyBinds["right"]]:
+                self.hasDash = False
+                self.vel[0] += 20
+                
