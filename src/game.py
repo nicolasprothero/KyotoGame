@@ -5,6 +5,7 @@ import pygame
 import CONSTANTS as C
 from Player import Player
 from Level import Level
+from Weapons import *
 
 # create a dictionary to store key presses for player 1 and player 2
 key_presses_1 = {
@@ -138,6 +139,10 @@ class Game():
         player = Player(key_presses_1, (0, 0), self.screen)
         player2 = Player(key_presses_2, (C.SCREEN_WIDTH - 50, 0), self.screen)
 
+        # Making some weapnos
+        sword = SlashWeapon("assets/img/sword.png")
+        mario = ThrustWeapon("assets/img/mario.png")
+
         # Setup the level
         level = Level(C.LEVEL_MAP, self.screen, "assets/img/DefaultBackground.webp")
         
@@ -155,10 +160,15 @@ class Game():
 
             clock.tick(60) # limit fps to 60
             pressed_keys = pygame.key.get_pressed()
+            player.changeWeapon(sword)
+            player2.changeWeapon(mario)
             player.move(pressed_keys)
             player2.move(pressed_keys)
             player.updatePos()
             player2.updatePos()
+            player.updateWeapon()
+            player2.updateWeapon()
+
             # set screen title to player.isOnGround, position
             pygame.display.set_caption("game | onGround: " + str(player.isOnGround) + " | canDoubleJump: " + str(player.hasDoubleJump))
             if player.hasDoubleJump == True:
