@@ -45,7 +45,7 @@ class Game():
 
         # Create the screen object
         # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
-        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.FULLSCREEN)
         
         # Instantiate player. Right now, this is just a rectangle.
         self.player = Player(key_presses_1, "assets/img/character.png", (200, 100), self.screen)
