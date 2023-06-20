@@ -5,6 +5,7 @@ import pygame
 import CONSTANTS as C
 from Player import Player
 from Level import Level
+from Weapons import *
 
 # create a dictionary to store key presses for player 1 and player 2
 key_presses_1 = {
@@ -26,6 +27,8 @@ from pygame.locals import (
     K_DOWN,
     K_w,
     K_s,
+    K_x,
+    K_m,
     K_RETURN,
     K_ESCAPE,
     K_SPACE,
@@ -47,6 +50,8 @@ class Game():
         # Instantiate player. Right now, this is just a rectangle.
         self.player = Player(key_presses_1, "assets/img/character.png", (200, 100), self.screen)
         self.player2 = Player(key_presses_2, "assets/img/character2.png", (C.SCREEN_WIDTH - 300, 100), self.screen)
+        fart = ThrustWeapon('assets/img/mario.png', (40, 60))
+        self.player2.changeWeapon(fart)
         
         pygame.mouse.set_visible(False)
 
@@ -155,6 +160,7 @@ class Game():
             self.player2.move(pressed_keys)
             self.player.updatePos()
             self.player2.updatePos()
+
             
             # for loop through the event queue
             for event in pygame.event.get():
@@ -171,6 +177,10 @@ class Game():
                         self.player2.dash(pressed_keys)
                     elif event.key == K_SPACE:
                         self.player.dash(pressed_keys)
+                    elif event.key == K_x:
+                        self.player.weapon.attack()
+                    elif event.key == K_m:
+                        self.player2.weapon.attack()
 
             # Run the Level
             self.level.run()
@@ -180,8 +190,10 @@ class Game():
             # Draw the player on the screen
             self.screen.blit(self.player.image, self.player.pos)
             self.screen.blit(self.player2.image, self.player2.pos)
-
-
+            self.screen.blit(self.player.weapon.image, self.player.pos)
+            self.screen.blit(self.player2.weapon.image, self.player2.pos)
+            
+            self.draw_text("IN LIFE EVEN WHEN TOLD NOT TO, SWOASE.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
 
             # Update the display
             pygame.display.flip()
