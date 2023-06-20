@@ -15,7 +15,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, keyBinds, img, pos, surface):
         self.keyBinds = keyBinds
         self.image = pygame.image.load(img).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (50, 70)) # scale image down
+        self.image = pygame.transform.scale(self.image, (47, 65)) # scale image down 13 by 18
         # convert pos to pair of float
         pos = (float(pos[0]), float(pos[1]))
         surface.blit(self.image, pos)
