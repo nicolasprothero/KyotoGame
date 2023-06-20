@@ -50,7 +50,7 @@ class Game():
         # Instantiate player. Right now, this is just a rectangle.
         self.player = Player(key_presses_1, "assets/img/character.png", (200, 100), self.screen)
         self.player2 = Player(key_presses_2, "assets/img/character2.png", (C.SCREEN_WIDTH - 300, 100), self.screen)
-        fart = ThrustWeapon('assets/img/mario.png', (40, 60))
+        fart = ThrustWeapon('assets/img/sword.png', (40, 60))
         self.player2.changeWeapon(fart)
         
         pygame.mouse.set_visible(False)
@@ -190,8 +190,8 @@ class Game():
             # Draw the player on the screen
             self.screen.blit(self.player.image, self.player.pos)
             self.screen.blit(self.player2.image, self.player2.pos)
-            self.screen.blit(self.player.weapon.image, self.player.pos)
-            self.screen.blit(self.player2.weapon.image, self.player2.pos)
+            self.screen.blit(self.player.weapon.image, self.player.pos + C.HAND_CORDS - (20, 50)) # - hilt_cords
+            self.screen.blit(self.player2.weapon.image, self.player2.pos + C.HAND_CORDS - (20, 50))
             
             self.draw_text("IN LIFE EVEN WHEN TOLD NOT TO, SWOASE.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
 
