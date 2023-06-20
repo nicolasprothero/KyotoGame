@@ -180,9 +180,8 @@ class Game():
             # Draw the player on the screen
             self.screen.blit(self.player.image, self.player.pos)
             self.screen.blit(self.player2.image, self.player2.pos)
-            
-            
-            self.draw_text("IN LIFE EVEN WHEN TOLD NOT TO, SWOASE.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
+
+
 
             # Update the display
             pygame.display.flip()
