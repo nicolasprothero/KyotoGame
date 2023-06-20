@@ -1,6 +1,7 @@
 import pygame
 import numpy as np
 import CONSTANTS as C
+from Weapons import *
 from pygame.locals import (
     K_UP,
     K_DOWN,
@@ -32,6 +33,10 @@ class Player(pygame.sprite.Sprite):
         
         self.mask = pygame.mask.from_surface(self.image)
 
+        # Make the default weapon.
+        self.weapon = SlashWeapon('assets/img/sword.png', (40, 60))
+
+
     def move(self, pressed_keys):  
         if pressed_keys[self.keyBinds["down"]]:
             self.FastFall = True
@@ -39,11 +44,13 @@ class Player(pygame.sprite.Sprite):
         if pressed_keys[self.keyBinds["left"]]:
             if self.facingRight:
                 self.image = pygame.transform.flip(self.image, True, False)
+                self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
                 self.facingRight = False
             self.vel[0] -= 1.5
         if pressed_keys[self.keyBinds["right"]]:
             if not self.facingRight:
                 self.image = pygame.transform.flip(self.image, True, False)
+                self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
                 self.facingRight = True
             self.vel[0] += 1.5
 
@@ -83,6 +90,7 @@ class Player(pygame.sprite.Sprite):
         if self.pos[0] >= C.SCREEN_WIDTH - self.image.get_width():
             self.pos[0] = C.SCREEN_WIDTH - self.image.get_width()
             self.vel[0] = 0
+
         
     def jump(self):
         if self.isOnGround:
@@ -103,3 +111,5 @@ class Player(pygame.sprite.Sprite):
                 self.hasDash = False
                 self.vel[0] += 20
                 
+    def changeWeapon(self, weapon):
+        self.weapon = weapon
