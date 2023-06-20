@@ -248,9 +248,9 @@ class Game():
                             
                             self.menu_running = True
                         
-            self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, 250)
-            self.draw_text("SETTINGS", settings_text_color, 35, C.SCREEN_WIDTH/2, 400)
-            self.draw_text("RETURN TO MENU", quit_text_color, 35, C.SCREEN_WIDTH/2, 550)
+            self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 150)
+            self.draw_text("SETTINGS", settings_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
+            self.draw_text("RETURN TO MENU", quit_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 150)
             pygame.display.flip()
 
     def options_menu(self):
