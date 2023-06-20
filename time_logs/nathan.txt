@@ -1,0 +1,8 @@
+06/14: 2:00PM-6:00PM: Fixed my virtual enviroment, designed levels and tiles
+06/15: 9:10AM - 11:00AM : made background and tiles take images
+06/15: 12:00PM - 2:00PM made sure all of our gits were up to draw_text
+06/15: 3:30PM - 6:11PM created my time log, created a weapon class with slash weapon and thrust weapon. couldn't figure out the OOP part...
+06/19: 3:30PM - 4:00PM did some research on the Weapons
+06/19: 4:45PM - 6:00PM did some progress on Weapons, but I can't make it follow the character yet.
+06/20: 9:20PM - 11:00PM Got the weapons on the screen
+06/20: 3:00PM - 5:00PM Got the weapons to follow the player and play a sound when an attack button is pressed, also you can change the weapon

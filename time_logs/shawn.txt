@@ -1,2 +1,3 @@
 06/15: IN: 9AM OUT: 11AM - Changed movement of player class. Added gravity, sliding physics
-06/15: IN: 12:00PM OUT: 
+06/15: IN: 12:00PM OUT: 3:00PM - Tried to add double jump functionality, tweaked physics
+06/20: IN: 12:00PM OUT: 5:00PM - Implementing collisions with platforms, stuck on a bug rn :(
