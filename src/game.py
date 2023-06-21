@@ -161,7 +161,18 @@ class Game():
             self.player.updatePos()
             self.player2.updatePos()
 
+            # Run the Level
+            self.level.run()
             
+            self.check_collisions()
+
+            # Draw the player on the screen
+            self.screen.blit(self.player.image, self.player.pos)
+            self.screen.blit(self.player2.image, self.player2.pos)
+            self.screen.blit(self.player.weapon.image, self.player.pos + C.HAND_CORDS - (20, 50)) # - hilt_cords
+            self.screen.blit(self.player2.weapon.image, self.player2.pos + C.HAND_CORDS - (20, 50))
+
+            self.draw_text("IN LIFE EVEN WHEN TOLD NOT TO, SWOASE.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
@@ -178,22 +189,11 @@ class Game():
                     elif event.key == K_SPACE:
                         self.player.dash(pressed_keys)
                     elif event.key == K_x:
-                        self.player.weapon.attack()
+                        self.player.attack()
                     elif event.key == K_m:
-                        self.player2.weapon.attack()
+                        self.player2.attack()
 
-            # Run the Level
-            self.level.run()
             
-            self.check_collisions()
-
-            # Draw the player on the screen
-            self.screen.blit(self.player.image, self.player.pos)
-            self.screen.blit(self.player2.image, self.player2.pos)
-            self.screen.blit(self.player.weapon.image, self.player.pos + C.HAND_CORDS - (20, 50)) # - hilt_cords
-            self.screen.blit(self.player2.weapon.image, self.player2.pos + C.HAND_CORDS - (20, 50))
-            
-            self.draw_text("IN LIFE EVEN WHEN TOLD NOT TO, SWOASE.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
 
             # Update the display
             pygame.display.flip()

@@ -19,7 +19,10 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (47, 65)) # scale image down 13 by 18
         # convert pos to pair of float
         pos = (float(pos[0]), float(pos[1]))
-        surface.blit(self.image, pos)
+        
+        #for attack function 
+        self.surface = surface
+        #surface.blit(self.image, pos) <-players still drawn without this
         self.rect = self.image.get_rect()
         self.pos = np.array(pos) # (x_pos, y_pos)
         self.vel = np.array([0.0, 0.0]) # (x_vel, y_vel)
@@ -35,7 +38,6 @@ class Player(pygame.sprite.Sprite):
 
         # Make the default weapon.
         self.weapon = SlashWeapon('assets/img/sword.png', (40, 60))
-
 
     def move(self, pressed_keys):  
         if pressed_keys[self.keyBinds["down"]]:
@@ -113,3 +115,6 @@ class Player(pygame.sprite.Sprite):
                 
     def changeWeapon(self, weapon):
         self.weapon = weapon
+
+    def attack(self):
+        self.weapon.attack(self, self.surface)
