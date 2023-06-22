@@ -13,16 +13,21 @@ from pygame.locals import (
 )
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, keyBinds, img, pos, surface):
+    def __init__(self, keyBinds, img, pos):
+        pygame.sprite.Sprite.__init__(self)
         self.keyBinds = keyBinds
         self.image = pygame.image.load(img).convert_alpha()
         self.image = pygame.transform.scale(self.image, (65, 90)) # scale image down; 13 by 18
-        # convert pos to pair of float
-        pos = (float(pos[0]), float(pos[1]))
-        surface.blit(self.image, pos)
-        self.rect = self.image.get_rect()
-        self.pos = np.array(pos) # (x_pos, y_pos)
-        self.vel = np.array([0.0, 0.0]) # (x_vel, y_vel)
+        self.rect = self.image.get_rect(topleft = pos)
+
+        # player movment
+        self.direction = pygame.math.Vector2(0, 0)
+        self.speed = 10
+        self.jump_speed = -20
+        self.dash_speed = 5
+        self.gravity = 0.9
+
+
         
         self.FastFall = False
         self.isOnGround = False
@@ -37,79 +42,57 @@ class Player(pygame.sprite.Sprite):
         self.weapon = SlashWeapon('assets/img/sword.png', (40, 60))
 
 
-    def move(self, pressed_keys):  
-        if pressed_keys[self.keyBinds["down"]]:
-            self.FastFall = True
-            self.vel[1] += 1.5
+    def move(self):  
+        pressed_keys = pygame.key.get_pressed()
+        
         if pressed_keys[self.keyBinds["left"]]:
             if self.facingRight:
                 self.image = pygame.transform.flip(self.image, True, False)
                 self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
                 self.facingRight = False
-            self.vel[0] -= 1.5
-        if pressed_keys[self.keyBinds["right"]]:
+            self.direction.x = -1 
+        elif pressed_keys[self.keyBinds["right"]]:
             if not self.facingRight:
                 self.image = pygame.transform.flip(self.image, True, False)
                 self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
                 self.facingRight = True
-            self.vel[0] += 1.5
+            self.direction.x = 1
+        else:
+            self.direction.x = round(self.direction.x * 0.85, 2)
+
+        if pressed_keys[self.keyBinds["down"]]:
+            self.FastFall = True
+            self.gravity = 3
 
 
-        # reset fast fall if player hits the ground
-        if self.pos[1] >= C.SCREEN_HEIGHT - self.image.get_height():
-            self.FastFall = False
-        
+    def update(self):
+        self.move()
 
-    def updatePos(self):
-        self.pos += self.vel
-        # deccelerate horizontally
-        self.vel[0] *= 0.85
-        # add gravity
-        self.vel[1] += 0.9
-        # fast fall
-        if self.FastFall:
-            self.vel[1] += 2.0
-
-        # check if player is out of bounds
-        # ceiling
-        if self.pos[1] <= 0:
-            self.pos[1] = 0 + 1
-            self.vel[1] = 0
-        # floor
-        if self.pos[1] >= C.SCREEN_HEIGHT - self.image.get_height():
-            self.pos[1] = C.SCREEN_HEIGHT - self.image.get_height()
-            self.vel[1] = 0
-            self.isOnGround = True
-            self.hasDoubleJump = True
-            self.hasDash = True
-            
-            
-        if self.pos[0] <= 0:
-            self.pos[0] = 0
-            self.vel[0] = 0
-        if self.pos[0] >= C.SCREEN_WIDTH - self.image.get_width():
-            self.pos[0] = C.SCREEN_WIDTH - self.image.get_width()
-            self.vel[0] = 0
+    
+    def apply_gravity(self):
+        self.direction.y += self.gravity
+        self.rect.y += self.direction.y
 
         
     def jump(self):
         if self.isOnGround:
-            self.vel[1] -= 15
+            self.direction.y = self.jump_speed
             self.isOnGround = False
         elif self.hasDoubleJump:
-            self.vel[1] = 0
-            self.vel[1] -= 15
+            self.direction.y = self.jump_speed
             self.hasDoubleJump = False
-            self.isOnGround = False
+        self.FastFall = False
+        self.gravity = 0.9
+        
             
-    def dash(self, pressed_keys):
+    def dash(self):
         if not self.isOnGround and self.hasDash:
-            if pressed_keys[self.keyBinds["left"]]:
+            if not self.facingRight:
                 self.hasDash = False
-                self.vel[0] -= 20
-            if pressed_keys[self.keyBinds["right"]]:
+                self.direction.x = -self.dash_speed
+            if self.facingRight:
                 self.hasDash = False
-                self.vel[0] += 20
+                self.direction.x = self.dash_speed
                 
     def changeWeapon(self, weapon):
         self.weapon = weapon

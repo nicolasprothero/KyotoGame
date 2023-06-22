@@ -1,5 +1,5 @@
-# ISSUE: we need to figure out how to make game full screen and kinda scale the level to the screen size
-# This is temporary, but we can use this to test collisions
+import pygame
+
 LEVEL_MAP = [
     'KBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBJ',
     'R  M                         M         L',
@@ -50,3 +50,18 @@ SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1200
 GRAVITY = 15
 FRICTION = 0.8
+
+# create a dictionary to store key presses for player 1 and player 2
+key_presses_1 = {
+    "up": pygame.K_w,
+    "down": pygame.K_s,
+    "left": pygame.K_a,
+    "right": pygame.K_d,
+}
+
+key_presses_2 = {
+    "up": pygame.K_UP,
+    "down": pygame.K_DOWN,
+    "left": pygame.K_LEFT,
+    "right": pygame.K_RIGHT,
+}

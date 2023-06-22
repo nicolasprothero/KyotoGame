@@ -7,21 +7,6 @@ from Player import Player
 from Level import Level
 from Weapons import *
 
-# create a dictionary to store key presses for player 1 and player 2
-key_presses_1 = {
-    "up": pygame.K_w,
-    "down": pygame.K_s,
-    "left": pygame.K_a,
-    "right": pygame.K_d,
-}
-
-key_presses_2 = {
-    "up": pygame.K_UP,
-    "down": pygame.K_DOWN,
-    "left": pygame.K_LEFT,
-    "right": pygame.K_RIGHT,
-}
-
 from pygame.locals import (
     K_UP,
     K_DOWN,
@@ -48,10 +33,14 @@ class Game():
         self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.FULLSCREEN)
         
         # Instantiate player. Right now, this is just a rectangle.
-        self.player = Player(key_presses_1, "assets/img/character.png", (200, 100), self.screen)
-        self.player2 = Player(key_presses_2, "assets/img/character2.png", (C.SCREEN_WIDTH - 300, 100), self.screen)
-        fart = ThrustWeapon('assets/img/mario.png', (40, 60))
-        self.player2.changeWeapon(fart)
+        self.players = pygame.sprite.Group()
+        self.player1 = Player(C.key_presses_1, "assets/img/character.png", (C.SCREEN_WIDTH - 300, 100))
+        self.players.add(self.player1)
+        self.player2 = Player(C.key_presses_2, "assets/img/character2.png", (C.SCREEN_WIDTH - 200, 100))
+        self.players.add(self.player2)
+        
+        # fart = ThrustWeapon('assets/img/mario.png', (40, 60))
+        # self.player2.changeWeapon(fart)
         
         pygame.mouse.set_visible(False)
 
@@ -74,6 +63,34 @@ class Game():
         self.color_dos = (77, 77, 77)
         self.color_select = (255, 77, 112)
         self.color_default = (245, 244, 228)
+    
+    def horizontal_movement_collision(self):
+        players = self.players.sprites()
+        for player in players:
+            player.rect.x += player.direction.x * player.speed
+            for sprite in self.level.tile_group.sprites():
+                if sprite.rect.colliderect(player.rect):
+                    if player.direction.x < 0:
+                        player.rect.left = sprite.rect.right
+                    if player.direction.x > 0:
+                        player.rect.right = sprite.rect.left
+
+    def vertical_movement_collision(self):
+        players = self.players.sprites()
+        for player in players:
+            player.apply_gravity()
+            for sprite in self.level.tile_group.sprites():
+                if sprite.rect.colliderect(player.rect):
+                    if player.direction.y > 0:
+                        player.rect.bottom = sprite.rect.top
+                        player.direction.y = 0
+                        player.isOnGround = True
+                        player.hasDash = True
+                        player.hasDoubleJump = True
+                        player.gravity = 0.9
+                    if player.direction.y < 0:
+                        player.rect.top = sprite.rect.bottom
+                        player.direction.y = 0
 
     def draw_text(self, text, color, size, x, y):
         font = pygame.font.Font("assets/fonts/ThaleahFat.ttf", size)
@@ -155,12 +172,6 @@ class Game():
         while self.game_running:
             
             clock.tick(60) # limit fps to 60
-            pressed_keys = pygame.key.get_pressed()
-            self.player.move(pressed_keys)
-            self.player2.move(pressed_keys)
-            self.player.updatePos()
-            self.player2.updatePos()
-
             
             # for loop through the event queue
             for event in pygame.event.get():
@@ -170,28 +181,36 @@ class Game():
                     if event.key == K_ESCAPE:
                         self.pause_menu()
                     elif event.key == K_w:
-                        self.player.jump()
+                         self.player1.jump()
                     elif event.key == K_UP:
-                        self.player2.jump()
+                         self.player2.jump()
                     elif event.key == K_RETURN:
-                        self.player2.dash(pressed_keys)
+                        self.player2.dashing = True
+                        self.player2.dash()
                     elif event.key == K_SPACE:
-                        self.player.dash(pressed_keys)
-                    elif event.key == K_x:
-                        self.player.weapon.attack()
-                    elif event.key == K_m:
-                        self.player2.weapon.attack()
+                        self.player1.dashing = True
+                        self.player1.dash()
+                    # elif event.key == K_x:
+                    #     self.player1.weapon.attack()
+                    # elif event.key == K_m:
+                    #     self.player2.weapon.attack()
 
             # Run the Level
             self.level.run()
             
-            self.check_collisions()
+            # self.check_collisions()
 
             # Draw the player on the screen
-            self.screen.blit(self.player.image, self.player.pos)
-            self.screen.blit(self.player2.image, self.player2.pos)
-            self.screen.blit(self.player.weapon.image, self.player.pos)
-            self.screen.blit(self.player2.weapon.image, self.player2.pos)
+            # self.screen.blit(self.player.image, self.player.pos)
+            # self.screen.blit(self.player2.image, self.player2.pos)
+            # self.screen.blit(self.player.weapon.image, self.player.pos)
+            # self.screen.blit(self.player2.weapon.image, self.player2.pos)
+
+            # Players
+            self.players.update()
+            self.horizontal_movement_collision()
+            self.vertical_movement_collision()
+            self.players.draw(self.screen) 
             
             self.draw_text("IN LIFE EVEN WHEN TOLD NOT TO, SWOASE.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
 
@@ -204,7 +223,7 @@ class Game():
         self.paused = True
         while self.paused:
             pygame.draw.rect(self.screen, self.color_dos, pygame.Rect(C.SCREEN_WIDTH/2 - 250, C.SCREEN_HEIGHT/2 - 250, 500, 500))
-            # Check for QUIT event. If QUIT, then set running to false.    
+            # Check for QUIT event. If QUIT, then set running to false.
             if(current_selection == "resume"):
                 resume_text_color = self.color_select
                 settings_text_color = self.color_default
@@ -326,9 +345,11 @@ class Game():
             self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 700)
             pygame.display.flip()
             
-    def check_collisions(self):
-        #if pygame.sprite.spritecollide(self.player, self.level.tile_group, False, pygame.sprite.collide_mask):
-        if self.player.mask.overlap(self.player2.mask, (self.player.pos[0] - self.player2.pos[0], self.player.pos[1] - self.player2.pos[1])):
-            pygame.display.set_caption("COLLISION DETECTED")
-        else:
-            pygame.display.set_caption("COLLISION NOT")
+    # def check_collisions(self):
+    #     #if pygame.sprite.spritecollide(self.player, self.level.tile_group, False, pygame.sprite.collide_mask):
+    #     if self.player.mask.overlap(self.player2.mask, (self.player.pos[0] - self.player2.pos[0], self.player.pos[1] - self.player2.pos[1])):
+    #         pygame.display.set_caption("COLLISION DETECTED")
+    #     else:
+    #         pygame.display.set_caption("COLLISION NOT")
+        
+        

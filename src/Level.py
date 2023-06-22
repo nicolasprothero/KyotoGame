@@ -1,6 +1,7 @@
 import pygame
 from CONSTANTS import *
 from Tile import Tile
+from Player import Player
 
 class Level:
     def __init__(self, level_data, surface, background_img_path):
@@ -8,6 +9,7 @@ class Level:
         self.background_image = pygame.image.load(background_img_path).convert()
         self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.tile_group = pygame.sprite.Group()
+        self.players = pygame.sprite.Group()
         self.setup_level(level_data)
         
     def setup_level(self, layout):
@@ -61,27 +63,26 @@ class Level:
                 elif col == 'M':
                     tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/vine_tile.png')
                     self.tile_group.add(tile)
-                
+                # T: TOP TILE
+                # B: BOTTOM TILE
+                # L: LEFT TILE
+                # R: RIGHT TILE
+                # X: MIDDLE TILE
 
-# T: TOP TILE
-# B: BOTTOM TILE
-# L: LEFT TILE
-# R: RIGHT TILE
-# X: MIDDLE TILE
+                # 1: TOP LEFT
+                # 2: TOP RIGHT
+                # 3: BOT LEFT
+                # 4: BOT RIGHT
 
-# 1: TOP LEFT
-# 2: TOP RIGHT
-# 3: BOT LEFT
-# 4: BOT RIGHT
+                # G: LEFT CORNER
+                # H: RIGHT CORNER
+                # J: BOTLEFT CORNER
+                # K: BOTRIGHT CORNER
 
-# G: LEFT CORNER
-# H: RIGHT CORNER
-# J: BOTLEFT CORNER
-# K: BOTRIGHT CORNER
-
-# N: Grass
-# M: Vine
+                # N: Grass
+                # M: Vine
 
     def run(self):
         self.display_surface.blit(self.background_image, (0, 0))
+        # Tiles
         self.tile_group.draw(self.display_surface)
