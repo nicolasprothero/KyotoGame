@@ -63,9 +63,15 @@ class Player(pygame.sprite.Sprite):
     def updatePos(self):
         self.pos += self.vel
         # deccelerate horizontally
-        self.vel[0] *= 0.85
+        self.rect.x = self.pos[0]
+        self.rect.y = self.pos[1]
+        self.vel[0] = round(self.vel[0] * 0.85, 2)
+        if abs(self.vel[0]) < 1:
+            self.vel[0] = 0
         # add gravity
-        self.vel[1] += 0.9
+        if not self.isOnGround:
+            self.vel[1] += 0.9
+        self.vel[1] = round(self.vel[1], 2)
         # fast fall
         if self.FastFall:
             self.vel[1] += 2.0
@@ -82,7 +88,6 @@ class Player(pygame.sprite.Sprite):
             self.isOnGround = True
             self.hasDoubleJump = True
             self.hasDash = True
-            
             
         if self.pos[0] <= 0:
             self.pos[0] = 0
