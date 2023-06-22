@@ -6,3 +6,5 @@
 06/19: 4:45PM - 6:00PM did some progress on Weapons, but I can't make it follow the character yet.
 06/20: 9:20PM - 11:00PM Got the weapons on the screen
 06/20: 3:00PM - 5:00PM Got the weapons to follow the player and play a sound when an attack button is pressed, also you can change the weapon
+06/21: 1:30PM - 3:30PM Doing research on animations and trying to make it change on the screen (unsuccesful...)
+06/21: 6:15PM - 
