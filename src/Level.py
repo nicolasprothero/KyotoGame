@@ -1,4 +1,5 @@
 import pygame
+import CONSTANTS as C
 from CONSTANTS import *
 from Tile import Tile
 
@@ -6,12 +7,12 @@ class Level:
     def __init__(self, level_data, surface, background_img_path):
         self.display_surface = surface
         self.background_image = pygame.image.load(background_img_path).convert()
-        self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.background_image = pygame.transform.scale(self.background_image, (C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
         self.tile_group = pygame.sprite.Group()
         self.setup_level(level_data)
         
     def setup_level(self, layout):
-        TILE_SIZE = min(SCREEN_WIDTH // len(LEVEL_MAP[0]), SCREEN_HEIGHT // len(LEVEL_MAP))
+        TILE_SIZE = min(C.SCREEN_WIDTH // len(LEVEL_MAP[0]), C.SCREEN_HEIGHT // len(LEVEL_MAP))
         for row_index, row in enumerate(layout):
             for col_index, col in enumerate(row):
                 x = col_index * TILE_SIZE

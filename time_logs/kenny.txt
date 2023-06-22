@@ -1,0 +1,6 @@
+6/14 2:00pm - 6pm set up git, fix merge conflicts, create symbolic link for python3.10, setup vritual env
+6/15 12:00pm - 2:00pm Figure out how to attach weapon to player hand, take inspo from other games 
+6/19 4:30pm - 7pm Create structure for weapon class (player.equip_weapon, player.attack, follow function, etc.)
+6/20 6pm - 9pm Aligned weapon with hand coordinates, researched hitboxes, mask overlapping
+6/21 1:30pm - 3:45pm Tweaked attack structure, created hitboxes and solved display issue with blits
+6/22 2:45pm - 6pm Made it so that resolution dynamically updates based on user's dimensions 

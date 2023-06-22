@@ -1,3 +1,4 @@
+import pygame
 # ISSUE: we need to figure out how to make game full screen and kinda scale the level to the screen size
 # This is temporary, but we can use this to test collisions
 LEVEL_MAP = [
@@ -46,8 +47,27 @@ LEVEL_MAP = [
 # N: Grass
 # M: Vine
 
+# def get_screen_resolution():
+
+#     if not pygame.get_init():
+#         pygame.init()
+
+#     screen_info = pygame.display.Info()
+#     resolution = (screen_info.current_w, screen_info.current_h)
+
+#     return resolution
+
 SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 1200
+SCREEN_HEIGHT = 1080
+
+def setwh(width, height):
+
+    global SCREEN_WIDTH
+    global SCREEN_HEIGHT
+
+    SCREEN_WIDTH = width
+    SCREEN_HEIGHT = height
+
 GRAVITY = 15
 FRICTION = 0.8
 HAND_CORDS = (24, 40)
