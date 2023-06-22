@@ -45,7 +45,7 @@ class Game():
 
         # Create the screen object
         # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
-        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.FULLSCREEN)
         
         # Instantiate player. Right now, this is just a rectangle.
         self.player = Player(key_presses_1, "assets/img/character.png", (200, 100), self.screen)
@@ -193,6 +193,16 @@ class Game():
                     elif event.key == K_m:
                         self.player2.attack()
 
+            # Run the Level
+            self.level.run()
+            
+            self.check_collisions()
+
+            # Draw the player on the screen
+            self.screen.blit(self.player.image, self.player.pos)
+            self.screen.blit(self.player2.image, self.player2.pos)
+            self.screen.blit(self.player.weapon.image, self.player.pos)
+            self.screen.blit(self.player2.weapon.image, self.player2.pos)
             
 
             # Update the display
@@ -248,9 +258,9 @@ class Game():
                             
                             self.menu_running = True
                         
-            self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, 250)
-            self.draw_text("SETTINGS", settings_text_color, 35, C.SCREEN_WIDTH/2, 400)
-            self.draw_text("RETURN TO MENU", quit_text_color, 35, C.SCREEN_WIDTH/2, 550)
+            self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 150)
+            self.draw_text("SETTINGS", settings_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
+            self.draw_text("RETURN TO MENU", quit_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 150)
             pygame.display.flip()
 
     def options_menu(self):
@@ -332,3 +342,6 @@ class Game():
             pygame.display.set_caption("COLLISION DETECTED")
         else:
             pygame.display.set_caption("COLLISION NOT")
+
+    # def collide_platform(self, rect, tiles):
+
