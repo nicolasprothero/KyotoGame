@@ -28,7 +28,8 @@ class Player(pygame.sprite.Sprite):
         self.jump_speed = -16
         self.dash_speed = 5
         self.gravity = 0.9
-
+        
+        self.isHit = False
         self.FastFall = False
         self.isOnGround = False
         self.hasDoubleJump = True
@@ -50,7 +51,7 @@ class Player(pygame.sprite.Sprite):
 
 
     def move(self, pressed_keys):  
-        if self.hasDash and pressed_keys[self.keyBinds["dash"]]:
+        if self.hasDash and pressed_keys[self.keyBinds["dash"]] and self.isOnGround == False:
             self.dash()
         elif abs(self.direction.x) <= 1:
             if pressed_keys[self.keyBinds["left"]]:
@@ -100,6 +101,12 @@ class Player(pygame.sprite.Sprite):
             if self.facingRight:
                 self.hasDash = False
                 self.direction.x = self.dash_speed
+
+    def knockback(self, distance, isRight):
+        if isRight:
+            self.direction.x = distance
+        else:
+            self.direction.x = -distance
                 
     def changeWeapon(self, weapon):
         self.weapon = weapon
