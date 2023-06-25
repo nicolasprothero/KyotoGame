@@ -1,4 +1,5 @@
 import pygame
+import time
 import numpy as np
 import CONSTANTS as C
 from Weapons import *
@@ -16,6 +17,10 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, keyBinds, img, pos, surface):
         self.keyBinds = keyBinds
         self.image = pygame.image.load(img).convert_alpha()
+        
+        self.slash_right_image = pygame.image.load("assets/img/slash.png").convert_alpha()
+        self.slash_left_image = pygame.transform.flip(self.slash_right_image, True, False)
+        
         self.image = pygame.transform.scale(self.image, (65, 90)) # scale image down; 13 by 18
         # convert pos to pair of float
         pos = (float(pos[0]), float(pos[1]))
@@ -31,10 +36,14 @@ class Player(pygame.sprite.Sprite):
         
         self.facingRight = True
         
+        self.attackRight = True
+        self.attacking = False
+        self.canAttack = True
+        
         self.mask = pygame.mask.from_surface(self.image)
 
         # Make the default weapon.
-        self.weapon = SlashWeapon('assets/img/sword.png', (40, 60))
+        self.weapon = SlashWeapon('assets/img/sword.png', (30, 90))
 
 
     def move(self, pressed_keys):  
@@ -44,16 +53,13 @@ class Player(pygame.sprite.Sprite):
         if pressed_keys[self.keyBinds["left"]]:
             if self.facingRight:
                 self.image = pygame.transform.flip(self.image, True, False)
-                self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
                 self.facingRight = False
             self.vel[0] -= 1.5
         if pressed_keys[self.keyBinds["right"]]:
             if not self.facingRight:
                 self.image = pygame.transform.flip(self.image, True, False)
-                self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
                 self.facingRight = True
             self.vel[0] += 1.5
-
 
         # reset fast fall if player hits the ground
         if self.pos[1] >= C.SCREEN_HEIGHT - self.image.get_height():
