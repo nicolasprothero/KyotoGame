@@ -31,6 +31,7 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0.9
         
         self.isHit = False
+        self.knockbackRight = True
         self.FastFall = False
         self.isOnGround = False
         self.hasDoubleJump = True
@@ -52,9 +53,9 @@ class Player(pygame.sprite.Sprite):
 
 
     def move(self, pressed_keys): 
-        # only process spacebar if player is in air
-        
-        if pressed_keys[self.keyBinds["dash"]] and self.isOnGround == False:
+        if self.isHit:
+            self.knockback(3, self.knockbackRight)
+        elif pressed_keys[self.keyBinds["dash"]] and self.isOnGround == False:
             if self.hasDash:
                 self.dash()
         elif abs(self.direction.x) <= 1:
@@ -108,8 +109,10 @@ class Player(pygame.sprite.Sprite):
 
     def knockback(self, distance, isRight):
         if isRight:
+            self.isHit = False
             self.direction.x = distance
         else:
+            self.isHit = False
             self.direction.x = -distance
                 
     def changeWeapon(self, weapon):
