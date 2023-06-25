@@ -17,6 +17,8 @@ from pygame.locals import (
     K_RETURN,
     K_ESCAPE,
     KEYDOWN,
+    K_SPACE,
+    KEYUP,
     QUIT,
 )
 
@@ -91,6 +93,7 @@ class Game():
     def vertical_movement_collision(self):
         players = self.players.sprites()
         for player in players:
+            # make a temp rect to check if the player is on the ground, place it 1 pixel below the player
             player.apply_gravity()
             for sprite in self.level.tile_group.sprites():
                 if sprite.rect.colliderect(player.rect):
@@ -104,6 +107,8 @@ class Game():
                     if player.direction.y < 0:
                         player.rect.top = sprite.rect.bottom
                         player.direction.y = 0
+
+
 
     def draw_text(self, text, color, size, x, y):
         font = pygame.font.Font("assets/fonts/ThaleahFat.ttf", size)
@@ -267,12 +272,16 @@ class Game():
                     self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y))
                     if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
                         self.player_hit(self.player2, False)
+                        self.player2.isHit = True
+                        self.player2.knockbackRight = True
                 elif not self.player.attackRight:
                     player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
                     self.screen.blit(self.player.slash_left_image, (self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y))
                     if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
                         self.player_hit(self.player2, False)
+                        self.player2.isHit = True
+                        self.player2.knockbackRight = False
                 if time.time() - self.attacking_start > 0.1:
                     self.player.attacking = False
                     self.attacking_start = time.time()
@@ -289,12 +298,16 @@ class Game():
                     self.screen.blit(self.player2.slash_right_image, (self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y))
                     if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
                         self.player_hit(self.player, True)
+                        self.player.isHit = True
+                        self.player.knockbackRight = True
                 elif not self.player2.attackRight:
                     player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
                     self.screen.blit(self.player2.slash_left_image, (self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y))
                     if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
                         self.player_hit(self.player, True)
+                        self.player.isHit = True
+                        self.player.knockbackRight = False
                 if time.time() - self.attacking_start2 > 0.1:
                     self.player2.attacking = False
                     self.attacking_start2 = time.time()

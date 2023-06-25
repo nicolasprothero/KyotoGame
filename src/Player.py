@@ -9,6 +9,7 @@ from pygame.locals import (
     K_RIGHT,
     K_ESCAPE,
     KEYDOWN,
+    KEYUP,
     QUIT,
 )
 
@@ -30,6 +31,7 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0.9
         
         self.isHit = False
+        self.knockbackRight = True
         self.FastFall = False
         self.isOnGround = False
         self.hasDoubleJump = True
@@ -50,9 +52,12 @@ class Player(pygame.sprite.Sprite):
         self.weapon = SlashWeapon('assets/img/sword.png', (30,90))
 
 
-    def move(self, pressed_keys):  
-        if self.hasDash and pressed_keys[self.keyBinds["dash"]] and self.isOnGround == False:
-            self.dash()
+    def move(self, pressed_keys): 
+        if self.isHit:
+            self.knockback(3, self.knockbackRight)
+        elif pressed_keys[self.keyBinds["dash"]] and self.isOnGround == False:
+            if self.hasDash:
+                self.dash()
         elif abs(self.direction.x) <= 1:
             if pressed_keys[self.keyBinds["left"]]:
                 if self.facingRight:
@@ -104,8 +109,10 @@ class Player(pygame.sprite.Sprite):
 
     def knockback(self, distance, isRight):
         if isRight:
+            self.isHit = False
             self.direction.x = distance
         else:
+            self.isHit = False
             self.direction.x = -distance
                 
     def changeWeapon(self, weapon):
