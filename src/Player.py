@@ -19,7 +19,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load(img).convert_alpha()
         self.slash_right_image = pygame.image.load("assets/img/slash.png").convert_alpha()
         self.slash_left_image = pygame.transform.flip(self.slash_right_image, True, False)
-        self.image = pygame.transform.scale(self.image, (65, 90)) # scale image down; 13 by 18
+        self.image = pygame.transform.scale(self.image, (65 * C.SCALING_FACTOR_X, 90 * C.SCALING_FACTOR_Y)) # scale image down; 13 by 18
         self.rect = self.image.get_rect(topleft = pos)
 
         # player movment

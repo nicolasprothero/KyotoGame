@@ -7,6 +7,10 @@ import CONSTANTS as C
 from Player import Player
 from Level import Level
 from Weapons import *
+import ctypes
+
+#windows solution to scaling issues with high ppi display
+ctypes.windll.user32.SetProcessDPIAware()
 
 from pygame.locals import (
     K_UP,
@@ -34,17 +38,22 @@ class Game():
         info = pygame.display.Info()
         self.screen_width = info.current_w
         self.screen_height = info.current_h
-        
+
+        print(self.screen_width, " ", self.screen_height)
         C.setwh(self.screen_width, self.screen_height)
+        print("base: ", C.BASE_SCREEN_WIDTH, " ", C.BASE_SCREEN_HEIGHT)
+        print("actual: ", C.SCREEN_WIDTH, C.SCREEN_HEIGHT)
+        print('y sf: ', C.SCALING_FACTOR_Y)
+
 
         self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.FULLSCREEN)
         
 
         # Instantiate player. Right now, this is just a rectangle.
         self.players = pygame.sprite.Group()
-        self.player = Player(C.key_presses_1, "assets/img/character.png", (C.SCREEN_WIDTH - 300, 100))
+        self.player = Player(C.key_presses_1, "assets/img/character.png", (C.SCREEN_WIDTH/6, 100))
         self.players.add(self.player)
-        self.player2 = Player(C.key_presses_2, "assets/img/character2.png", (C.SCREEN_WIDTH - 200, 100))
+        self.player2 = Player(C.key_presses_2, "assets/img/character2.png", (C.SCREEN_WIDTH*5/6, 100))
         self.players.add(self.player2)
         
         # fart = ThrustWeapon('assets/img/mario.png', (40, 60))
@@ -112,9 +121,11 @@ class Game():
     def draw_text(self, text, color, size, x, y):
         font = pygame.font.Font("assets/fonts/ThaleahFat.ttf", size)
         text_surface = font.render(text, True, color)
-        text_rect = text_surface.get_rect()
+        #scale surface
+        scaled_text_image = pygame.transform.scale(text_surface, (int(text_surface.get_width() * C.SCALING_FACTOR_X), int(text_surface.get_height() * C.SCALING_FACTOR_Y)))
+        text_rect = scaled_text_image.get_rect()
         text_rect.center = (x, y)
-        self.screen.blit(text_surface, text_rect)
+        self.screen.blit(scaled_text_image, text_rect)
             
     def run_menu(self):
         current_selection = "start"
@@ -173,13 +184,13 @@ class Game():
             self.screen.fill(self.color_menu)
             # create a surface object, image is drawn on it.
             title_img = pygame.image.load("assets/img/title.png")
-            title_img = pygame.transform.scale(title_img,(C.SCREEN_WIDTH * 0.6, ((C.SCREEN_WIDTH* 0.6)/3)))
-            self.screen.blit(title_img, (C.SCREEN_WIDTH/2 - ((C.SCREEN_WIDTH* 0.6)/2), 100))
+            title_img = pygame.transform.scale(title_img,((C.SCREEN_WIDTH * 0.6)*C.SCALING_FACTOR_X, (((C.SCREEN_WIDTH* 0.6)/3)*C.SCALING_FACTOR_Y)))
+            self.screen.blit(title_img, ((C.SCREEN_WIDTH/2 - (title_img.get_width()/2)), 100*C.SCALING_FACTOR_Y))
             
-            
-            self.draw_text("START", start_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 150)
-            self.draw_text("OPTIONS", settings_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 300)
-            self.draw_text("QUIT", quit_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 450)
+            #C.SCREEN_WIDTH/2 - ((C.SCREEN_WIDTH* 0.6)/2
+            self.draw_text("START", start_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (150*C.SCALING_FACTOR_Y))
+            self.draw_text("OPTIONS", settings_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (300*C.SCALING_FACTOR_Y))
+            self.draw_text("QUIT", quit_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (450*C.SCALING_FACTOR_Y))
             pygame.display.flip()
 
     def run_game(self):

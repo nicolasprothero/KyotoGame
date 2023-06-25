@@ -1,4 +1,6 @@
 import pygame
+import CONSTANTS as C
+from CONSTANTS import *
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, pos, size, img_path):
