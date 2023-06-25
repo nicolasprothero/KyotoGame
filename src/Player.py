@@ -30,6 +30,7 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0.9
 
 
+        self.isHit = False
         self.FastFall = False
         self.isOnGround = False
         self.hasDoubleJump = True
@@ -98,6 +99,12 @@ class Player(pygame.sprite.Sprite):
             if self.facingRight:
                 self.hasDash = False
                 self.direction.x = self.dash_speed
+
+    def knockback(self, distance, isRight):
+        if isRight:
+            self.direction.x = distance
+        else:
+            self.direction.x = -distance
                 
     def changeWeapon(self, weapon):
         self.weapon = weapon

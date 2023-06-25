@@ -1,6 +1,7 @@
 # Import the pygame module
 from select import select
 from tkinter import Menu
+from Particle import Particle
 import time
 import pygame
 import CONSTANTS as C
@@ -180,6 +181,17 @@ class Game():
         # Setup the level        
         self.game_running = True
         # Main loop
+
+        """
+        Working on implementing particles
+
+        ...not working yet
+        """
+        particle1 = Particle()
+        PARTICLE_EVNET = pygame.USEREVENT + 1
+        pygame.time.set_timer(PARTICLE_EVNET, 100)
+
+
         while self.game_running:
             
             clock.tick(60) # limit fps to 60
