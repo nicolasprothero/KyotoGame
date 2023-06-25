@@ -25,7 +25,7 @@ class Player(pygame.sprite.Sprite):
         # player movment
         self.direction = pygame.math.Vector2(0, 0)
         self.speed = 10
-        self.jump_speed = -20
+        self.jump_speed = -16
         self.dash_speed = 5
         self.gravity = 0.9
 
@@ -44,7 +44,7 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
         # Make the default weapon.
-        self.weapon = SlashWeapon('assets/img/sword.png', (40, 60))
+        self.weapon = SlashWeapon('assets/img/sword.png', (30,90))
 
 
     def move(self, pressed_keys):  
