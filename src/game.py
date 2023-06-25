@@ -194,6 +194,13 @@ class Game():
             self.level.run()
             self.check_collisions()
 
+            collisions = pygame.sprite.spritecollide(self.player, self.level.tile_group, False)
+            for tile in collisions:
+                print("x: " + str(tile.rect.x) + " y: " + str(tile.rect.y))
+            print('-----------------')
+
+            pygame.display.set_caption("xvel: " + str(self.player.vel[0]) + " yvel: " + str(self.player.vel[1]))
+
             # Draw the player on the screen
             self.screen.blit(self.player.image, self.player.pos)
             self.screen.blit(self.player2.image, self.player2.pos)
