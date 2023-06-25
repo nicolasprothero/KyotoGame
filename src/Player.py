@@ -9,6 +9,7 @@ from pygame.locals import (
     K_RIGHT,
     K_ESCAPE,
     KEYDOWN,
+    KEYUP,
     QUIT,
 )
 
@@ -48,9 +49,12 @@ class Player(pygame.sprite.Sprite):
         self.weapon = SlashWeapon('assets/img/sword.png', (30,90))
 
 
-    def move(self, pressed_keys):  
-        if self.hasDash and pressed_keys[self.keyBinds["dash"]] and self.isOnGround == False:
-            self.dash()
+    def move(self, pressed_keys): 
+        # only process spacebar if player is in air
+        
+        if pressed_keys[self.keyBinds["dash"]] and self.isOnGround == False:
+            if self.hasDash:
+                self.dash()
         elif abs(self.direction.x) <= 1:
             if pressed_keys[self.keyBinds["left"]]:
                 if self.facingRight:

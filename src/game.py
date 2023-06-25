@@ -21,6 +21,8 @@ from pygame.locals import (
     K_RETURN,
     K_ESCAPE,
     KEYDOWN,
+    K_SPACE,
+    KEYUP,
     QUIT,
 )
 
@@ -90,6 +92,7 @@ class Game():
     def vertical_movement_collision(self):
         players = self.players.sprites()
         for player in players:
+            # make a temp rect to check if the player is on the ground, place it 1 pixel below the player
             player.apply_gravity()
             for sprite in self.level.tile_group.sprites():
                 if sprite.rect.colliderect(player.rect):
@@ -103,6 +106,8 @@ class Game():
                     if player.direction.y < 0:
                         player.rect.top = sprite.rect.bottom
                         player.direction.y = 0
+
+
 
     def draw_text(self, text, color, size, x, y):
         font = pygame.font.Font("assets/fonts/ThaleahFat.ttf", size)
