@@ -14,10 +14,6 @@ from pygame.locals import (
     K_DOWN,
     K_w,
     K_s,
-    K_x,
-    K_z,
-    K_PERIOD,
-    K_COMMA,
     K_RETURN,
     K_ESCAPE,
     KEYDOWN,
@@ -75,6 +71,11 @@ class Game():
         
         self.attacking_start = time.time()
         self.attacking_start2 = time.time()
+        
+        self.invincibility_start = time.time()
+        self.invincibility_start2 = time.time()
+        
+        self.winner = 1
             
     def horizontal_movement_collision(self):
         players = self.players.sprites()
@@ -180,6 +181,13 @@ class Game():
     def run_game(self):
         # Setup the level        
         self.game_running = True
+        pygame.mixer.Sound.play(pygame.mixer.Sound("assets/sound/LevelMusic.mp3"))
+        self.players.empty()
+        self.player = Player(C.key_presses_1, "assets/img/character.png", (200, 800))
+        self.players.add(self.player)
+        self.player2 = Player(C.key_presses_2, "assets/img/character2.png", (1650, 800))
+        self.players.add(self.player2)
+
         # Main loop
 
         """
@@ -254,9 +262,17 @@ class Game():
             
             if self.player.attacking:
                 if self.player.attackRight:
+                    player_attack_hitbox = pygame.Rect(self.player.rect.x + self.player.image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                    # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
                     self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y))
+                    if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
+                        self.player_hit(self.player2, False)
                 elif not self.player.attackRight:
+                    player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                    # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
                     self.screen.blit(self.player.slash_left_image, (self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y))
+                    if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
+                        self.player_hit(self.player2, False)
                 if time.time() - self.attacking_start > 0.1:
                     self.player.attacking = False
                     self.attacking_start = time.time()
@@ -268,9 +284,17 @@ class Game():
                     
             if self.player2.attacking:
                 if self.player2.attackRight:
+                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
+                    # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
                     self.screen.blit(self.player2.slash_right_image, (self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y))
+                    if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
+                        self.player_hit(self.player, True)
                 elif not self.player2.attackRight:
+                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
+                    # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
                     self.screen.blit(self.player2.slash_left_image, (self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y))
+                    if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
+                        self.player_hit(self.player, True)
                 if time.time() - self.attacking_start2 > 0.1:
                     self.player2.attacking = False
                     self.attacking_start2 = time.time()
@@ -291,13 +315,21 @@ class Game():
                 if time.time() - self.attack_start2 > 0.7:
                     self.player2.canAttack = True
                     self.attack_start2 = time.time()
-
-
+                    
+            if self.player2.isInvincible:
+                if time.time() - self.invincibility_start2 > 0.3:
+                    self.player2.isInvincible = False
+                    self.invincibility_start2 = time.time()
+                    
+            if self.player.isInvincible:
+                if time.time() - self.invincibility_start > 0.3:
+                    self.player.isInvincible = False
+                    self.invincibility_start = time.time()
             pygame.display.flip()
             
     def pause_menu(self):
         current_selection = "resume"
-        
+        pygame.mixer.pause()
         self.paused = True
         while self.paused:
             # pause_background = pygame.Surface((C.SCREEN_WIDTH/4, C.SCREEN_HEIGHT/2))
@@ -330,6 +362,7 @@ class Game():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         self.paused = False
+                        pygame.mixer.unpause()
                     elif event.key == K_w or event.key == K_UP:
                         if(current_selection == "settings"):
                             current_selection = "resume"
@@ -350,9 +383,9 @@ class Game():
                             self.paused = False
                         if(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
+                            pygame.mixer.stop()
                             self.game_running = False
                             self.paused = False
-                            
                             self.menu_running = True
                         
             self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 150)
@@ -469,9 +502,33 @@ class Game():
             player2_2_controls_image = pygame.transform.scale(player2_2_controls_image, (C.SCREEN_WIDTH/9, (((C.SCREEN_WIDTH/9)/3)*2)))
             self.screen.blit(player2_2_controls_image, (C.SCREEN_WIDTH/2 + 300, 800))
 
+            
             pygame.display.flip()
             
-    def check_collisions(self):
+    def game_over(self):
+        self.game_is_over = True
+        while self.game_is_over:
+            background_image = pygame.image.load("assets/img/DefaultBackground.png").convert()
+            background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2))
+            background_image.set_alpha(50)
+            self.screen.blit(background_image, (C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/4), C.SCREEN_HEIGHT/4))
+
+            # for loop through the event queue
+            for event in pygame.event.get():
+                # Check for KEYDOWN event
+                if event.type == KEYDOWN:
+                    if event.key == K_RETURN or event.key == K_ESCAPE:
+                            pygame.mixer.stop()
+                            self.game_running = False
+                            self.game_is_over = False
+                            self.menu_running = True
+            
+            final_script = f"Player {self.winner} won!"
+            self.draw_text(final_script, (255, 255, 255), 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 100)
+            pygame.display.flip()
+
+            
+    def check_player_collisions(self):
         #if pygame.sprite.spritecollide(self.player, self.level.tile_group, False, pygame.sprite.collide_mask):
         if self.player.mask.overlap(self.player2.mask, (self.player.rect.x - self.player2.rect.x, self.player.rect.y - self.player2.rect.y)):
             pygame.display.set_caption("COLLISION DETECTED")
@@ -500,3 +557,22 @@ class Game():
                     pygame.draw.rect(self.screen, self.color_select, pygame.Rect(player.rect.x - self.player.image.get_width(), player.rect.y, self.player.image.get_width(), self.player.image.get_height()))
                     #player.weapon.image = pygame.transform.rotate(player.weapon.image, 10)
                     player.canAttack = False
+
+    def player_hit(self, player, isPlayer1):
+        if not player.isInvincible:
+            if player.isDamaged:
+                pygame.mixer.Sound.play(pygame.mixer.Sound("assets/sound/Hurt_grunt.wav"))
+                if isPlayer1:
+                    self.winner = 2
+                else:
+                    self.winner = 1
+                self.game_over()
+            else:
+                pygame.mixer.Sound.play(pygame.mixer.Sound("assets/sound/shieldbreak.mp3"))
+                player.isInvincible = True
+                player.isDamaged = True
+                if isPlayer1:
+                    self.invincibility_start = time.time()
+                else:
+                    self.invincibility_start2 = time.time()
+                
