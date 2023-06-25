@@ -1,5 +1,4 @@
 import pygame
-import math
 
 class Weapon(pygame.sprite.Sprite):
     def __init__(self, weapon_img_path, scaling):
