@@ -366,7 +366,7 @@ class Game():
             
             self.screen.fill(self.color_dos)
             self.draw_text("OPTIONS", self.color_default, 75, C.SCREEN_WIDTH/2, 100)
-            self.draw_text("Nathan Wand occasionally smells like cheese.", self.color_default, 40, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
+            self.draw_text("There are no options to change yet. Check back later.", self.color_default, 40, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
             pygame.display.flip()
             
     def pregame_menu(self):

@@ -64,10 +64,10 @@ class Level:
                     self.tile_group.add(tile)
                 elif col == 'N':
                     tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/grass_tile.png')
-                    self.tile_group.add(tile)
+                    self.no_collide_group.add(tile)
                 elif col == 'M':
                     tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/vine_tile.png')
-                    self.tile_group.add(tile)
+                    self.no_collide_group.add(tile)
                 # T: TOP TILE
                 # B: BOTTOM TILE
                 # L: LEFT TILE
