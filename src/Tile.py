@@ -7,3 +7,4 @@ class Tile(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image,(size, size))
         self.rect = self.image.get_rect(topleft = pos)
         self.mask = pygame.mask.from_surface(self.image)
+        

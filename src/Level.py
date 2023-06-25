@@ -3,12 +3,17 @@ from CONSTANTS import *
 from Tile import Tile
 from Player import Player
 
+"""
+Made a no_collide_group for non collidable tiles.
+"""
+
 class Level:
     def __init__(self, level_data, surface, background_img_path):
         self.display_surface = surface
         self.background_image = pygame.image.load(background_img_path).convert()
         self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.tile_group = pygame.sprite.Group()
+        self.tile_group = pygame.sprite.Group() # collidable tiles
+        self.no_collide_group = pygame.sprite.Group() # non-collidable tiles
         self.players = pygame.sprite.Group()
         self.setup_level(level_data)
         
@@ -86,3 +91,4 @@ class Level:
         self.display_surface.blit(self.background_image, (0, 0))
         # Tiles
         self.tile_group.draw(self.display_surface)
+        self.no_collide_group.draw(self.display_surface)
