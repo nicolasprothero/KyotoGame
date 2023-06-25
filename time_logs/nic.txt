@@ -8,3 +8,11 @@
 
 6/20: 9:00AM - 11:00AM: Created tileset and wrote code to put correct tile in correct place
 6/20: 1:20PM - 2:40PM: Edited screen resolution and edited tilemap more.
+
+6/21: 3:00PM - 5:00PM: Worked on player and tile collision
+6/21: 6:00PM - 7:10PM: Got player directional attack hurtboxes to appear
+
+6/22: 12:00PM - 2:20PM: Rewrote the player directional attack hurtboxes, created how long the slash animation should last + attack cooldown
+6/22: 5:00PM - 7:40PM: Fixed player slash animation, hid weapon on slash, added Player2 slash animation, changed player sprites, remade the map
+
+6/25: 2:00PM - : Working on making game itself look nicer, menu, images, buttons, added controls display

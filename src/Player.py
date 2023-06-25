@@ -17,6 +17,8 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.keyBinds = keyBinds
         self.image = pygame.image.load(img).convert_alpha()
+        self.slash_right_image = pygame.image.load("assets/img/slash.png").convert_alpha()
+        self.slash_left_image = pygame.transform.flip(self.slash_right_image, True, False)
         self.image = pygame.transform.scale(self.image, (65, 90)) # scale image down; 13 by 18
         self.rect = self.image.get_rect(topleft = pos)
 
@@ -34,6 +36,10 @@ class Player(pygame.sprite.Sprite):
         self.hasDash = True
         
         self.facingRight = True
+
+        self.attackRight = True
+        self.attacking = False
+        self.canAttack = True
         
         self.mask = pygame.mask.from_surface(self.image)
 
@@ -41,8 +47,7 @@ class Player(pygame.sprite.Sprite):
         self.weapon = SlashWeapon('assets/img/sword.png', (40, 60))
 
 
-    def move(self):  
-        pressed_keys = pygame.key.get_pressed()
+    def move(self, pressed_keys):  
         if self.hasDash and pressed_keys[self.keyBinds["dash"]]:
             self.dash()
         elif abs(self.direction.x) <= 1:
@@ -65,8 +70,8 @@ class Player(pygame.sprite.Sprite):
 
         self.direction.x = round(self.direction.x * 0.85, 2)
 
-    def update(self):
-        self.move()
+    def update(self, pressed_keys):
+        self.move(pressed_keys)
 
     
     def apply_gravity(self):
