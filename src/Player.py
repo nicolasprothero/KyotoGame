@@ -28,7 +28,6 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0.9
 
 
-        
         self.FastFall = False
         self.isOnGround = False
         self.hasDoubleJump = True
@@ -44,26 +43,27 @@ class Player(pygame.sprite.Sprite):
 
     def move(self):  
         pressed_keys = pygame.key.get_pressed()
-        
-        if pressed_keys[self.keyBinds["left"]]:
-            if self.facingRight:
-                self.image = pygame.transform.flip(self.image, True, False)
-                self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
-                self.facingRight = False
-            self.direction.x = -1 
-        elif pressed_keys[self.keyBinds["right"]]:
-            if not self.facingRight:
-                self.image = pygame.transform.flip(self.image, True, False)
-                self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
-                self.facingRight = True
-            self.direction.x = 1
-        else:
-            self.direction.x = round(self.direction.x * 0.85, 2)
+        if self.hasDash and pressed_keys[self.keyBinds["dash"]]:
+            self.dash()
+        elif abs(self.direction.x) <= 1:
+            if pressed_keys[self.keyBinds["left"]]:
+                if self.facingRight:
+                    self.image = pygame.transform.flip(self.image, True, False)
+                    self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
+                    self.facingRight = False
+                self.direction.x = -1 
+            elif pressed_keys[self.keyBinds["right"]]:
+                if not self.facingRight:
+                    self.image = pygame.transform.flip(self.image, True, False)
+                    self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
+                    self.facingRight = True
+                self.direction.x = 1
 
         if pressed_keys[self.keyBinds["down"]]:
             self.FastFall = True
             self.gravity = 3
 
+        self.direction.x = round(self.direction.x * 0.85, 2)
 
     def update(self):
         self.move()

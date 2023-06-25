@@ -184,12 +184,10 @@ class Game():
                          self.player1.jump()
                     elif event.key == K_UP:
                          self.player2.jump()
-                    elif event.key == K_RETURN:
-                        self.player2.dashing = True
-                        self.player2.dash()
-                    elif event.key == K_SPACE:
-                        self.player1.dashing = True
-                        self.player1.dash()
+                    # elif event.key == K_RETURN:
+                    #     self.player2.dash()
+                    # elif event.key == K_SPACE:
+                    #     self.player1.dash()
                     # elif event.key == K_x:
                     #     self.player1.weapon.attack()
                     # elif event.key == K_m:
