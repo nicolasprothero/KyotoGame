@@ -59,7 +59,7 @@ key_presses_1 = {
     "down": pygame.K_s,
     "left": pygame.K_a,
     "right": pygame.K_d,
-    "dash": pygame.K_SPACE,
+    "dash": pygame.K_z,
 }
 
 key_presses_2 = {
@@ -67,5 +67,5 @@ key_presses_2 = {
     "down": pygame.K_DOWN,
     "left": pygame.K_LEFT,
     "right": pygame.K_RIGHT,
-    "dash": pygame.K_RETURN,
+    "dash": pygame.K_COMMA,
 }

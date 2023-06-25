@@ -46,7 +46,7 @@ class Game():
         
         pygame.mouse.set_visible(False)
 
-        pygame.display.set_caption("SWOASE ON SWOASE")
+        pygame.display.set_caption("WEAPONIZE")
         icon = pygame.image.load("assets/img/icon.png")
         pygame.display.set_icon(icon)
         
@@ -225,9 +225,9 @@ class Game():
                 self.attack_start = time.time()
                 
             if pressed_keys[pygame.K_PERIOD] and self.player2.canAttack:
-                if pressed_keys[pygame.K_d]:
+                if pressed_keys[pygame.K_RIGHT]:
                     self.player2.attackRight = True
-                elif pressed_keys[pygame.K_a]:
+                elif pressed_keys[pygame.K_LEFT]:
                     self.player2.attackRight = False
                 else:
                     if self.player2.facingRight:
@@ -237,16 +237,15 @@ class Game():
                 self.player2.attacking = True
                 self.player2.canAttack = False
                 pygame.mixer.Sound.play(self.attack_sound)
-                self.attacking_start = time.time()
-                self.attack_start = time.time()
-            
+                self.attacking_start2 = time.time()
+                self.attack_start2 = time.time()
             
             if self.player.attacking:
                 if self.player.attackRight:
                     self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y))
                 elif not self.player.attackRight:
                     self.screen.blit(self.player.slash_left_image, (self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y))
-            #     if time.time() - self.attacking_start > 0.1:
+                if time.time() - self.attacking_start > 0.1:
                     self.player.attacking = False
                     self.attacking_start = time.time()
             else:
@@ -254,13 +253,7 @@ class Game():
                     self.screen.blit(self.player.weapon.image, (self.player.rect.x + 5, self.player.rect.y - 30))
                 else:
                     self.screen.blit(self.player.weapon.image, (self.player.rect.x + 30, self.player.rect.y - 30))
-
-            # player 1 attack cooldown
-            if self.player.canAttack is False:
-                if time.time() - self.attack_start > 0.7:
-                    self.player.canAttack = True
-                    self.attack_start = time.time()
-            
+                    
             if self.player2.attacking:
                 if self.player2.attackRight:
                     self.screen.blit(self.player2.slash_right_image, (self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y))
@@ -275,12 +268,17 @@ class Game():
                 else:
                     self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 30, self.player2.rect.y - 30))
 
+            # player 1 attack cooldown
+            if self.player.canAttack is False:
+                if time.time() - self.attack_start > 0.7:
+                    self.player.canAttack = True
+                    self.attack_start = time.time()
+                    
             # player 2 attack cooldown
             if self.player2.canAttack is False:
                 if time.time() - self.attack_start2 > 0.7:
                     self.player2.canAttack = True
                     self.attack_start2 = time.time()
-            # Update the display
 
 
             pygame.display.flip()
