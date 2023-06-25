@@ -1,39 +1,40 @@
 import pygame
-# ISSUE: we need to figure out how to make game full screen and kinda scale the level to the screen size
-# This is temporary, but we can use this to test collisions
+
 LEVEL_MAP = [
-    'KBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBJ',
-    'R  M                         M         L',
+    'XXKBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBJXX',
+    'XK4                                  3JX',
+    'K4                                    3J',
     'R                                      L',
     'R                                      L',
-    'R                               N      L',
-    'R    1TT2                      1TT2    L',
-    'R    M  M                        M     L',
+    'R            1TTTTTTTTTTTT2            L',
+    'R            3BBBBBBBBBBBB4            L',
     'H2                                    1G',
     'XH2                                  1GX',
-    'XXR                                  LXX',
-    'XK4           N         N            3JX',
-    'K4          1TTTTTTTTTTTTTT2          3J',
-    'R                      M               L',
+    'XXHTTTT2                        1TTTTGXX',
+    'XXXKBBB4                        3BBBJXXX',
+    'XKB4                                3BJX',
+    'XR           1TT2      1TT2           LX',
+    'K4           LXK4      3JXR           3J',
+    'R            LXR        LXR            L',
+    'R            LXR        LXR            L',
+    'R        1TTTGXR        LXHTTT2        L',
+    'R        3BBBBB4        3BBBBB4        L',
     'R                                      L',
     'R                                      L',
     'R                                      L',
-    'R                                      L',
-    'R       N                              L',
-    'R    1TT2                      1TT2    L',
-    'R                                M     L',
-    'R                                      L',
-    'R                                      L',
-    'R                                      L',
-    'HT2  N  12              N    12      1TG',
-    'XXHTTTTTGHTTTTTTTTTTTTTTTTTTTGHTTTTTTGXX',
+    'H2    1T2                      1T2    1G',
+    'XHTTTTGXR                      LXHTTTTGX',
+    'XXXXXXXXR        1TTTT2        LXXXXXXXX',
+    'XXXXXXXXHTTTTTTTTGXXXXHTTTTTTTTGXXXXXXXX',
 ]
 
 # T: TOP TILE
 # B: BOTTOM TILE
 # L: LEFT TILE
 # R: RIGHT TILE
+
 # X: MIDDLE TILE
+
 # 1: TOP LEFT
 # 2: TOP RIGHT
 # 3: BOT LEFT
@@ -70,4 +71,20 @@ def setwh(width, height):
 
 GRAVITY = 15
 FRICTION = 0.8
-HAND_CORDS = (24, 40)
+
+# create a dictionary to store key presses for player 1 and player 2
+key_presses_1 = {
+    "up": pygame.K_w,
+    "down": pygame.K_s,
+    "left": pygame.K_a,
+    "right": pygame.K_d,
+    "dash": pygame.K_SPACE,
+}
+
+key_presses_2 = {
+    "up": pygame.K_UP,
+    "down": pygame.K_DOWN,
+    "left": pygame.K_LEFT,
+    "right": pygame.K_RIGHT,
+    "dash": pygame.K_RETURN,
+}

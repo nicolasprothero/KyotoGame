@@ -1,26 +1,12 @@
 # Import the pygame module
 from select import select
 from tkinter import Menu
+import time
 import pygame
 import CONSTANTS as C
 from Player import Player
 from Level import Level
 from Weapons import *
-
-# create a dictionary to store key presses for player 1 and player 2
-key_presses_1 = {
-    "up": pygame.K_w,
-    "down": pygame.K_s,
-    "left": pygame.K_a,
-    "right": pygame.K_d,
-}
-
-key_presses_2 = {
-    "up": pygame.K_UP,
-    "down": pygame.K_DOWN,
-    "left": pygame.K_LEFT,
-    "right": pygame.K_RIGHT,
-}
 
 from pygame.locals import (
     K_UP,
@@ -28,10 +14,11 @@ from pygame.locals import (
     K_w,
     K_s,
     K_x,
-    K_m,
+    K_z,
+    K_PERIOD,
+    K_COMMA,
     K_RETURN,
     K_ESCAPE,
-    K_SPACE,
     KEYDOWN,
     QUIT,
 )
@@ -54,21 +41,28 @@ class Game():
         
 
         # Instantiate player. Right now, this is just a rectangle.
-        self.player = Player(key_presses_1, "assets/img/character.png", (200, 100), self.screen)
-        self.player2 = Player(key_presses_2, "assets/img/character2.png", (C.SCREEN_WIDTH - 300, 100), self.screen)
-        fart = ThrustWeapon('assets/img/sword.png', (40, 60))
-        self.player2.changeWeapon(fart)
+        self.players = pygame.sprite.Group()
+        self.player = Player(C.key_presses_1, "assets/img/character.png", (C.SCREEN_WIDTH - 300, 100))
+        self.players.add(self.player)
+        self.player2 = Player(C.key_presses_2, "assets/img/character2.png", (C.SCREEN_WIDTH - 200, 100))
+        self.players.add(self.player2)
+        
+        # fart = ThrustWeapon('assets/img/mario.png', (40, 60))
+        # self.player2.changeWeapon(fart)
         
         pygame.mouse.set_visible(False)
 
         pygame.display.set_caption("SWOASE ON SWOASE")
-        icon = pygame.image.load("assets/img/capy.png")
+        icon = pygame.image.load("assets/img/icon.png")
         pygame.display.set_icon(icon)
         
         self.level = Level(C.LEVEL_MAP, self.screen, "assets/img/DefaultBackground.png")
 
         self.select_sound = pygame.mixer.Sound("assets/sound/Select.wav")
         self.select_sound.set_volume(0.3)
+        
+        self.attack_sound = pygame.mixer.Sound('assets/sound/swoosh.wav')
+        self.attack_sound.set_volume(0.3)
 
         self.menu_running = True
         self.game_running = False
@@ -80,6 +74,40 @@ class Game():
         self.color_dos = (77, 77, 77)
         self.color_select = (255, 77, 112)
         self.color_default = (245, 244, 228)
+
+        self.attack_start = time.time()
+        self.attack_start2 = time.time()
+        
+        self.attacking_start = time.time()
+        self.attacking_start2 = time.time()
+            
+    def horizontal_movement_collision(self):
+        players = self.players.sprites()
+        for player in players:
+            player.rect.x += player.direction.x * player.speed            
+            for sprite in self.level.tile_group.sprites():
+                if sprite.rect.colliderect(player.rect):
+                    if player.direction.x < 0:
+                        player.rect.left = sprite.rect.right
+                    if player.direction.x > 0:
+                        player.rect.right = sprite.rect.left
+
+    def vertical_movement_collision(self):
+        players = self.players.sprites()
+        for player in players:
+            player.apply_gravity()
+            for sprite in self.level.tile_group.sprites():
+                if sprite.rect.colliderect(player.rect):
+                    if player.direction.y > 0:
+                        player.rect.bottom = sprite.rect.top
+                        player.direction.y = 0
+                        player.isOnGround = True
+                        player.hasDash = True
+                        player.hasDoubleJump = True
+                        player.gravity = 0.9
+                    if player.direction.y < 0:
+                        player.rect.top = sprite.rect.bottom
+                        player.direction.y = 0
 
     def draw_text(self, text, color, size, x, y):
         font = pygame.font.Font("assets/fonts/ThaleahFat.ttf", size)
@@ -145,13 +173,13 @@ class Game():
             self.screen.fill(self.color_menu)
             # create a surface object, image is drawn on it.
             title_img = pygame.image.load("assets/img/title.png")
-            title_img = pygame.transform.scale(title_img,(700,200))
-            self.screen.blit(title_img, (C.SCREEN_WIDTH/2-350, 100))
+            title_img = pygame.transform.scale(title_img,(C.SCREEN_WIDTH * 0.6, ((C.SCREEN_WIDTH* 0.6)/3)))
+            self.screen.blit(title_img, (C.SCREEN_WIDTH/2 - ((C.SCREEN_WIDTH* 0.6)/2), 100))
             
             
-            self.draw_text("START", start_text_color, 50, C.SCREEN_WIDTH/2, 450)
-            self.draw_text("OPTIONS", settings_text_color, 50, C.SCREEN_WIDTH/2, 550)
-            self.draw_text("QUIT", quit_text_color, 50, C.SCREEN_WIDTH/2, 650)
+            self.draw_text("START", start_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 150)
+            self.draw_text("OPTIONS", settings_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 300)
+            self.draw_text("QUIT", quit_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 450)
             pygame.display.flip()
 
     def run_game(self):
@@ -162,23 +190,6 @@ class Game():
             
             clock.tick(60) # limit fps to 60
             pressed_keys = pygame.key.get_pressed()
-            self.player.move(pressed_keys)
-            self.player2.move(pressed_keys)
-            self.player.updatePos()
-            self.player2.updatePos()
-
-            # Run the Level
-            self.level.run()
-            
-            self.check_collisions()
-
-            # Draw the player on the screen
-            self.screen.blit(self.player.image, self.player.pos)
-            self.screen.blit(self.player2.image, self.player2.pos)
-            self.screen.blit(self.player.weapon.image, self.player.pos + C.HAND_CORDS - (20, 50)) # - hilt_cords
-            self.screen.blit(self.player2.weapon.image, self.player2.pos + C.HAND_CORDS - (20, 50))
-
-            self.draw_text("IN LIFE EVEN WHEN TOLD NOT TO, SWOASE.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
@@ -187,31 +198,97 @@ class Game():
                     if event.key == K_ESCAPE:
                         self.pause_menu()
                     elif event.key == K_w:
-                        self.player.jump()
+                         self.player.jump()
                     elif event.key == K_UP:
-                        self.player2.jump()
-                    elif event.key == K_RETURN:
-                        self.player2.dash(pressed_keys)
-                    elif event.key == K_SPACE:
-                        self.player.dash(pressed_keys)
-                    elif event.key == K_x:
-                        self.player.attack()
-                    elif event.key == K_m:
-                        self.player2.attack()
+                         self.player2.jump()
 
             # Run the Level
             self.level.run()
-            
-            self.check_collisions()
+
 
             # Draw the player on the screen
-            self.screen.blit(self.player.image, self.player.pos)
-            self.screen.blit(self.player2.image, self.player2.pos)
-            self.screen.blit(self.player.weapon.image, self.player.pos)
-            self.screen.blit(self.player2.weapon.image, self.player2.pos)
+            self.players.update(pressed_keys)
+            self.horizontal_movement_collision()
+            self.vertical_movement_collision()
+            self.players.draw(self.screen) 
             
+            # self.screen.blit(self.player.image, self.player.pos)
+            # self.screen.blit(self.player2.image, self.player2.pos)
+            if pressed_keys[pygame.K_x] and self.player.canAttack:
+                if pressed_keys[pygame.K_d]:
+                    self.player.attackRight = True
+                elif pressed_keys[pygame.K_a]:
+                    self.player.attackRight = False
+                else:
+                    if self.player.facingRight:
+                        self.player.attackRight = True
+                    else:
+                        self.player.attackRight = False                 
+                self.player.attacking = True
+                self.player.canAttack = False
+                pygame.mixer.Sound.play(self.attack_sound)
+                self.attacking_start = time.time()
+                self.attack_start = time.time()
+                
+            if pressed_keys[pygame.K_PERIOD] and self.player2.canAttack:
+                if pressed_keys[pygame.K_d]:
+                    self.player2.attackRight = True
+                elif pressed_keys[pygame.K_a]:
+                    self.player2.attackRight = False
+                else:
+                    if self.player2.facingRight:
+                        self.player2.attackRight = True
+                    else:
+                        self.player2.attackRight = False                 
+                self.player2.attacking = True
+                self.player2.canAttack = False
+                pygame.mixer.Sound.play(self.attack_sound)
+                self.attacking_start = time.time()
+                self.attack_start = time.time()
+            
+            
+            if self.player.attacking:
+                if self.player.attackRight:
+                    self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y))
+                elif not self.player.attackRight:
+                    self.screen.blit(self.player.slash_left_image, (self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y))
+            #     if time.time() - self.attacking_start > 0.1:
+                    self.player.attacking = False
+                    self.attacking_start = time.time()
+            else:
+                if self.player.facingRight:
+                    self.screen.blit(self.player.weapon.image, (self.player.rect.x + 5, self.player.rect.y - 30))
+                else:
+                    self.screen.blit(self.player.weapon.image, (self.player.rect.x + 30, self.player.rect.y - 30))
 
+            # player 1 attack cooldown
+            if self.player.canAttack is False:
+                if time.time() - self.attack_start > 0.7:
+                    self.player.canAttack = True
+                    self.attack_start = time.time()
+            
+            if self.player2.attacking:
+                if self.player2.attackRight:
+                    self.screen.blit(self.player2.slash_right_image, (self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y))
+                elif not self.player2.attackRight:
+                    self.screen.blit(self.player2.slash_left_image, (self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y))
+                if time.time() - self.attacking_start2 > 0.1:
+                    self.player2.attacking = False
+                    self.attacking_start2 = time.time()
+            else:
+                if self.player2.facingRight:
+                    self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 5, self.player2.rect.y - 30))
+                else:
+                    self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 30, self.player2.rect.y - 30))
+
+            # player 2 attack cooldown
+            if self.player2.canAttack is False:
+                if time.time() - self.attack_start2 > 0.7:
+                    self.player2.canAttack = True
+                    self.attack_start2 = time.time()
             # Update the display
+
+
             pygame.display.flip()
             
     def pause_menu(self):
@@ -219,7 +296,17 @@ class Game():
         
         self.paused = True
         while self.paused:
-            pygame.draw.rect(self.screen, self.color_dos, pygame.Rect(C.SCREEN_WIDTH/2 - 250, C.SCREEN_HEIGHT/2 - 250, 500, 500))
+            # pause_background = pygame.Surface((C.SCREEN_WIDTH/4, C.SCREEN_HEIGHT/2))
+            # pause_background.set_alpha(50)
+            # pause_background.fill((34,39,63)) #(34,39,63)
+            # self.screen.blit(pause_background, (C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2))
+            
+            background_image = pygame.image.load("assets/img/DefaultBackground.png").convert()
+            background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH/4, C.SCREEN_HEIGHT/2))
+            background_image.set_alpha(50)
+            self.screen.blit(background_image, (C.SCREEN_WIDTH/2 - ((C.SCREEN_WIDTH/4)/2), C.SCREEN_HEIGHT/2 - ((C.SCREEN_HEIGHT/2)/2)))
+
+            
             # Check for QUIT event. If QUIT, then set running to false.    
             if(current_selection == "resume"):
                 resume_text_color = self.color_select
@@ -322,7 +409,7 @@ class Game():
                         if(current_selection == "play"):
                             pygame.mixer.Sound.play(self.select_sound)
                             self.pregame_running = False
-                            self.run_game()
+                            self.controls_menu()
                         # elif(current_selection == "practice"):
                             # self.menu_running = False
                         elif(current_selection == "quit"):
@@ -342,12 +429,70 @@ class Game():
             self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 700)
             pygame.display.flip()
             
+    def controls_menu(self):  
+        self.controls_showing = True
+        
+        while self.controls_showing:
+            # for loop through the event queue
+            for event in pygame.event.get():
+                # Check for KEYDOWN event
+                if event.type == KEYDOWN:
+                    # If the Esc key is pressed, then exit the main loop
+                    if event.key == K_ESCAPE:
+                        self.controls_showing = False
+                        self.pregame_menu()
+                    elif event.key == K_RETURN:
+                            self.controls_showing = False
+                            self.run_game()
+            self.screen.fill(self.color_menu)
+            self.draw_text("CONTROLS", self.color_default, 90, C.SCREEN_WIDTH/2, 150)
+            self.draw_text("PLAYER ONE:", self.color_default, 50, C.SCREEN_WIDTH/2 - 400, 400)
+            self.draw_text("PLAYER TWO:", self.color_default, 50, C.SCREEN_WIDTH/2 + 400, 400)
+            
+            player1_controls_image = pygame.image.load("assets/img/player1Controls.png")
+            player1_controls_image = pygame.transform.scale(player1_controls_image, (C.SCREEN_WIDTH/9, (((C.SCREEN_WIDTH/9)/3)*2)))
+            self.screen.blit(player1_controls_image, (C.SCREEN_WIDTH/2 - 500, 500))
+    
+            player2_controls_image = pygame.image.load("assets/img/player2Controls.png")
+            player2_controls_image = pygame.transform.scale(player2_controls_image, (C.SCREEN_WIDTH/9, (((C.SCREEN_WIDTH/9)/3)*2)))
+            self.screen.blit(player2_controls_image, (C.SCREEN_WIDTH/2 + 300, 500))
+            
+            player1_2_controls_image = pygame.image.load("assets/img/player1_2Controls.png")
+            player1_2_controls_image = pygame.transform.scale(player1_2_controls_image, (C.SCREEN_WIDTH/9, (((C.SCREEN_WIDTH/9)/3)*2)))
+            self.screen.blit(player1_2_controls_image, (C.SCREEN_WIDTH/2 - 500, 800))
+    
+            player2_2_controls_image = pygame.image.load("assets/img/player2_2Controls.png")
+            player2_2_controls_image = pygame.transform.scale(player2_2_controls_image, (C.SCREEN_WIDTH/9, (((C.SCREEN_WIDTH/9)/3)*2)))
+            self.screen.blit(player2_2_controls_image, (C.SCREEN_WIDTH/2 + 300, 800))
+
+            pygame.display.flip()
+            
     def check_collisions(self):
         #if pygame.sprite.spritecollide(self.player, self.level.tile_group, False, pygame.sprite.collide_mask):
-        if self.player.mask.overlap(self.player2.mask, (self.player.pos[0] - self.player2.pos[0], self.player.pos[1] - self.player2.pos[1])):
+        if self.player.mask.overlap(self.player2.mask, (self.player.rect.x - self.player2.rect.x, self.player.rect.y - self.player2.rect.y)):
             pygame.display.set_caption("COLLISION DETECTED")
         else:
             pygame.display.set_caption("COLLISION NOT")
 
-    # def collide_platform(self, rect, tiles):
-
+    def check_attack(self, player, pressed_keys):
+        if player.canAttack:
+            if(pressed_keys[player.keyBinds["left"]] or pressed_keys[player.keyBinds["right"]] or pressed_keys[player.keyBinds["up"]] or pressed_keys[player.keyBinds["down"]]):
+                if(pressed_keys[player.keyBinds["left"]] and pressed_keys[player.keyBinds["attack"]]):
+                    pygame.draw.rect(self.screen, self.color_select, pygame.Rect(player.rect.x - self.player.image.get_width(), player.rect.y, self.player.image.get_width(), self.player.image.get_height()))
+                    player.canAttack = False
+                if(pressed_keys[player.keyBinds["right"]] and pressed_keys[player.keyBinds["attack"]]):
+                    pygame.draw.rect(self.screen, self.color_select, pygame.Rect(player.rect.x + self.player.image.get_width(), player.rect.y, self.player.image.get_width(), self.player.image.get_height()))
+                    player.canAttack = False
+                # if(pressed_keys[player.keyBinds["up"]] and pressed_keys[player.keyBinds["attack"]]):
+                #     pygame.draw.rect(self.screen, self.color_select, pygame.Rect(player.rect.x, player.pos[1] - self.player.image.get_height(), self.player.image.get_width(), self.player.image.get_height()))
+                # if(pressed_keys[player.keyBinds["down"]] and pressed_keys[player.keyBinds["attack"]] and player.isOnGround is False):
+                #     pygame.draw.rect(self.screen, self.color_select, pygame.Rect(player.rect.x, player.pos[1] + self.player.image.get_height(), self.player.image.get_width(), self.player.image.get_height()))
+            elif pressed_keys[player.keyBinds["attack"]]:
+                if player.facingRight:
+                    pygame.draw.rect(self.screen, self.color_select, pygame.Rect(player.rect.x + self.player.image.get_width(), player.rect.y, self.player.image.get_width(), self.player.image.get_height()))
+                    # player.weapon.image = pygame.transform.rotate(player.weapon.image, -10)
+                    player.canAttack = False
+                else:
+                    pygame.draw.rect(self.screen, self.color_select, pygame.Rect(player.rect.x - self.player.image.get_width(), player.rect.y, self.player.image.get_width(), self.player.image.get_height()))
+                    #player.weapon.image = pygame.transform.rotate(player.weapon.image, 10)
+                    player.canAttack = False
