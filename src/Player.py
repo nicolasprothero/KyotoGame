@@ -29,8 +29,7 @@ class Player(pygame.sprite.Sprite):
         self.jump_speed = -16
         self.dash_speed = 5
         self.gravity = 0.9
-
-
+        
         self.isHit = False
         self.FastFall = False
         self.isOnGround = False
@@ -42,6 +41,9 @@ class Player(pygame.sprite.Sprite):
         self.attackRight = True
         self.attacking = False
         self.canAttack = True
+        
+        self.isDamaged = False
+        self.isInvincible = False
         
         self.mask = pygame.mask.from_surface(self.image)
 
