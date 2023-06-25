@@ -16,10 +16,17 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, keyBinds, img, pos):
         pygame.sprite.Sprite.__init__(self)
         self.keyBinds = keyBinds
-        self.image = pygame.image.load(img).convert_alpha()
         self.slash_right_image = pygame.image.load("assets/img/slash.png").convert_alpha()
         self.slash_left_image = pygame.transform.flip(self.slash_right_image, True, False)
-        self.image = pygame.transform.scale(self.image, (65, 90)) # scale image down; 13 by 18
+        
+        self.OriginalImage = pygame.image.load(img).convert_alpha()
+        self.OriginalImage = pygame.transform.scale(self.OriginalImage, (65, 90)) # scale image down; 13 by 18
+        
+        self.Damagedimage = pygame.image.load("assets/img/characterDamaged.png")
+        self.Damagedimage = pygame.transform.scale(self.Damagedimage, (65, 90))
+        
+        self.image = self.OriginalImage
+        
         self.rect = self.image.get_rect(topleft = pos)
 
         # player movment
@@ -57,12 +64,16 @@ class Player(pygame.sprite.Sprite):
             if pressed_keys[self.keyBinds["left"]]:
                 if self.facingRight:
                     self.image = pygame.transform.flip(self.image, True, False)
+                    self.OriginalImage = pygame.transform.flip(self.OriginalImage, True, False)
+                    self.Damagedimage = pygame.transform.flip(self.Damagedimage, True, False)
                     self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
                     self.facingRight = False
                 self.direction.x = -1 
             elif pressed_keys[self.keyBinds["right"]]:
                 if not self.facingRight:
                     self.image = pygame.transform.flip(self.image, True, False)
+                    self.OriginalImage = pygame.transform.flip(self.OriginalImage, True, False)
+                    self.Damagedimage = pygame.transform.flip(self.Damagedimage, True, False)
                     self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
                     self.facingRight = True
                 self.direction.x = 1

@@ -62,7 +62,6 @@ class Game():
         self.pregame_running = False
         
         self.color_menu = (40, 40, 40)
-        self.color_dos = (77, 77, 77)
         self.color_select = (255, 77, 112)
         self.color_default = (245, 244, 228)
 
@@ -74,6 +73,9 @@ class Game():
         
         self.invincibility_start = time.time()
         self.invincibility_start2 = time.time()
+        
+        self.damaged_start = time.time()
+        self.damaged_start2 = time.time()
         
         self.winner = 1
             
@@ -325,8 +327,22 @@ class Game():
                 if time.time() - self.invincibility_start > 0.3:
                     self.player.isInvincible = False
                     self.invincibility_start = time.time()
+
+               
+            if self.player.isDamaged:
+                if time.time() - self.damaged_start > 5:
+                    self.player.isDamaged = False
+                    self.player.image = self.player.OriginalImage
+                    self.damaged_start = time.time()
+                                        
+            if self.player2.isDamaged:
+                if time.time() - self.damaged_start2 > 5:
+                    self.player2.isDamaged = False
+                    self.player2.image = self.player2.OriginalImage
+                    self.damaged_start2 = time.time()
+                    
             pygame.display.flip()
-            
+                    
     def pause_menu(self):
         current_selection = "resume"
         pygame.mixer.pause()
@@ -409,7 +425,7 @@ class Game():
                 elif event.type == QUIT:
                     self.options_running = False
             
-            self.screen.fill(self.color_dos)
+            self.screen.fill(self.color_menu)
             self.draw_text("OPTIONS", self.color_default, 75, C.SCREEN_WIDTH/2, 100)
             self.draw_text("There are no options to change yet. Check back later.", self.color_default, 40, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
             pygame.display.flip()
@@ -495,14 +511,19 @@ class Game():
             self.screen.blit(player2_controls_image, (C.SCREEN_WIDTH/2 + 300, 500))
             
             player1_2_controls_image = pygame.image.load("assets/img/player1_2Controls.png")
-            player1_2_controls_image = pygame.transform.scale(player1_2_controls_image, (C.SCREEN_WIDTH/9, (((C.SCREEN_WIDTH/9)/3)*2)))
+            player1_2_controls_image = pygame.transform.scale(player1_2_controls_image, (C.SCREEN_WIDTH/27, (((C.SCREEN_WIDTH/27)*3))))
             self.screen.blit(player1_2_controls_image, (C.SCREEN_WIDTH/2 - 500, 800))
     
             player2_2_controls_image = pygame.image.load("assets/img/player2_2Controls.png")
-            player2_2_controls_image = pygame.transform.scale(player2_2_controls_image, (C.SCREEN_WIDTH/9, (((C.SCREEN_WIDTH/9)/3)*2)))
+            player2_2_controls_image = pygame.transform.scale(player2_2_controls_image, (C.SCREEN_WIDTH/27, (((C.SCREEN_WIDTH/27)*3))))
             self.screen.blit(player2_2_controls_image, (C.SCREEN_WIDTH/2 + 300, 800))
-
             
+            self.draw_text("ATTACK", self.color_default, 50, C.SCREEN_WIDTH/2 - 330, 830)
+            self.draw_text("DASH", self.color_default, 50, C.SCREEN_WIDTH/2 - 330, 980)
+
+            self.draw_text("ATTACK", self.color_default, 50, C.SCREEN_WIDTH/2 + 450, 850)
+            self.draw_text("DASH", self.color_default, 50, C.SCREEN_WIDTH/2 + 450, 950)
+
             pygame.display.flip()
             
     def game_over(self):
@@ -569,10 +590,13 @@ class Game():
                 self.game_over()
             else:
                 pygame.mixer.Sound.play(pygame.mixer.Sound("assets/sound/shieldbreak.mp3"))
+                player.image = player.Damagedimage
                 player.isInvincible = True
                 player.isDamaged = True
                 if isPlayer1:
                     self.invincibility_start = time.time()
+                    self.damaged_start = time.time()
                 else:
                     self.invincibility_start2 = time.time()
+                    self.damaged_start2 = time.time()
                 
