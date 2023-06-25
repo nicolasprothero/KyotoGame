@@ -48,7 +48,7 @@ class Player(pygame.sprite.Sprite):
 
 
     def move(self, pressed_keys):  
-        if self.hasDash and pressed_keys[self.keyBinds["dash"]]:
+        if self.hasDash and pressed_keys[self.keyBinds["dash"]] and self.isOnGround == False:
             self.dash()
         elif abs(self.direction.x) <= 1:
             if pressed_keys[self.keyBinds["left"]]:
