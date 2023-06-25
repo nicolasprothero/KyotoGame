@@ -7,4 +7,6 @@
 06/20: 9:20PM - 11:00PM Got the weapons on the screen
 06/20: 3:00PM - 5:00PM Got the weapons to follow the player and play a sound when an attack button is pressed, also you can change the weapon
 06/21: 1:30PM - 3:30PM Doing research on animations and trying to make it change on the screen (unsuccesful...)
-06/21: 6:15PM - 
+06/21: 6:15PM - 8:00PM Couldn't really figure out the weapons and animations so nic will need to help menu_running
+06/22: 2:45PM - 7:00PM Rewrote player class, and make collisions with tiles work.
+06/25: 3:00PM - 
