@@ -2,29 +2,29 @@ import pygame
 
 LEVEL_MAP = [
     'XXKBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBJXX',
-    'XK4    M         M           M      M3JX',
+    'XK4                                  3JX',
     'K4                                    3J',
     'R                                      L',
-    'R              N          N            L',
+    'R                                      L',
     'R            1TTTTTTTTTTTT2            L',
-    'RN           3BBBBBBBBBBBB4            L',
-    'H2             M     M               N1G',
-    'XH2   N                         N    1GX',
+    'R            3BBBBBBBBBBBB4            L',
+    'H2                                    1G',
+    'XH2                                  1GX',
     'XXHTTTT2                        1TTTTGXX',
     'XXXKBBB4                        3BBBJXXX',
-    'XKB4  M         N        N      M   3BJX',
-    'XR           1TT2      1TT2         M LX',
+    'XKB4                                3BJX',
+    'XR           1TT2      1TT2           LX',
     'K4           LXK4      3JXR           3J',
     'R            LXR        LXR            L',
-    'R          N LXR        LXR  N         L',
+    'R            LXR        LXR            L',
     'R        1TTTGXR        LXHTTT2        L',
     'R        3BBBBB4        3BBBBB4        L',
-    'R           M           M     M        L',
     'R                                      L',
-    'R                              N       L',
-    'H2 N  1T2                      1T2  N 1G',
-    'XHTTTTGXR           N          LXHTTTTGX',
-    'XXXXXXXXR    N   1TTTT2  N   N LXXXXXXXX',
+    'R                                      L',
+    'R                                      L',
+    'H2    1T2                      1T2    1G',
+    'XHTTTTGXR                      LXHTTTTGX',
+    'XXXXXXXXR        1TTTT2        LXXXXXXXX',
     'XXXXXXXXHTTTTTTTTGXXXXHTTTTTTTTGXXXXXXXX',
 ]
 
@@ -58,28 +58,28 @@ LEVEL_MAP = [
 
 #     return resolution
 
-BASE_SCREEN_WIDTH = 1920
-BASE_SCREEN_HEIGHT = 1200
+# BASE_SCREEN_WIDTH = 1920
+# BASE_SCREEN_HEIGHT = 1200
 
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1200
 
-SCALING_FACTOR_X = 1
-SCALING_FACTOR_Y = 1
+# SCALING_FACTOR_X = 1
+# SCALING_FACTOR_Y = 1
 
-def setwh(width, height):
+# def setwh(width, height):
 
-    global SCREEN_WIDTH
-    global SCREEN_HEIGHT
+#     global SCREEN_WIDTH
+#     global SCREEN_HEIGHT
 
-    global SCALING_FACTOR_X
-    global SCALING_FACTOR_Y
+#     global SCALING_FACTOR_X
+#     global SCALING_FACTOR_Y
 
-    SCREEN_WIDTH = width
-    SCREEN_HEIGHT = height
+#     SCREEN_WIDTH = width
+#     SCREEN_HEIGHT = height
 
-    SCALING_FACTOR_X = SCREEN_WIDTH / float(BASE_SCREEN_WIDTH)
-    SCALING_FACTOR_Y = SCREEN_HEIGHT / float(BASE_SCREEN_HEIGHT)
+#     SCALING_FACTOR_X = SCREEN_WIDTH / float(BASE_SCREEN_WIDTH)
+#     SCALING_FACTOR_Y = SCREEN_HEIGHT / float(BASE_SCREEN_HEIGHT)
 
 GRAVITY = 15
 FRICTION = 0.8
@@ -90,7 +90,7 @@ key_presses_1 = {
     "down": pygame.K_s,
     "left": pygame.K_a,
     "right": pygame.K_d,
-    "dash": pygame.K_z,
+    "dash": pygame.K_SPACE,
 }
 
 key_presses_2 = {
@@ -98,5 +98,5 @@ key_presses_2 = {
     "down": pygame.K_DOWN,
     "left": pygame.K_LEFT,
     "right": pygame.K_RIGHT,
-    "dash": pygame.K_COMMA,
+    "dash": pygame.K_RETURN,
 }
