@@ -25,8 +25,6 @@ from pygame.locals import (
     K_RETURN,
     K_ESCAPE,
     KEYDOWN,
-    K_SPACE,
-    KEYUP,
     QUIT,
 )
 
@@ -575,7 +573,7 @@ class Game():
         while self.game_is_over:
             background_image = pygame.image.load("assets/img/menuBackground.png").convert()
             background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2))
-            background_image.set_alpha(100)
+            background_image.set_alpha(140)
             self.screen.blit(background_image, (C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/4), C.SCREEN_HEIGHT/4))
         
     
