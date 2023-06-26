@@ -108,6 +108,9 @@ class Game():
                         player.rect.top = sprite.rect.bottom
                         player.direction.y = 0
 
+        if player.direction.y > 0:
+            player.isOnGround = False
+
 
 
     def draw_text(self, text, color, size, x, y):
