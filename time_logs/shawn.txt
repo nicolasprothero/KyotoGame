@@ -3,3 +3,4 @@
 06/20: IN: 12:00PM OUT: 5:00PM - Implementing collisions with platforms, stuck on a bug rn 
 06/25: IN: 2:00PM OUT: 6:00PM - Merged old code with new player movement code. Created non-collidable tiles. Working on particle effects
 06/25 IN: 9:00PM OUT: 12:00AM - Fix player dash bug. Implement player knockback from attacking
+06/26 IN 4:00PM OUT: 12:00AM - FINALIZE PACKAGING
