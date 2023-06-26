@@ -5,3 +5,4 @@ local_testing/
 src/__pycache__/
 dist/
 Weaponize.egg-info/
+build/
