@@ -366,9 +366,9 @@ class Game():
             # pause_background.fill((34,39,63)) #(34,39,63)
             # self.screen.blit(pause_background, (C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2))
             
-            background_image = pygame.image.load("assets/img/DefaultBackground.png").convert()
+            background_image = pygame.image.load("assets/img/menuBackground.png").convert()
             background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH/4, C.SCREEN_HEIGHT/2))
-            background_image.set_alpha(50)
+            background_image.set_alpha(100)
             self.screen.blit(background_image, (C.SCREEN_WIDTH/2 - ((C.SCREEN_WIDTH/4)/2), C.SCREEN_HEIGHT/2 - ((C.SCREEN_HEIGHT/2)/2)))
 
             
@@ -452,9 +452,15 @@ class Game():
             if(current_selection == "play"):
                 start_text_color = self.color_select
                 quit_text_color = self.color_default
+                controls_text_color = self.color_default
             elif(current_selection == "quit"):
                 start_text_color = self.color_default
                 quit_text_color = self.color_select
+                controls_text_color = self.color_default
+            elif(current_selection == "controls"):
+                controls_text_color = self.color_select
+                start_text_color = self.color_default
+                quit_text_color = self.color_default
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
@@ -466,13 +472,23 @@ class Game():
                     elif event.key == K_w or event.key == K_UP:
                         if(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "controls"
+                        elif(current_selection == "controls"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             current_selection = "play"
                     elif event.key == K_s or event.key == K_DOWN:
                         if(current_selection == "play"):
                             pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "controls"
+                        elif(current_selection == "controls"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             current_selection = "quit"
                     elif event.key == K_RETURN:
                         if(current_selection == "play"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            self.pregame_running = False
+                            self.run_game()
+                        elif(current_selection == "controls"):
                             pygame.mixer.Sound.play(self.select_sound)
                             self.pregame_running = False
                             self.controls_menu()
@@ -492,7 +508,8 @@ class Game():
             self.draw_text("PLAY", start_text_color, 50, C.SCREEN_WIDTH/2, 400)
             self.draw_text("PRACTICE", (130,130,130), 50, C.SCREEN_WIDTH/2, 500)
             self.draw_text("ARMORY", (130,130,130), 50, C.SCREEN_WIDTH/2, 600)
-            self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 700)
+            self.draw_text("CONTROLS", controls_text_color, 50, C.SCREEN_WIDTH/2, 700)
+            self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 800)
             pygame.display.flip()
             
     def controls_menu(self):  
@@ -509,7 +526,7 @@ class Game():
                         self.pregame_menu()
                     elif event.key == K_RETURN:
                             self.controls_showing = False
-                            self.run_game()
+                            self.pregame_menu()
             self.screen.fill(self.color_menu)
             self.draw_text("CONTROLS", self.color_default, 90, C.SCREEN_WIDTH/2, 150)
             self.draw_text("PLAYER ONE:", self.color_default, 50, C.SCREEN_WIDTH/2 - 400, 400)
@@ -541,24 +558,52 @@ class Game():
             
     def game_over(self):
         self.game_is_over = True
+        current_selection = "restart"
         while self.game_is_over:
-            background_image = pygame.image.load("assets/img/DefaultBackground.png").convert()
+            background_image = pygame.image.load("assets/img/menuBackground.png").convert()
             background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2))
-            background_image.set_alpha(50)
+            background_image.set_alpha(100)
             self.screen.blit(background_image, (C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/4), C.SCREEN_HEIGHT/4))
-
+        
+    
+            if(current_selection == "restart"):
+                restart_text_color = self.color_select
+                quit_text_color = self.color_default
+            elif(current_selection == "quit"):
+                restart_text_color = self.color_default
+                quit_text_color = self.color_select
+                
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
                 if event.type == KEYDOWN:
-                    if event.key == K_RETURN or event.key == K_ESCAPE:
+                    # If the Esc key is pressed, then exit the main loop
+                    if event.key == K_w or event.key == K_UP:
+                        if current_selection == "quit":
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "restart"
+                    elif event.key == K_s or event.key == K_DOWN:
+                        if current_selection == "restart":
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "quit"
+                    elif event.key == K_RETURN:
+                        if current_selection == "restart":
+                            pygame.mixer.Sound.play(self.select_sound)
                             pygame.mixer.stop()
                             self.game_running = False
                             self.game_is_over = False
-                            self.menu_running = True
+                            self.run_game()
+                        elif current_selection == "quit":
+                                pygame.mixer.stop()
+                                self.game_running = False
+                                self.game_is_over = False
+                                self.menu_running = True
             
             final_script = f"Player {self.winner} won!"
             self.draw_text(final_script, (255, 255, 255), 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 100)
+            self.draw_text("GAME OVER", self.color_select, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 150)
+            self.draw_text("RESTART", restart_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 50)
+            self.draw_text("QUIT", quit_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 150)
             pygame.display.flip()
 
             

@@ -17,3 +17,5 @@
 
 6/25: 2:00PM - 5:55PM: Working on making game itself look nicer, menu, images, buttons, added controls display, fixed combat for new code
 6/25: 7:26PM - 11:10PM: Worked on player attack hitbox, player and attack collision detection, damaged state, invincibility frames, background music setup, game over screen, game over event, damaged state hair, damaged state timer
+
+6/26: 11:50PM - 12:25PM: Created controls menu
