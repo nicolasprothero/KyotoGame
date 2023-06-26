@@ -25,7 +25,7 @@ The development team has planned the following features for future updates:
 python setup.py sdist
 
 ###  Install the package
-pip install dist/Weaponize-1.0.tar.gz
+pip install .
 
 ### Run the game
 weaponize
