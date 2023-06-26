@@ -33,15 +33,10 @@ class Game():
         # Create the screen object
         # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
         pygame.init()
-
-        info = pygame.display.Info()
-        self.screen_width = info.current_w
-        self.screen_height = info.current_h
-
-
-        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.FULLSCREEN)
         
-
+        flags = pygame.SCALED | pygame.FULLSCREEN
+        self.screen= pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
+        
         # Instantiate player. Right now, this is just a rectangle.
         self.players = pygame.sprite.Group()
         self.player = Player(C.key_presses_1, "assets/img/character.png", (C.SCREEN_WIDTH/6, 100))
@@ -128,7 +123,7 @@ class Game():
         font = pygame.font.Font("assets/fonts/ThaleahFat.ttf", size)
         text_surface = font.render(text, True, color)
         #scale surface
-        scaled_text_image = pygame.transform.scale(text_surface, (int(text_surface.get_width() * C.SCALING_FACTOR_X), int(text_surface.get_height() * C.SCALING_FACTOR_Y)))
+        scaled_text_image = pygame.transform.scale(text_surface, (int(text_surface.get_width()), int(text_surface.get_height())))
         text_rect = scaled_text_image.get_rect()
         text_rect.center = (x, y)
         self.screen.blit(scaled_text_image, text_rect)
@@ -190,13 +185,13 @@ class Game():
             self.screen.fill(self.color_menu)
             # create a surface object, image is drawn on it.
             title_img = pygame.image.load("assets/img/title.png")
-            title_img = pygame.transform.scale(title_img,((C.SCREEN_WIDTH * 0.6)*C.SCALING_FACTOR_X, (((C.SCREEN_WIDTH* 0.6)/3)*C.SCALING_FACTOR_Y)))
-            self.screen.blit(title_img, ((C.SCREEN_WIDTH/2 - (title_img.get_width()/2)), 100*C.SCALING_FACTOR_Y))
+            title_img = pygame.transform.scale(title_img,((C.SCREEN_WIDTH * 0.6), (((C.SCREEN_WIDTH* 0.6)/3))))
+            self.screen.blit(title_img, ((C.SCREEN_WIDTH/2 - (title_img.get_width()/2)), 100))
             
             #C.SCREEN_WIDTH/2 - ((C.SCREEN_WIDTH* 0.6)/2
-            self.draw_text("START", start_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (150*C.SCALING_FACTOR_Y))
-            self.draw_text("OPTIONS", settings_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (300*C.SCALING_FACTOR_Y))
-            self.draw_text("QUIT", quit_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (450*C.SCALING_FACTOR_Y))
+            self.draw_text("START", start_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (150))
+            self.draw_text("OPTIONS", settings_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (300))
+            self.draw_text("QUIT", quit_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (450))
             pygame.display.flip()
 
     def run_game(self):

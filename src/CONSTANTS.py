@@ -48,38 +48,9 @@ LEVEL_MAP = [
 # N: Grass
 # M: Vine
 
-# def get_screen_resolution():
-
-#     if not pygame.get_init():
-#         pygame.init()
-
-#     screen_info = pygame.display.Info()
-#     resolution = (screen_info.current_w, screen_info.current_h)
-
-#     return resolution
-
-# BASE_SCREEN_WIDTH = 1920
-# BASE_SCREEN_HEIGHT = 1200
 
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1200
-
-# SCALING_FACTOR_X = 1
-# SCALING_FACTOR_Y = 1
-
-# def setwh(width, height):
-
-#     global SCREEN_WIDTH
-#     global SCREEN_HEIGHT
-
-#     global SCALING_FACTOR_X
-#     global SCALING_FACTOR_Y
-
-#     SCREEN_WIDTH = width
-#     SCREEN_HEIGHT = height
-
-#     SCALING_FACTOR_X = SCREEN_WIDTH / float(BASE_SCREEN_WIDTH)
-#     SCALING_FACTOR_Y = SCREEN_HEIGHT / float(BASE_SCREEN_HEIGHT)
 
 GRAVITY = 15
 FRICTION = 0.8
