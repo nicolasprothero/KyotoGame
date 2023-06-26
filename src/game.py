@@ -9,9 +9,13 @@ from Player import Player
 from Level import Level
 from Weapons import *
 import ctypes
+import os
+import platform
+
 
 #windows solution to scaling issues with high ppi display
-ctypes.windll.user32.SetProcessDPIAware()
+if platform.system() == 'Windows':
+    ctypes.windll.user32.SetProcessDPIAware()
 
 from pygame.locals import (
     K_UP,
