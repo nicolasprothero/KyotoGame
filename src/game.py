@@ -1,13 +1,13 @@
 # Import the pygame module
 from select import select
 from tkinter import Menu
-from Particle import Particle
+from src.Particle import Particle
 import time
 import pygame
-import CONSTANTS as C
-from Player import Player
-from Level import Level
-from Weapons import *
+import src.CONSTANTS as C
+from src.Player import Player
+from src.Level import Level
+from src.Weapons import *
 import ctypes
 import os
 import platform
@@ -35,6 +35,7 @@ class Game():
         # Create the screen object
         # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
         pygame.init()
+        pygame.mixer.init()
         
         flags = pygame.SCALED | pygame.FULLSCREEN
         self.screen= pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
