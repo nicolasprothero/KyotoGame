@@ -4,5 +4,5 @@
 6/20 6pm - 9pm Aligned weapon with hand coordinates, researched hitboxes, mask overlapping
 6/21 1:30pm - 3:45pm Tweaked attack structure, created hitboxes and solved display issue with blits
 6/22 2:45pm - 6pm Made it so that resolution dynamically updates based on user's dimensions 
-6/25 Looked into setup.py and packaging, redid scaling as bc it didn't work
-6/26 2:30pm - 
+6/25 3:00pm - 7pm 9pm - 12am Looked into setup.py and packaging, redid scaling bc it didn't work, fixed player start positions
+6/26 2:30pm - 4:20pm 4:50pm - 8:00pm 9:00pm - Fixed scaling, fixed bug with windows system and scaling, minor fixes with CONSTANTS, add list of levels and 1 new level, add player death attribute, update README.txt
