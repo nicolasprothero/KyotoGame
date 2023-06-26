@@ -1,6 +1,7 @@
 # Import the pygame module
 from select import select
 from tkinter import Menu
+from Particle import Particle
 import time
 import pygame
 import CONSTANTS as C
@@ -17,13 +18,11 @@ from pygame.locals import (
     K_DOWN,
     K_w,
     K_s,
-    K_x,
-    K_z,
-    K_PERIOD,
-    K_COMMA,
     K_RETURN,
     K_ESCAPE,
     KEYDOWN,
+    K_SPACE,
+    KEYUP,
     QUIT,
 )
 
@@ -38,12 +37,6 @@ class Game():
         info = pygame.display.Info()
         self.screen_width = info.current_w
         self.screen_height = info.current_h
-
-        print(self.screen_width, " ", self.screen_height)
-        C.setwh(self.screen_width, self.screen_height)
-        print("base: ", C.BASE_SCREEN_WIDTH, " ", C.BASE_SCREEN_HEIGHT)
-        print("actual: ", C.SCREEN_WIDTH, C.SCREEN_HEIGHT)
-        print('y sf: ', C.SCALING_FACTOR_Y)
 
 
         self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.FULLSCREEN)
@@ -61,7 +54,7 @@ class Game():
         
         pygame.mouse.set_visible(False)
 
-        pygame.display.set_caption("SWOASE ON SWOASE")
+        pygame.display.set_caption("WEAPONIZE")
         icon = pygame.image.load("assets/img/icon.png")
         pygame.display.set_icon(icon)
         
@@ -80,7 +73,6 @@ class Game():
         self.pregame_running = False
         
         self.color_menu = (40, 40, 40)
-        self.color_dos = (77, 77, 77)
         self.color_select = (255, 77, 112)
         self.color_default = (245, 244, 228)
 
@@ -89,6 +81,14 @@ class Game():
         
         self.attacking_start = time.time()
         self.attacking_start2 = time.time()
+        
+        self.invincibility_start = time.time()
+        self.invincibility_start2 = time.time()
+        
+        self.damaged_start = time.time()
+        self.damaged_start2 = time.time()
+        
+        self.winner = 1
             
     def horizontal_movement_collision(self):
         players = self.players.sprites()
@@ -104,6 +104,7 @@ class Game():
     def vertical_movement_collision(self):
         players = self.players.sprites()
         for player in players:
+            # make a temp rect to check if the player is on the ground, place it 1 pixel below the player
             player.apply_gravity()
             for sprite in self.level.tile_group.sprites():
                 if sprite.rect.colliderect(player.rect):
@@ -117,6 +118,11 @@ class Game():
                     if player.direction.y < 0:
                         player.rect.top = sprite.rect.bottom
                         player.direction.y = 0
+
+        if player.direction.y > 0:
+            player.isOnGround = False
+
+
 
     def draw_text(self, text, color, size, x, y):
         font = pygame.font.Font("assets/fonts/ThaleahFat.ttf", size)
@@ -196,7 +202,25 @@ class Game():
     def run_game(self):
         # Setup the level        
         self.game_running = True
+        pygame.mixer.Sound.play(pygame.mixer.Sound("assets/sound/LevelMusic.mp3"))
+        self.players.empty()
+        self.player = Player(C.key_presses_1, "assets/img/character.png", (200, 800))
+        self.players.add(self.player)
+        self.player2 = Player(C.key_presses_2, "assets/img/character2.png", (1650, 800))
+        self.players.add(self.player2)
+
         # Main loop
+
+        """
+        Working on implementing particles
+
+        ...not working yet
+        """
+        particle1 = Particle()
+        PARTICLE_EVNET = pygame.USEREVENT + 1
+        pygame.time.set_timer(PARTICLE_EVNET, 100)
+
+
         while self.game_running:
             
             clock.tick(60) # limit fps to 60
@@ -242,9 +266,9 @@ class Game():
                 self.attack_start = time.time()
                 
             if pressed_keys[pygame.K_PERIOD] and self.player2.canAttack:
-                if pressed_keys[pygame.K_d]:
+                if pressed_keys[pygame.K_RIGHT]:
                     self.player2.attackRight = True
-                elif pressed_keys[pygame.K_a]:
+                elif pressed_keys[pygame.K_LEFT]:
                     self.player2.attackRight = False
                 else:
                     if self.player2.facingRight:
@@ -254,16 +278,27 @@ class Game():
                 self.player2.attacking = True
                 self.player2.canAttack = False
                 pygame.mixer.Sound.play(self.attack_sound)
-                self.attacking_start = time.time()
-                self.attack_start = time.time()
-            
+                self.attacking_start2 = time.time()
+                self.attack_start2 = time.time()
             
             if self.player.attacking:
                 if self.player.attackRight:
+                    player_attack_hitbox = pygame.Rect(self.player.rect.x + self.player.image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                    # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
                     self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y))
+                    if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
+                        self.player_hit(self.player2, False)
+                        self.player2.isHit = True
+                        self.player2.knockbackRight = True
                 elif not self.player.attackRight:
+                    player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                    # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
                     self.screen.blit(self.player.slash_left_image, (self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y))
-            #     if time.time() - self.attacking_start > 0.1:
+                    if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
+                        self.player_hit(self.player2, False)
+                        self.player2.isHit = True
+                        self.player2.knockbackRight = False
+                if time.time() - self.attacking_start > 0.1:
                     self.player.attacking = False
                     self.attacking_start = time.time()
             else:
@@ -271,18 +306,24 @@ class Game():
                     self.screen.blit(self.player.weapon.image, (self.player.rect.x + 5, self.player.rect.y - 30))
                 else:
                     self.screen.blit(self.player.weapon.image, (self.player.rect.x + 30, self.player.rect.y - 30))
-
-            # player 1 attack cooldown
-            if self.player.canAttack is False:
-                if time.time() - self.attack_start > 0.7:
-                    self.player.canAttack = True
-                    self.attack_start = time.time()
-            
+                    
             if self.player2.attacking:
                 if self.player2.attackRight:
+                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
+                    # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
                     self.screen.blit(self.player2.slash_right_image, (self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y))
+                    if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
+                        self.player_hit(self.player, True)
+                        self.player.isHit = True
+                        self.player.knockbackRight = True
                 elif not self.player2.attackRight:
+                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
+                    # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
                     self.screen.blit(self.player2.slash_left_image, (self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y))
+                    if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
+                        self.player_hit(self.player, True)
+                        self.player.isHit = True
+                        self.player.knockbackRight = False
                 if time.time() - self.attacking_start2 > 0.1:
                     self.player2.attacking = False
                     self.attacking_start2 = time.time()
@@ -292,19 +333,46 @@ class Game():
                 else:
                     self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 30, self.player2.rect.y - 30))
 
+            # player 1 attack cooldown
+            if self.player.canAttack is False:
+                if time.time() - self.attack_start > 0.7:
+                    self.player.canAttack = True
+                    self.attack_start = time.time()
+                    
             # player 2 attack cooldown
             if self.player2.canAttack is False:
                 if time.time() - self.attack_start2 > 0.7:
                     self.player2.canAttack = True
                     self.attack_start2 = time.time()
-            # Update the display
+                    
+            if self.player2.isInvincible:
+                if time.time() - self.invincibility_start2 > 0.3:
+                    self.player2.isInvincible = False
+                    self.invincibility_start2 = time.time()
+                    
+            if self.player.isInvincible:
+                if time.time() - self.invincibility_start > 0.3:
+                    self.player.isInvincible = False
+                    self.invincibility_start = time.time()
 
-
+               
+            if self.player.isDamaged:
+                if time.time() - self.damaged_start > 5:
+                    self.player.isDamaged = False
+                    self.player.image = self.player.OriginalImage
+                    self.damaged_start = time.time()
+                                        
+            if self.player2.isDamaged:
+                if time.time() - self.damaged_start2 > 5:
+                    self.player2.isDamaged = False
+                    self.player2.image = self.player2.OriginalImage
+                    self.damaged_start2 = time.time()
+                    
             pygame.display.flip()
-            
+                    
     def pause_menu(self):
         current_selection = "resume"
-        
+        pygame.mixer.pause()
         self.paused = True
         while self.paused:
             # pause_background = pygame.Surface((C.SCREEN_WIDTH/4, C.SCREEN_HEIGHT/2))
@@ -312,9 +380,9 @@ class Game():
             # pause_background.fill((34,39,63)) #(34,39,63)
             # self.screen.blit(pause_background, (C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2))
             
-            background_image = pygame.image.load("assets/img/DefaultBackground.png").convert()
+            background_image = pygame.image.load("assets/img/menuBackground.png").convert()
             background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH/4, C.SCREEN_HEIGHT/2))
-            background_image.set_alpha(50)
+            background_image.set_alpha(100)
             self.screen.blit(background_image, (C.SCREEN_WIDTH/2 - ((C.SCREEN_WIDTH/4)/2), C.SCREEN_HEIGHT/2 - ((C.SCREEN_HEIGHT/2)/2)))
 
             
@@ -337,6 +405,7 @@ class Game():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         self.paused = False
+                        pygame.mixer.unpause()
                     elif event.key == K_w or event.key == K_UP:
                         if(current_selection == "settings"):
                             current_selection = "resume"
@@ -357,9 +426,9 @@ class Game():
                             self.paused = False
                         if(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
+                            pygame.mixer.stop()
                             self.game_running = False
                             self.paused = False
-                            
                             self.menu_running = True
                         
             self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 150)
@@ -383,9 +452,9 @@ class Game():
                 elif event.type == QUIT:
                     self.options_running = False
             
-            self.screen.fill(self.color_dos)
+            self.screen.fill(self.color_menu)
             self.draw_text("OPTIONS", self.color_default, 75, C.SCREEN_WIDTH/2, 100)
-            self.draw_text("Nathan Wand occasionally smells like cheese.", self.color_default, 40, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
+            self.draw_text("There are no options to change yet. Check back later.", self.color_default, 40, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
             pygame.display.flip()
             
     def pregame_menu(self):
@@ -397,9 +466,15 @@ class Game():
             if(current_selection == "play"):
                 start_text_color = self.color_select
                 quit_text_color = self.color_default
+                controls_text_color = self.color_default
             elif(current_selection == "quit"):
                 start_text_color = self.color_default
                 quit_text_color = self.color_select
+                controls_text_color = self.color_default
+            elif(current_selection == "controls"):
+                controls_text_color = self.color_select
+                start_text_color = self.color_default
+                quit_text_color = self.color_default
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
@@ -411,13 +486,23 @@ class Game():
                     elif event.key == K_w or event.key == K_UP:
                         if(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "controls"
+                        elif(current_selection == "controls"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             current_selection = "play"
                     elif event.key == K_s or event.key == K_DOWN:
                         if(current_selection == "play"):
                             pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "controls"
+                        elif(current_selection == "controls"):
+                            pygame.mixer.Sound.play(self.select_sound)
                             current_selection = "quit"
                     elif event.key == K_RETURN:
                         if(current_selection == "play"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            self.pregame_running = False
+                            self.run_game()
+                        elif(current_selection == "controls"):
                             pygame.mixer.Sound.play(self.select_sound)
                             self.pregame_running = False
                             self.controls_menu()
@@ -437,7 +522,8 @@ class Game():
             self.draw_text("PLAY", start_text_color, 50, C.SCREEN_WIDTH/2, 400)
             self.draw_text("PRACTICE", (130,130,130), 50, C.SCREEN_WIDTH/2, 500)
             self.draw_text("ARMORY", (130,130,130), 50, C.SCREEN_WIDTH/2, 600)
-            self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 700)
+            self.draw_text("CONTROLS", controls_text_color, 50, C.SCREEN_WIDTH/2, 700)
+            self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 800)
             pygame.display.flip()
             
     def controls_menu(self):  
@@ -454,7 +540,7 @@ class Game():
                         self.pregame_menu()
                     elif event.key == K_RETURN:
                             self.controls_showing = False
-                            self.run_game()
+                            self.pregame_menu()
             self.screen.fill(self.color_menu)
             self.draw_text("CONTROLS", self.color_default, 90, C.SCREEN_WIDTH/2, 150)
             self.draw_text("PLAYER ONE:", self.color_default, 50, C.SCREEN_WIDTH/2 - 400, 400)
@@ -469,16 +555,73 @@ class Game():
             self.screen.blit(player2_controls_image, (C.SCREEN_WIDTH/2 + 300, 500))
             
             player1_2_controls_image = pygame.image.load("assets/img/player1_2Controls.png")
-            player1_2_controls_image = pygame.transform.scale(player1_2_controls_image, (C.SCREEN_WIDTH/9, (((C.SCREEN_WIDTH/9)/3)*2)))
+            player1_2_controls_image = pygame.transform.scale(player1_2_controls_image, (C.SCREEN_WIDTH/27, (((C.SCREEN_WIDTH/27)*3))))
             self.screen.blit(player1_2_controls_image, (C.SCREEN_WIDTH/2 - 500, 800))
     
             player2_2_controls_image = pygame.image.load("assets/img/player2_2Controls.png")
-            player2_2_controls_image = pygame.transform.scale(player2_2_controls_image, (C.SCREEN_WIDTH/9, (((C.SCREEN_WIDTH/9)/3)*2)))
+            player2_2_controls_image = pygame.transform.scale(player2_2_controls_image, (C.SCREEN_WIDTH/27, (((C.SCREEN_WIDTH/27)*3))))
             self.screen.blit(player2_2_controls_image, (C.SCREEN_WIDTH/2 + 300, 800))
+            
+            self.draw_text("ATTACK", self.color_default, 50, C.SCREEN_WIDTH/2 - 330, 830)
+            self.draw_text("DASH", self.color_default, 50, C.SCREEN_WIDTH/2 - 330, 980)
+
+            self.draw_text("ATTACK", self.color_default, 50, C.SCREEN_WIDTH/2 + 450, 850)
+            self.draw_text("DASH", self.color_default, 50, C.SCREEN_WIDTH/2 + 450, 950)
 
             pygame.display.flip()
             
-    def check_collisions(self):
+    def game_over(self):
+        self.game_is_over = True
+        current_selection = "restart"
+        while self.game_is_over:
+            background_image = pygame.image.load("assets/img/menuBackground.png").convert()
+            background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2))
+            background_image.set_alpha(100)
+            self.screen.blit(background_image, (C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/4), C.SCREEN_HEIGHT/4))
+        
+    
+            if(current_selection == "restart"):
+                restart_text_color = self.color_select
+                quit_text_color = self.color_default
+            elif(current_selection == "quit"):
+                restart_text_color = self.color_default
+                quit_text_color = self.color_select
+                
+            # for loop through the event queue
+            for event in pygame.event.get():
+                # Check for KEYDOWN event
+                if event.type == KEYDOWN:
+                    # If the Esc key is pressed, then exit the main loop
+                    if event.key == K_w or event.key == K_UP:
+                        if current_selection == "quit":
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "restart"
+                    elif event.key == K_s or event.key == K_DOWN:
+                        if current_selection == "restart":
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "quit"
+                    elif event.key == K_RETURN:
+                        if current_selection == "restart":
+                            pygame.mixer.Sound.play(self.select_sound)
+                            pygame.mixer.stop()
+                            self.game_running = False
+                            self.game_is_over = False
+                            self.run_game()
+                        elif current_selection == "quit":
+                                pygame.mixer.stop()
+                                self.game_running = False
+                                self.game_is_over = False
+                                self.menu_running = True
+            
+            final_script = f"Player {self.winner} won!"
+            self.draw_text(final_script, (255, 255, 255), 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 100)
+            self.draw_text("GAME OVER", self.color_select, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 150)
+            self.draw_text("RESTART", restart_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 50)
+            self.draw_text("QUIT", quit_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 150)
+            pygame.display.flip()
+
+            
+    def check_player_collisions(self):
         #if pygame.sprite.spritecollide(self.player, self.level.tile_group, False, pygame.sprite.collide_mask):
         if self.player.mask.overlap(self.player2.mask, (self.player.rect.x - self.player2.rect.x, self.player.rect.y - self.player2.rect.y)):
             pygame.display.set_caption("COLLISION DETECTED")
@@ -507,3 +650,25 @@ class Game():
                     pygame.draw.rect(self.screen, self.color_select, pygame.Rect(player.rect.x - self.player.image.get_width(), player.rect.y, self.player.image.get_width(), self.player.image.get_height()))
                     #player.weapon.image = pygame.transform.rotate(player.weapon.image, 10)
                     player.canAttack = False
+
+    def player_hit(self, player, isPlayer1):
+        if not player.isInvincible:
+            if player.isDamaged:
+                pygame.mixer.Sound.play(pygame.mixer.Sound("assets/sound/Hurt_grunt.wav"))
+                if isPlayer1:
+                    self.winner = 2
+                else:
+                    self.winner = 1
+                self.game_over()
+            else:
+                pygame.mixer.Sound.play(pygame.mixer.Sound("assets/sound/shieldbreak.mp3"))
+                player.image = player.Damagedimage
+                player.isInvincible = True
+                player.isDamaged = True
+                if isPlayer1:
+                    self.invincibility_start = time.time()
+                    self.damaged_start = time.time()
+                else:
+                    self.invincibility_start2 = time.time()
+                    self.damaged_start2 = time.time()
+                
