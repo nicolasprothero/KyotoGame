@@ -1,7 +1,7 @@
 import pygame
 import numpy as np
-import CONSTANTS as C
-from Weapons import *
+import src.CONSTANTS as C
+from src.Weapons import *
 from pygame.locals import (
     K_UP,
     K_DOWN,
