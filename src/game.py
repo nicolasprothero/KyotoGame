@@ -1,13 +1,13 @@
 # Import the pygame module
 from select import select
 from tkinter import Menu
-from src.Particle import Particle
+from Particle import Particle
 import time
 import pygame
-import src.CONSTANTS as C
-from src.Player import Player
-from src.Level import Level
-from src.Weapons import *
+import CONSTANTS as C
+from Player import Player
+from Level import Level
+from Weapons import *
 import ctypes
 import os
 import platform
@@ -41,7 +41,8 @@ class Game():
         pygame.mixer.init()
         
         flags = pygame.SCALED | pygame.FULLSCREEN
-        self.screen= pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
+        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
+        self.camera = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
         
         # Instantiate player. Right now, this is just a rectangle.
         self.players = pygame.sprite.Group()
@@ -51,8 +52,6 @@ class Game():
         self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, 100))
         self.players.add(self.player2)
         
-        # fart = ThrustWeapon('assets/img/mario.png', (40, 60))
-        # self.player2.changeWeapon(fart)
         
         pygame.mouse.set_visible(False)
 
@@ -63,10 +62,10 @@ class Game():
         self.level = Level(C.LEVEL_MAP, self.screen, os.path.join(base_directory, "assets/img/DefaultBackground.png"))
 
         self.select_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Select.wav"))
-        self.select_sound.set_volume(0.3)
+        self.select_sound.set_volume(0.1)
         
         self.attack_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/swoosh.wav'))
-        self.attack_sound.set_volume(0.3)
+        self.attack_sound.set_volume(0.1)
 
         self.menu_running = True
         self.game_running = False
@@ -204,7 +203,7 @@ class Game():
     def run_game(self):
         # Setup the level        
         self.game_running = True
-        pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3")))
+        pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(0.1)
         self.players.empty()
         self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800))
         self.players.add(self.player)
@@ -656,14 +655,14 @@ class Game():
     def player_hit(self, player, isPlayer1):
         if not player.isInvincible:
             if player.isDamaged:
-                pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Hurt_grunt.wav")))
+                pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Hurt_grunt.wav"))).set_volume(0.2)
                 if isPlayer1:
                     self.winner = 2
                 else:
                     self.winner = 1
                 self.game_over()
             else:
-                pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/shieldbreak.mp3")))
+                pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/shieldbreak.mp3"))).set_volume(0.2)
                 player.image = player.Damagedimage
                 player.isInvincible = True
                 player.isDamaged = True

@@ -1,6 +1,6 @@
 import pygame
-import src.CONSTANTS as C
-from src.Weapons import *
+import CONSTANTS as C
+from Weapons import *
 import os
 
 base_directory = os.path.dirname(os.path.abspath(__file__))

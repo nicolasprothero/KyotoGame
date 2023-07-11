@@ -1,5 +1,5 @@
 import pygame
-import src.CONSTANTS as C
+import CONSTANTS as C
 
 class screen():
     def __init__(self, title, width, height, fill):
