@@ -1,8 +1,8 @@
 import pygame
-import src.CONSTANTS as C
-from src.CONSTANTS import *
-from src.Tile import Tile
-from src.Player import Player
+import CONSTANTS as C
+from CONSTANTS import *
+from Tile import Tile
+from Player import Player
 import sys
 import os
 
