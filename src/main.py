@@ -1,10 +1,10 @@
-from game import Game
+from src.game import Game
 
-# we are all set if we have this message
-# and this message too!!! - nic
-# testing merges four
 def main():
     game = Game()
     game.run_menu()
     
-main()
+
+# only run if invoked directly
+if __name__ == "__main__":
+    main()

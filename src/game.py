@@ -1,16 +1,19 @@
 # Import the pygame module
 from select import select
 from tkinter import Menu
-from Particle import Particle
+from src.Particle import Particle
 import time
 import pygame
-import CONSTANTS as C
-from Player import Player
-from Level import Level
-from Weapons import *
+import src.CONSTANTS as C
+from src.Player import Player
+from src.Level import Level
+from src.Weapons import *
 import ctypes
 import os
 import platform
+
+base_directory = os.path.dirname(os.path.abspath(__file__))
+
 
 
 #windows solution to scaling issues with high ppi display
@@ -35,15 +38,17 @@ class Game():
         # Create the screen object
         # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
         pygame.init()
+        pygame.mixer.init()
         
         flags = pygame.SCALED | pygame.FULLSCREEN
         self.screen= pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
         
         # Instantiate player. Right now, this is just a rectangle.
         self.players = pygame.sprite.Group()
-        self.player = Player(C.key_presses_1, "assets/img/character.png", (C.SCREEN_WIDTH/6, 100))
+        abs_path = os.path.join(base_directory, "assets/img/character.png")
+        self.player = Player(C.key_presses_1, abs_path, (C.SCREEN_WIDTH/6, 100))
         self.players.add(self.player)
-        self.player2 = Player(C.key_presses_2, "assets/img/character2.png", (C.SCREEN_WIDTH*5/6, 100))
+        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, 100))
         self.players.add(self.player2)
         
         # fart = ThrustWeapon('assets/img/mario.png', (40, 60))
@@ -52,15 +57,15 @@ class Game():
         pygame.mouse.set_visible(False)
 
         pygame.display.set_caption("WEAPONIZE")
-        icon = pygame.image.load("assets/img/icon.png")
+        icon = pygame.image.load(os.path.join(base_directory, "assets/img/icon.png"))
         pygame.display.set_icon(icon)
         
-        self.level = Level(C.LEVEL_MAP, self.screen, "assets/img/DefaultBackground.png")
+        self.level = Level(C.LEVEL_MAP, self.screen, os.path.join(base_directory, "assets/img/DefaultBackground.png"))
 
-        self.select_sound = pygame.mixer.Sound("assets/sound/Select.wav")
+        self.select_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Select.wav"))
         self.select_sound.set_volume(0.3)
         
-        self.attack_sound = pygame.mixer.Sound('assets/sound/swoosh.wav')
+        self.attack_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/swoosh.wav'))
         self.attack_sound.set_volume(0.3)
 
         self.menu_running = True
@@ -122,7 +127,7 @@ class Game():
 
 
     def draw_text(self, text, color, size, x, y):
-        font = pygame.font.Font("assets/fonts/ThaleahFat.ttf", size)
+        font = pygame.font.Font(os.path.join(base_directory, "assets/fonts/ThaleahFat.ttf"), size)
         text_surface = font.render(text, True, color)
         #scale surface
         scaled_text_image = pygame.transform.scale(text_surface, (int(text_surface.get_width()), int(text_surface.get_height())))
@@ -186,7 +191,7 @@ class Game():
             
             self.screen.fill(self.color_menu)
             # create a surface object, image is drawn on it.
-            title_img = pygame.image.load("assets/img/title.png")
+            title_img = pygame.image.load(os.path.join(base_directory, "assets/img/title.png"))
             title_img = pygame.transform.scale(title_img,((C.SCREEN_WIDTH * 0.6), (((C.SCREEN_WIDTH* 0.6)/3))))
             self.screen.blit(title_img, ((C.SCREEN_WIDTH/2 - (title_img.get_width()/2)), 100))
             
@@ -199,11 +204,11 @@ class Game():
     def run_game(self):
         # Setup the level        
         self.game_running = True
-        pygame.mixer.Sound.play(pygame.mixer.Sound("assets/sound/LevelMusic.mp3"))
+        pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3")))
         self.players.empty()
-        self.player = Player(C.key_presses_1, "assets/img/character.png", (200, 800))
+        self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800))
         self.players.add(self.player)
-        self.player2 = Player(C.key_presses_2, "assets/img/character2.png", (1650, 800))
+        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800))
         self.players.add(self.player2)
 
         # Main loop
@@ -377,7 +382,7 @@ class Game():
             # pause_background.fill((34,39,63)) #(34,39,63)
             # self.screen.blit(pause_background, (C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2))
             
-            background_image = pygame.image.load("assets/img/menuBackground.png").convert()
+            background_image = pygame.image.load(os.path.join(base_directory, "assets/img/menuBackground.png")).convert()
             background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH/4, C.SCREEN_HEIGHT/2))
             background_image.set_alpha(100)
             self.screen.blit(background_image, (C.SCREEN_WIDTH/2 - ((C.SCREEN_WIDTH/4)/2), C.SCREEN_HEIGHT/2 - ((C.SCREEN_HEIGHT/2)/2)))
@@ -543,19 +548,19 @@ class Game():
             self.draw_text("PLAYER ONE:", self.color_default, 50, C.SCREEN_WIDTH/2 - 400, 400)
             self.draw_text("PLAYER TWO:", self.color_default, 50, C.SCREEN_WIDTH/2 + 400, 400)
             
-            player1_controls_image = pygame.image.load("assets/img/player1Controls.png")
+            player1_controls_image = pygame.image.load(os.path.join(base_directory, "assets/img/player1Controls.png"))
             player1_controls_image = pygame.transform.scale(player1_controls_image, (C.SCREEN_WIDTH/9, (((C.SCREEN_WIDTH/9)/3)*2)))
             self.screen.blit(player1_controls_image, (C.SCREEN_WIDTH/2 - 500, 500))
     
-            player2_controls_image = pygame.image.load("assets/img/player2Controls.png")
+            player2_controls_image = pygame.image.load(os.path.join(base_directory, "assets/img/player2Controls.png"))
             player2_controls_image = pygame.transform.scale(player2_controls_image, (C.SCREEN_WIDTH/9, (((C.SCREEN_WIDTH/9)/3)*2)))
             self.screen.blit(player2_controls_image, (C.SCREEN_WIDTH/2 + 300, 500))
             
-            player1_2_controls_image = pygame.image.load("assets/img/player1_2Controls.png")
+            player1_2_controls_image = pygame.image.load(os.path.join(base_directory, "assets/img/player1_2Controls.png"))
             player1_2_controls_image = pygame.transform.scale(player1_2_controls_image, (C.SCREEN_WIDTH/27, (((C.SCREEN_WIDTH/27)*3))))
             self.screen.blit(player1_2_controls_image, (C.SCREEN_WIDTH/2 - 500, 800))
     
-            player2_2_controls_image = pygame.image.load("assets/img/player2_2Controls.png")
+            player2_2_controls_image = pygame.image.load(os.path.join(base_directory, "assets/img/player2_2Controls.png"))
             player2_2_controls_image = pygame.transform.scale(player2_2_controls_image, (C.SCREEN_WIDTH/27, (((C.SCREEN_WIDTH/27)*3))))
             self.screen.blit(player2_2_controls_image, (C.SCREEN_WIDTH/2 + 300, 800))
             
@@ -571,7 +576,7 @@ class Game():
         self.game_is_over = True
         current_selection = "restart"
         while self.game_is_over:
-            background_image = pygame.image.load("assets/img/menuBackground.png").convert()
+            background_image = pygame.image.load(os.path.join(base_directory, "assets/img/menuBackground.png")).convert()
             background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2))
             background_image.set_alpha(140)
             self.screen.blit(background_image, (C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/4), C.SCREEN_HEIGHT/4))
@@ -651,14 +656,14 @@ class Game():
     def player_hit(self, player, isPlayer1):
         if not player.isInvincible:
             if player.isDamaged:
-                pygame.mixer.Sound.play(pygame.mixer.Sound("assets/sound/Hurt_grunt.wav"))
+                pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Hurt_grunt.wav")))
                 if isPlayer1:
                     self.winner = 2
                 else:
                     self.winner = 1
                 self.game_over()
             else:
-                pygame.mixer.Sound.play(pygame.mixer.Sound("assets/sound/shieldbreak.mp3"))
+                pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/shieldbreak.mp3")))
                 player.image = player.Damagedimage
                 player.isInvincible = True
                 player.isDamaged = True
