@@ -42,7 +42,7 @@ class Game():
         
         flags = pygame.SCALED | pygame.FULLSCREEN
         self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
-        self.camera = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
+        self.camera = pygame.Surface((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
         
         # Instantiate player. Right now, this is just a rectangle.
         self.players = pygame.sprite.Group()
@@ -90,7 +90,25 @@ class Game():
         self.damaged_start2 = time.time()
         
         self.winner = 1
+
+        # Used for Dynamic Camera Tracking
+        self.player_distance = 0
+        self.player_midpoint = pygame.math.Vector2(0, 0)
+        self.camera_x = 0
+        self.camera_y = 0
+        self.camera_width = C.SCREEN_WIDTH
+        self.camera_height = C.SCREEN_HEIGHT
+        self.cam_dim = [self.camera_width, self.camera_height]
             
+    def getPlayerDistance(self, Player1, Player2):
+        return round(((Player1.rect.x - Player2.rect.x)**2 + (Player1.rect.y - Player2.rect.y)**2)**0.5)
+
+    def getPlayerMidpoint(self, Player1, Player2):
+        midpoint = ((Player1.rect.x + Player2.rect.x)/2, (Player1.rect.y + Player2.rect.y)/2)
+        roundedMidPoint = tuple(map(lambda x: round(x), midpoint))
+        res = [roundedMidPoint[0], roundedMidPoint[1]]
+        return res
+
     def horizontal_movement_collision(self):
         players = self.players.sprites()
         for player in players:
@@ -210,6 +228,8 @@ class Game():
         self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800))
         self.players.add(self.player2)
 
+        scroll = [0,0]
+
         # Main loop
 
         """
@@ -246,7 +266,89 @@ class Game():
             self.players.update(pressed_keys)
             self.horizontal_movement_collision()
             self.vertical_movement_collision()
-            self.players.draw(self.screen) 
+            self.players.draw(self.screen)
+
+            # calculate player distance and midpoint
+            # self.player_distance = self.getPlayerDistance(self.player, self.player2)
+            self.player_midpoint = self.getPlayerMidpoint(self.player, self.player2)
+            # self.draw_text("Distance: " + str(self.player_distance), self.color_default, 50, 200, 100)
+            # self.draw_text("Midpoint: " + str(self.player_midpoint), self.color_default, 50, 300, 200)
+
+            # move camera, resize as needed
+            min_x = min(self.player.rect.x, self.player2.rect.x)
+            min_y = min(self.player.rect.y, self.player2.rect.y)
+            max_x = max(self.player.rect.x, self.player2.rect.x)
+            max_y = max(self.player.rect.y, self.player2.rect.y)
+            
+            PADDING = 300
+
+            # maintain a 1.6 : 1 aspect ratio
+            player_min_y = min(self.player.rect.y, self.player2.rect.y) + self.player.rect.height
+            player_max_y = max(self.player.rect.y, self.player2.rect.y)
+            player_min_x = min(self.player.rect.x, self.player2.rect.x)
+            player_max_x = max(self.player.rect.x, self.player2.rect.x) + self.player.rect.width
+            dist = max(player_max_x - player_min_x, player_max_y - player_min_y)
+            if dist < 1200:
+                # slowly decrease camera width and height to zoom in
+                self.camera_width = max(dist * 1.5, 900)
+                self.camera_height = int(self.camera_width * 0.625)
+
+                # adjust position based on player center
+                midpoint = self.player_midpoint
+                midpoint[0] = midpoint[0] + self.player.rect.width // 2
+                midpoint[1] = midpoint[1] + self.player.rect.height // 2
+                self.camera_x = midpoint[0] - self.camera_width // 2
+                self.camera_y = midpoint[1] - self.camera_height // 2
+                # self.camera_x, self.camera_y is top left corner of viewport
+                if self.camera_x < 0:
+                    self.camera_x = 0
+                elif self.camera_x + self.camera_width > C.SCREEN_WIDTH:
+                    self.camera_x = C.SCREEN_WIDTH - self.camera_width
+                if self.camera_y < 0:
+                    self.camera_y = 0
+                elif self.camera_y + self.camera_height > C.SCREEN_HEIGHT:
+                    self.camera_y = C.SCREEN_HEIGHT - self.camera_height
+            else:
+                self.camera_width = C.SCREEN_WIDTH
+                self.camera_height = C.SCREEN_HEIGHT
+                self.camera_x = 0
+                self.camera_y = 0
+            # if either player off screen, move camera
+            # player 1 is too high or too low
+           
+
+            # restrict camera border to screen
+          
+
+            # camera_view = pygame.Surface((camera_width, camera_height))
+            # camera_view.blit(self.world, (midpoint[0], midpoint[1]), (self.camera_x, self.camera_y, camera_width, camera_height))
+
+            """
+            camera_view.blit() is messing up rn
+            might have something to do with self.screen surface object
+
+            """
+            # draw red box around camera
+            pygame.draw.rect(self.screen, (255, 0, 0), (self.camera_x, self.camera_y, self.camera_width, self.camera_height), 2)
+            # draw dot at self.camera_x, self.camera_y
+            pygame.draw.circle(self.screen, (0, 255, 0), (self.camera_x, self.camera_y), 10)
+            # make a subsurface of self.screen, using dimensions of camera
+            subsurface = self.screen.subsurface((self.camera_x, self.camera_y, self.camera_width, self.camera_height))
+            self.draw_text(str(subsurface.get_width()) + " x " + str(subsurface.get_height()), self.color_default, 50, 200, 100)
+            # display the subsurface and scale it to the screen size
+            self.screen.blit(pygame.transform.scale(subsurface, (C.SCREEN_WIDTH, C.SCREEN_HEIGHT)), (0, 0))
+
+            
+
+            # cam_rec = pygame.Rect(self.camera_x, self.camera_y, camera_width, camera_height)
+            # make a pygame.Surface object from cam_rec
+
+
+
+            # self.screen.blit(self.screen, (C.SCREEN_WIDTH//10, C.SCREEN_HEIGHT//10), (self.camera_x, self.camera_y, camera_width, camera_height))
+            
+            # draw players on camera
+            # self.screen.blit(pygame.transform.scale(self.camera, (C.SCREEN_WIDTH, C.SCREEN_HEIGHT)), (0, 0))
             
             # self.screen.blit(self.player.image, self.player.pos)
             # self.screen.blit(self.player2.image, self.player2.pos)
