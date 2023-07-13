@@ -1,6 +1,9 @@
 import pygame
 import CONSTANTS as C
 from CONSTANTS import *
+import os
+
+base_directory = os.path.dirname(os.path.abspath(__file__))
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, pos, size, img_path):

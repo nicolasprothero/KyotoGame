@@ -1,7 +1,9 @@
 import pygame
-import numpy as np
 import CONSTANTS as C
 from Weapons import *
+import os
+
+base_directory = os.path.dirname(os.path.abspath(__file__))
 from pygame.locals import (
     K_UP,
     K_DOWN,
@@ -17,13 +19,13 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, keyBinds, img, pos):
         pygame.sprite.Sprite.__init__(self)
         self.keyBinds = keyBinds
-        self.slash_right_image = pygame.image.load("assets/img/slash.png").convert_alpha()
+        self.slash_right_image = pygame.image.load(os.path.join(base_directory, "assets/img/slash.png")).convert_alpha()
         self.slash_left_image = pygame.transform.flip(self.slash_right_image, True, False)
         
         self.OriginalImage = pygame.image.load(img).convert_alpha()
         self.OriginalImage = pygame.transform.scale(self.OriginalImage, (65, 90)) # scale image down; 13 by 18
         
-        self.Damagedimage = pygame.image.load("assets/img/characterDamaged.png")
+        self.Damagedimage = pygame.image.load(os.path.join(base_directory, "assets/img/characterDamaged.png"))
         self.Damagedimage = pygame.transform.scale(self.Damagedimage, (65, 90))
         
         self.image = self.OriginalImage
@@ -56,7 +58,7 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
         # Make the default weapon.
-        self.weapon = SlashWeapon('assets/img/sword.png', (30,90))
+        self.weapon = SlashWeapon(os.path.join(base_directory, 'assets/img/sword.png'), (30,90))
 
 
     def move(self, pressed_keys): 

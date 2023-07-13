@@ -3,6 +3,11 @@ import CONSTANTS as C
 from CONSTANTS import *
 from Tile import Tile
 from Player import Player
+import sys
+import os
+
+base_directory = os.path.dirname(os.path.abspath(__file__))
+
 
 """
 Made a no_collide_group for non collidable tiles.
@@ -19,55 +24,56 @@ class Level:
         self.setup_level(level_data)
         
     def setup_level(self, layout):
+       
         TILE_SIZE = min(C.SCREEN_WIDTH // len(LEVEL_MAP[0]), C.SCREEN_HEIGHT // len(LEVEL_MAP))
         for row_index, row in enumerate(layout):
             for col_index, col in enumerate(row):
                 x = col_index * TILE_SIZE
                 y = row_index * TILE_SIZE
                 if col == 'X':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/middle_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/middle_tile.png'))
                     self.tile_group.add(tile)
                 elif col == 'T':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/top_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/top_tile.png'))
                     self.tile_group.add(tile)
                 elif col == 'B':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/bot_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/bot_tile.png'))
                     self.tile_group.add(tile)
                 elif col == 'L':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/left_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/left_tile.png'))
                     self.tile_group.add(tile)
                 elif col == 'R':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/right_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/right_tile.png'))
                     self.tile_group.add(tile)
                 elif col == '1':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/topleft_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/topleft_tile.png'))
                     self.tile_group.add(tile)
                 elif col == '2':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/topright_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/topright_tile.png'))
                     self.tile_group.add(tile)
                 elif col == '3':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/botleft_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/botleft_tile.png'))
                     self.tile_group.add(tile)
                 elif col == '4':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/botright_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/botright_tile.png'))
                     self.tile_group.add(tile)
                 elif col == 'G':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/leftcorner_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/leftcorner_tile.png'))
                     self.tile_group.add(tile)
                 elif col == 'H':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/rightcorner_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/rightcorner_tile.png'))
                     self.tile_group.add(tile)
                 elif col == 'J':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/botleftcorner_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/botleftcorner_tile.png'))
                     self.tile_group.add(tile)
                 elif col == 'K':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/botrightcorner_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/botrightcorner_tile.png'))
                     self.tile_group.add(tile)
                 elif col == 'N':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/grass_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/grass_tile.png'))
                     self.no_collide_group.add(tile)
                 elif col == 'M':
-                    tile = Tile((x,y), TILE_SIZE, 'assets/img/tileset/vine_tile.png')
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/vine_tile.png'))
                     self.no_collide_group.add(tile)
                 # T: TOP TILE
                 # B: BOTTOM TILE
