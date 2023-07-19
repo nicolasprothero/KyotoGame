@@ -2,6 +2,7 @@ import pygame
 import CONSTANTS as C
 from Weapons import *
 import os
+import copy
 
 base_directory = os.path.dirname(os.path.abspath(__file__))
 from pygame.locals import (
@@ -38,6 +39,7 @@ class Player(pygame.sprite.Sprite):
         self.jump_speed = -17
         self.dash_speed = 5
         self.gravity = 0.9
+        self.knockback_distance = 3
         
         self.isHit = False
         self.knockbackRight = True
@@ -58,12 +60,16 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
         # Make the default weapon.
-        self.weapon = SlashWeapon(os.path.join(base_directory, 'assets/img/sword.png'), (30,90))
+
+        self.weapon = copy.copy(C.weapon_dict["defaultSword"])
+
+        self.slash_right_image = pygame.transform.scale(self.slash_right_image, self.weapon.hitbox_scaling)
+        self.slash_left_image = pygame.transform.scale(self.slash_left_image, self.weapon.hitbox_scaling)
 
 
     def move(self, pressed_keys): 
         if self.isHit:
-            self.knockback(3, self.knockbackRight)
+            self.knockback(self.knockback_distance, self.knockbackRight)
         elif pressed_keys[self.keyBinds["dash"]] and self.isOnGround == False:
             if self.hasDash:
                 self.dash()
@@ -129,4 +135,16 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = -distance
                 
     def changeWeapon(self, weapon):
-        self.weapon = weapon
+        self.weapon = copy.copy(weapon)
+        self.slash_right_image = pygame.transform.scale(self.slash_right_image, self.weapon.hitbox_scaling)
+        self.slash_left_image = pygame.transform.scale(self.slash_left_image, self.weapon.hitbox_scaling)
+
+        if self.weapon.get_speed_buff() != 0:
+            self.speed = self.weapon.get_speed_buff()
+        if self.weapon.get_jump_buff() != 0:
+            self.jump_speed = self.weapon.get_jump_buff()
+        if self.weapon.get_extra_shield():
+            self.extra_shield = True
+        if self.weapon.get_knockback_buff() != 0:
+            self.knockback_distance = self.weapon.get_knockback_buff()
+        

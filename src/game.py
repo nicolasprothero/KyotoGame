@@ -97,9 +97,6 @@ class Game():
         self.select_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Select.wav"))
         self.select_sound.set_volume(0.1)
         
-        self.attack_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/swoosh.wav'))
-        self.attack_sound.set_volume(0.1)
-        
         self.chest_open_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/chest_open.mp3'))
         self.chest_open_sound.set_volume(0.1)
         
@@ -340,6 +337,15 @@ class Game():
         
         self.character_icon = self.character1_img
         self.character2_icon = self.character2_img
+
+        self.player.changeWeapon(C.weapon_dict["godSword"])
+
+        self.player_attack_sound = pygame.mixer.Sound(os.path.join(base_directory, self.player.weapon.attack_sound_path))
+        self.player_attack_sound.set_volume(self.player.weapon.attack_sound_level)
+
+        self.player2_attack_sound = pygame.mixer.Sound(os.path.join(base_directory, self.player2.weapon.attack_sound_path))
+        self.player2_attack_sound.set_volume(self.player2.weapon.attack_sound_level)
+
         # Main loop
 
         """
@@ -376,6 +382,7 @@ class Game():
             self.horizontal_movement_collision()
             self.vertical_movement_collision()
             self.players.draw(self.screen) 
+
             
             #HUD
             #round_hud = pygame.Rect((C.SCREEN_WIDTH/2 - 150), 0, 350, 175)
@@ -412,7 +419,7 @@ class Game():
                         self.player.attackRight = False                 
                 self.player.attacking = True
                 self.player.canAttack = False
-                pygame.mixer.Sound.play(self.attack_sound)
+                pygame.mixer.Sound.play(self.player_attack_sound)
                 self.attacking_start = time.time()
                 self.attack_start = time.time()
                 
@@ -428,7 +435,7 @@ class Game():
                         self.player2.attackRight = False                 
                 self.player2.attacking = True
                 self.player2.canAttack = False
-                pygame.mixer.Sound.play(self.attack_sound)
+                pygame.mixer.Sound.play(self.player2_attack_sound)
                 self.attacking_start2 = time.time()
                 self.attack_start2 = time.time()
             
@@ -486,13 +493,13 @@ class Game():
 
             # player 1 attack cooldown
             if self.player.canAttack is False:
-                if time.time() - self.attack_start > 0.7:
+                if time.time() - self.attack_start > self.player.weapon.cooldown:
                     self.player.canAttack = True
                     self.attack_start = time.time()
                     
             # player 2 attack cooldown
             if self.player2.canAttack is False:
-                if time.time() - self.attack_start2 > 0.7:
+                if time.time() - self.attack_start2 > self.player2.weapon.cooldown:
                     self.player2.canAttack = True
                     self.attack_start2 = time.time()
                     

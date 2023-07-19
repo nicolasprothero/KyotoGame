@@ -1,4 +1,6 @@
 import pygame
+import os
+from Weapons import *
 
 LEVEL_MAP = [
     'XXKBBBBBBBBBBBBJXXXXXXZXKBBBBBBBBBBBBJXX',
@@ -361,4 +363,10 @@ key_presses_2 = {
     "left": pygame.K_LEFT,
     "right": pygame.K_RIGHT,
     "dash": pygame.K_COMMA,
+}
+
+# dictionary for all weapons
+weapon_dict = {
+    "defaultSword": SlashWeapon("The Default Sword", "Common", os.path.join(base_directory, "assets/img/sword.png"), os.path.join(base_directory, "assets/sound/swoosh.wav"), 0.1, (30, 90), (100, 100)),
+    "godSword": SlashWeapon("GOD SWORD", "Mythic", os.path.join(base_directory, "assets/img/godsword.png"), os.path.join(base_directory, "assets/sound/toot.mp3"), 0.2, (30, 90), (300, 300), 0.2, 25, -20, True, 7),
 }
