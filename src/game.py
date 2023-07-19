@@ -1,8 +1,11 @@
 # Import the pygame module
+from distutils.spawn import spawn
+from operator import truediv
 from select import select
 from tkinter import Menu
 from Particle import Particle
 import time
+import random
 import pygame
 import CONSTANTS as C
 from Player import Player
@@ -25,6 +28,8 @@ from pygame.locals import (
     K_DOWN,
     K_w,
     K_s,
+    K_x,
+    K_PERIOD,
     K_RETURN,
     K_ESCAPE,
     KEYDOWN,
@@ -52,6 +57,34 @@ class Game():
         self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, 100))
         self.players.add(self.player2)
         
+        self.character1_img = pygame.image.load('src/assets/img/character_icon.png')
+        self.character1_img = pygame.transform.scale(self.character1_img, (100, 100))
+            
+        self.character2_img = pygame.image.load('src/assets/img/character2_icon.png')
+        self.character2_img = pygame.transform.scale(self.character2_img, (100, 100))
+        
+        self.character1_damaged_img = pygame.image.load('src/assets/img/character_icon_damaged.png')
+        self.character1_damaged_img = pygame.transform.scale(self.character1_damaged_img, (100, 100))
+        
+        self.character2_damaged_img = pygame.image.load('src/assets/img/character2_icon_damaged.png')
+        self.character2_damaged_img = pygame.transform.scale(self.character2_damaged_img, (100, 100))
+        
+        self.character_icon = self.character1_img
+        self.character2_icon = self.character2_img
+        
+        self.character1_hud = pygame.image.load('src/assets/img/character1_hud.png')
+        self.character1_hud = pygame.transform.scale(self.character1_hud, (310, 140))
+        
+        self.character2_hud = pygame.image.load('src/assets/img/character2_hud.png')
+        self.character2_hud = pygame.transform.scale(self.character2_hud, (310, 140))
+        
+        self.round_hud = pygame.image.load('src/assets/img/round_hud.png')
+        self.round_hud = pygame.transform.scale(self.round_hud, (310, 140))
+        
+        self.player_weapon = pygame.transform.scale(self.player.weapon.image, (36, 108))
+        self.player2_weapon = pygame.transform.scale(self.player2.weapon.image, (36, 108))
+
+        self.the_map_list = []
         
         pygame.mouse.set_visible(False)
 
@@ -66,6 +99,13 @@ class Game():
         
         self.attack_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/swoosh.wav'))
         self.attack_sound.set_volume(0.1)
+        
+        self.chest_open_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/chest_open.mp3'))
+        self.chest_open_sound.set_volume(0.1)
+        
+        self.sword_get_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/sword_get.wav'))
+        self.sword_get_sound.set_volume(0.1)
+
 
         self.menu_running = True
         self.game_running = False
@@ -90,6 +130,12 @@ class Game():
         self.damaged_start2 = time.time()
         
         self.winner = 1
+        self.isPostGame = False
+        
+        self.round_num = 1
+        self.player_one_wins = 0
+        self.player_two_wins = 0
+        
             
     def horizontal_movement_collision(self):
         players = self.players.sprites()
@@ -133,6 +179,7 @@ class Game():
         text_rect = scaled_text_image.get_rect()
         text_rect.center = (x, y)
         self.screen.blit(scaled_text_image, text_rect)
+    
             
     def run_menu(self):
         current_selection = "start"
@@ -180,7 +227,7 @@ class Game():
                             self.pregame_menu()
                         if(current_selection == "settings"):
                             pygame.mixer.Sound.play(self.select_sound)
-                            self.options_menu()
+                            self.gun_screen()
                         elif(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
                             self.menu_running = False
@@ -203,13 +250,96 @@ class Game():
     def run_game(self):
         # Setup the level        
         self.game_running = True
-        pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(0.1)
-        self.players.empty()
-        self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800))
-        self.players.add(self.player)
-        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800))
-        self.players.add(self.player2)
+        
+        if self.round_num is 1:
+            self.the_map_list = C.map_list[:]
+        elif self.round_num is 6:
+            self.the_map_list = C.map_list2[:]
+         
+        if self.player_one_wins == 4 and self.player_two_wins == 4:
+            current_map = C.LEVEL_MAP9
+        else:
+            current_map = random.choice(self.the_map_list)
+            self.the_map_list.remove(current_map)
+            
+        if current_map == C.LEVEL_MAP:
+            self.players.empty()
+            spawn_options = [1, 2]
+            choice = random.choice(spawn_options)
+            if choice == 1:
+                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800))
+                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800))
+            elif choice == 2:
+                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.players.add(self.player)
+            self.players.add(self.player2)
+        elif current_map == C.LEVEL_MAP1:
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+            self.players.add(self.player)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.players.add(self.player2)
+        elif current_map == C.LEVEL_MAP2:
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
+            self.players.add(self.player)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
+            self.players.add(self.player2)
+        elif current_map == C.LEVEL_MAP3:
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
+            self.players.add(self.player)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
+            self.players.add(self.player2)
+        elif current_map ==C.LEVEL_MAP4:
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+            self.players.add(self.player)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.players.add(self.player2)
+        elif current_map == C.LEVEL_MAP5:
+            self.players.empty()
+            spawn_options = [1, 2]
+            choice = random.choice(spawn_options)
+            if choice == 1:
+                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800))
+                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800))
+            elif choice == 2:
+                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.players.add(self.player)
+            self.players.add(self.player2) 
+        elif current_map == C.LEVEL_MAP6:
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
+            self.players.add(self.player)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
+            self.players.add(self.player2)
+        elif current_map ==C.LEVEL_MAP7:
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+            self.players.add(self.player)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.players.add(self.player2)
+        elif current_map == C.LEVEL_MAP8:
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+            self.players.add(self.player)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.players.add(self.player2)
+        elif current_map == C.LEVEL_MAP9:
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 0))
+            self.players.add(self.player)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 0))
+            self.players.add(self.player2)
+        
+        self.level = Level(current_map, self.screen, os.path.join(base_directory, "assets/img/DefaultBackground.png"))
 
+        
+        self.character_icon = self.character1_img
+        self.character2_icon = self.character2_img
         # Main loop
 
         """
@@ -241,12 +371,32 @@ class Game():
             # Run the Level
             self.level.run()
 
-
             # Draw the player on the screen
             self.players.update(pressed_keys)
             self.horizontal_movement_collision()
             self.vertical_movement_collision()
             self.players.draw(self.screen) 
+            
+            #HUD
+            #round_hud = pygame.Rect((C.SCREEN_WIDTH/2 - 150), 0, 350, 175)
+            #pygame.draw.rect(self.screen, (34, 34, 34), round_hud)
+                        
+            self.draw_text("ROUND", self.color_default, 105, C.SCREEN_WIDTH/2, 60)
+            self.draw_text(str(self.round_num), self.color_select, 105, C.SCREEN_WIDTH/2, 120)
+
+            self.screen.blit(self.character1_hud, (120 , C.SCREEN_HEIGHT - 180))
+            self.screen.blit(self.character_icon, (222 , C.SCREEN_HEIGHT - 160))
+            
+            self.screen.blit(self.character2_hud, (C.SCREEN_WIDTH - 430 , C.SCREEN_HEIGHT - 180))
+            self.screen.blit(self.character2_icon, ((C.SCREEN_WIDTH - 320) ,  C.SCREEN_HEIGHT - 160))
+
+            self.draw_text(str(self.player_one_wins), self.color_default, 110, 384, C.SCREEN_HEIGHT - 85)
+            self.draw_text(str(self.player_two_wins), self.color_default, 100, C.SCREEN_WIDTH - 378, C.SCREEN_HEIGHT - 85)
+            
+            self.screen.blit(self.player_weapon, (146, C.SCREEN_HEIGHT - 163))
+            self.screen.blit(self.player2_weapon, (C.SCREEN_WIDTH - 182, C.SCREEN_HEIGHT - 163))
+
+
             
             # self.screen.blit(self.player.image, self.player.pos)
             # self.screen.blit(self.player2.image, self.player2.pos)
@@ -361,14 +511,23 @@ class Game():
                 if time.time() - self.damaged_start > 5:
                     self.player.isDamaged = False
                     self.player.image = self.player.OriginalImage
+                    self.character_icon = self.character1_img
                     self.damaged_start = time.time()
                                         
             if self.player2.isDamaged:
                 if time.time() - self.damaged_start2 > 5:
                     self.player2.isDamaged = False
                     self.player2.image = self.player2.OriginalImage
+                    self.character2_icon = self.character2_img
                     self.damaged_start2 = time.time()
                     
+            if self.player.rect.y > C.SCREEN_HEIGHT + 250:
+                self.player.isDamaged = True
+                self.player_hit(self.player, True)
+            elif self.player2.rect.y > C.SCREEN_HEIGHT + 250:
+                self.player2.isDamaged = True
+                self.player_hit(self.player2, False)
+            
             pygame.display.flip()
                     
     def pause_menu(self):
@@ -501,7 +660,12 @@ class Game():
                     elif event.key == K_RETURN:
                         if(current_selection == "play"):
                             pygame.mixer.Sound.play(self.select_sound)
+                            self.round_num = 1
+                            self.player_one_wins = 0
+                            self.player_two_wins = 0
                             self.pregame_running = False
+                            self.isPostGame = False
+                            pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(0.1)
                             self.run_game()
                         elif(current_selection == "controls"):
                             pygame.mixer.Sound.play(self.select_sound)
@@ -573,54 +737,145 @@ class Game():
             
     def game_over(self):
         self.game_is_over = True
-        current_selection = "restart"
+        self.round_is_over = False
         while self.game_is_over:
             background_image = pygame.image.load(os.path.join(base_directory, "assets/img/menuBackground.png")).convert()
-            background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2))
+            background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
             background_image.set_alpha(140)
-            self.screen.blit(background_image, (C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/4), C.SCREEN_HEIGHT/4))
+            self.screen.blit(background_image, (0,0))
         
-    
-            if(current_selection == "restart"):
-                restart_text_color = self.color_select
-                quit_text_color = self.color_default
-            elif(current_selection == "quit"):
-                restart_text_color = self.color_default
-                quit_text_color = self.color_select
-                
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
                 if event.type == KEYDOWN:
                     # If the Esc key is pressed, then exit the main loop
-                    if event.key == K_w or event.key == K_UP:
-                        if current_selection == "quit":
-                            pygame.mixer.Sound.play(self.select_sound)
-                            current_selection = "restart"
-                    elif event.key == K_s or event.key == K_DOWN:
-                        if current_selection == "restart":
-                            pygame.mixer.Sound.play(self.select_sound)
-                            current_selection = "quit"
-                    elif event.key == K_RETURN:
-                        if current_selection == "restart":
-                            pygame.mixer.Sound.play(self.select_sound)
-                            pygame.mixer.stop()
-                            self.game_running = False
-                            self.game_is_over = False
-                            self.run_game()
-                        elif current_selection == "quit":
-                                pygame.mixer.stop()
-                                self.game_running = False
-                                self.game_is_over = False
-                                self.menu_running = True
+                    if event.key == K_RETURN:
+                        pygame.mixer.stop()
+                        self.game_running = False
+                        self.game_is_over = False
+                        self.menu_running = True
+                        self.run_menu()
             
-            final_script = f"Player {self.winner} won!"
+            final_script = f"PLAYER {self.winner} WON THE GAME!"
             self.draw_text(final_script, (255, 255, 255), 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 100)
-            self.draw_text("GAME OVER", self.color_select, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 150)
-            self.draw_text("RESTART", restart_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 50)
-            self.draw_text("QUIT", quit_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 150)
             pygame.display.flip()
 
+    def round_over(self, player):
+        self.round_is_over = True
+        while self.round_is_over:
+            background_image = pygame.image.load(os.path.join(base_directory, "assets/img/menuBackground.png")).convert()
+            background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH/3, C.SCREEN_HEIGHT/3))
+            background_image.set_alpha(140)
+            self.screen.blit(background_image, (C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/6), (C.SCREEN_HEIGHT/2 - C.SCREEN_HEIGHT/6)))
+        
+            for event in pygame.event.get():
+                # Check for KEYDOWN event
+                if event.type == KEYDOWN:
+                    # If the Esc key is pressed, then exit the main loop
+                    if event.key == K_RETURN:
+                        if self.round_num == 6:
+                            self.game_running = False
+                            self.round_is_over = False
+                            self.gun_screen()
+                        else:
+                            self.game_running = False
+                            self.round_is_over = False
+                            self.run_game()
+            
+            final_script = f"Player {player} won!"
+            self.draw_text(final_script, (255, 255, 255), 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 50)
+            self.draw_text("Press ENTER to continue.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 75)
+            pygame.display.flip()
+            
+    def gun_screen(self):
+        self.giving_gun = True
+        chest_last_time = pygame.time.get_ticks()
+        chest2_last_time = pygame.time.get_ticks()
+        chest_current_frame = 0
+        chest2_current_frame = 0
+        
+        self.player_one_wins = 0
+        self.player_two_wins = 0
+        
+        self.isPostGame = True
+        
+        playedSound = False
+        playedSound2 = False
+
+        chest_opened = False
+        chest2_opened = False
+        
+        while self.giving_gun:
+            background_image = pygame.image.load(os.path.join(base_directory, "assets/img/menuBackground.png")).convert()
+            background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
+            self.screen.blit(background_image, (0,0))
+            
+            player1_chest_image = pygame.image.load(os.path.join(base_directory, "assets/img/character_animations/chest_opening.png"))
+            player1_chest_image = pygame.transform.scale(player1_chest_image, (4000, 240))
+            player2_chest_image = player1_chest_image
+            player1_chest_image = pygame.transform.flip(player1_chest_image, True, False)
+            
+            player_weapon = pygame.transform.scale(self.player.weapon.image, (90, 270))
+            player2_weapon = pygame.transform.scale(self.player2.weapon.image, (90, 270))
+            
+            if not chest_opened:
+                self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (3600,0,400,240))
+            elif chest_opened:
+                current_time = pygame.time.get_ticks()
+                if current_time - chest_last_time >= 70:
+                    chest_current_frame += 1
+                    chest_last_time = current_time
+                if chest_current_frame < 10:
+                    self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (4000 - (chest_current_frame*400),0,400,240))
+                else:
+                    self.screen.blit(player_weapon, (C.SCREEN_WIDTH/2 - 500, C.SCREEN_HEIGHT/2 - 120))
+                    if not playedSound:
+                        pygame.mixer.Sound.play(self.sword_get_sound)
+                        playedSound = True
+                    self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (0,0,400,240))
+
+            if not chest2_opened:
+                self.screen.blit(player2_chest_image, (C.SCREEN_WIDTH/2 + 300, C.SCREEN_HEIGHT/2 + 150), (0,0,400,240))
+            elif chest2_opened:
+                current_time = pygame.time.get_ticks()
+                if current_time - chest2_last_time >= 70:
+                    chest2_current_frame += 1
+                    chest2_last_time = current_time
+                if chest2_current_frame < 10:
+                    self.screen.blit(player2_chest_image, (C.SCREEN_WIDTH/2 + 300, C.SCREEN_HEIGHT/2 + 150), ((chest2_current_frame*400),0,400,240))
+                else:
+                    self.screen.blit(player2_weapon, (C.SCREEN_WIDTH/2 + 410, C.SCREEN_HEIGHT/2 - 120))
+                    if not playedSound2:
+                        pygame.mixer.Sound.play(self.sword_get_sound)
+                        playedSound2 = True
+                    self.screen.blit(player2_chest_image, (C.SCREEN_WIDTH/2 + 300, C.SCREEN_HEIGHT/2 + 150), (3600,0,400,240))
+
+            
+            if chest_opened and chest2_opened:
+                self.draw_text("Press ENTER to continue.", (255, 255, 255), 50, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 100)
+
+            
+            for event in pygame.event.get():
+                # Check for KEYDOWN event
+                if event.type == KEYDOWN:
+                    # If the Esc key is pressed, then exit the main loop
+                    if event.key == K_x:
+                        if not chest_opened:
+                            pygame.mixer.Sound.play(self.chest_open_sound)
+                            chest_opened = True
+                    if event.key == K_PERIOD:
+                        if not chest2_opened:
+                            pygame.mixer.Sound.play(self.chest_open_sound)
+                            chest2_opened = True
+                    if event.key == K_RETURN:
+                        if chest_opened and chest2_opened:
+                            self.game_running = False
+                            self.giving_gun = False
+                            self.run_game()
+            
+            self.draw_text("press attack to open", (255, 255, 255), 75, C.SCREEN_WIDTH/2, 250)
+
+            pygame.display.flip()
             
     def check_player_collisions(self):
         #if pygame.sprite.spritecollide(self.player, self.level.tile_group, False, pygame.sprite.collide_mask):
@@ -657,10 +912,24 @@ class Game():
             if player.isDamaged:
                 pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Hurt_grunt.wav"))).set_volume(0.2)
                 if isPlayer1:
-                    self.winner = 2
+                    self.player_two_wins += 1
+                    self.round_num += 1
                 else:
-                    self.winner = 1
-                self.game_over()
+                    self.player_one_wins += 1
+                    self.round_num += 1
+
+                if isPlayer1:
+                    if self.isPostGame and self.player_two_wins is 5:
+                        self.winner = 2
+                        self.game_over()
+                    else:
+                        self.round_over(2)
+                else:
+                    if self.isPostGame and self.player_one_wins is 5:
+                        self.winner = 1
+                        self.game_over()
+                    else:
+                        self.round_over(1)
             else:
                 pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/shieldbreak.mp3"))).set_volume(0.2)
                 player.image = player.Damagedimage
@@ -669,7 +938,9 @@ class Game():
                 if isPlayer1:
                     self.invincibility_start = time.time()
                     self.damaged_start = time.time()
+                    self.character_icon = self.character1_damaged_img
                 else:
                     self.invincibility_start2 = time.time()
                     self.damaged_start2 = time.time()
+                    self.character2_icon = self.character2_damaged_img
                 
