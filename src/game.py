@@ -223,7 +223,6 @@ class Game():
 
 
         while self.game_running:
-            
             clock.tick(60) # limit fps to 60
             pressed_keys = pygame.key.get_pressed()
             # for loop through the event queue
@@ -281,70 +280,134 @@ class Game():
                 pygame.mixer.Sound.play(self.attack_sound)
                 self.attacking_start2 = time.time()
                 self.attack_start2 = time.time()
-            
-            if self.player.attacking:
-                if self.player.attackRight:
-                    player_attack_hitbox = pygame.Rect(self.player.rect.x + self.player.image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
-                    # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
-                    self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y))
-                    if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
-                        self.player_hit(self.player2, False)
-                        self.player2.isHit = True
-                        self.player2.knockbackRight = True
-                elif not self.player.attackRight:
-                    player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
-                    # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
-                    self.screen.blit(self.player.slash_left_image, (self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y))
-                    if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
-                        self.player_hit(self.player2, False)
-                        self.player2.isHit = True
-                        self.player2.knockbackRight = False
-                if time.time() - self.attacking_start > 0.1:
-                    self.player.attacking = False
-                    self.attacking_start = time.time()
-            else:
-                if self.player.facingRight:
-                    self.screen.blit(self.player.weapon.image, (self.player.rect.x + 5, self.player.rect.y - 30))
+
+            #slash weapon attacking
+            #####
+            if self.player.weapon.type == "slash":
+                if self.player.attacking:
+                    if self.player.attackRight:
+                        player_attack_hitbox = pygame.Rect(self.player.rect.x + self.player.image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                        # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
+                        self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y))
+                        if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
+                            self.player_hit(self.player2, False)
+                            self.player2.isHit = True
+                            self.player2.knockbackRight = True
+                    elif not self.player.attackRight:
+                        player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                        # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
+                        self.screen.blit(self.player.slash_left_image, (self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y))
+                        if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
+                            self.player_hit(self.player2, False)
+                            self.player2.isHit = True
+                            self.player2.knockbackRight = False
+                    if time.time() - self.attacking_start > 0.1:
+                        self.player.attacking = False
+                        self.attacking_start = time.time()
                 else:
-                    self.screen.blit(self.player.weapon.image, (self.player.rect.x + 30, self.player.rect.y - 30))
-                    
-            if self.player2.attacking:
-                if self.player2.attackRight:
-                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
-                    # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
-                    self.screen.blit(self.player2.slash_right_image, (self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y))
-                    if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
-                        self.player_hit(self.player, True)
-                        self.player.isHit = True
-                        self.player.knockbackRight = True
-                elif not self.player2.attackRight:
-                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
-                    # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
-                    self.screen.blit(self.player2.slash_left_image, (self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y))
-                    if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
-                        self.player_hit(self.player, True)
-                        self.player.isHit = True
-                        self.player.knockbackRight = False
-                if time.time() - self.attacking_start2 > 0.1:
-                    self.player2.attacking = False
-                    self.attacking_start2 = time.time()
-            else:
-                if self.player2.facingRight:
-                    self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 5, self.player2.rect.y - 30))
+                    if self.player.facingRight:
+                        self.screen.blit(self.player.weapon.image, (self.player.rect.x + 5, self.player.rect.y - 30))
+                    else:
+                        self.screen.blit(self.player.weapon.image, (self.player.rect.x + 30, self.player.rect.y - 30))
+
+            if self.player2.weapon.type == "slash":            
+                if self.player2.attacking:
+                    if self.player2.attackRight:
+                        player2_attack_hitbox = pygame.Rect(self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
+                        # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
+                        self.screen.blit(self.player2.slash_right_image, (self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y))
+                        if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
+                            self.player_hit(self.player, True)
+                            self.player.isHit = True
+                            self.player.knockbackRight = True
+                    elif not self.player2.attackRight:
+                        player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
+                        # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
+                        self.screen.blit(self.player2.slash_left_image, (self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y))
+                        if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
+                            self.player_hit(self.player, True)
+                            self.player.isHit = True
+                            self.player.knockbackRight = False
+                    if time.time() - self.attacking_start2 > 0.1:
+                        self.player2.attacking = False
+                        self.attacking_start2 = time.time()
                 else:
-                    self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 30, self.player2.rect.y - 30))
+                    if self.player2.facingRight:
+                        self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 5, self.player2.rect.y - 30))
+                    else:
+                        self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 30, self.player2.rect.y - 30))
 
             # player 1 attack cooldown
             if self.player.canAttack is False:
-                if time.time() - self.attack_start > 0.7:
+                if time.time() - self.attack_start > self.player.weapon.cooldown:
                     self.player.canAttack = True
                     self.attack_start = time.time()
                     
             # player 2 attack cooldown
             if self.player2.canAttack is False:
-                if time.time() - self.attack_start2 > 0.7:
+                if time.time() - self.attack_start2 > self.player2.weapon.cooldown:
                     self.player2.canAttack = True
                     self.attack_start2 = time.time()
+            #####
+
+            #thrust weapon attacking
+            #####
+            if self.player.weapon.type == "thrust":
+                if self.player.attacking:
+                    if self.player.attackRight:
+                        player_attack_hitbox = pygame.Rect(self.player.rect.x + self.player.image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                        # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
+                        self.screen.blit(self.player.weapon.image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y))
+                        if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
+                            self.player_hit(self.player2, False)
+                            self.player2.isHit = True
+                            self.player2.knockbackRight = True
+                    elif not self.player.attackRight:
+                        player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                        # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
+                        self.screen.blit(self.player.weapon.image, (self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y))
+                        if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
+                            self.player_hit(self.player2, False)
+                            self.player2.isHit = True
+                            self.player2.knockbackRight = False
+                    if time.time() - self.attacking_start > 0.1:
+                        self.player.attacking = False
+                        self.attacking_start = time.time()
+                else:
+                    if self.player.facingRight:
+                        self.screen.blit(self.player.weapon.image, (self.player.rect.x + 5, self.player.rect.y + 45))
+                    else:
+                        self.screen.blit(self.player.weapon.image, (self.player.rect.x - 5, self.player.rect.y + 45))
+
+
+            if self.player2.weapon.type == "thrust":
+                if self.player2.attacking:
+                    if self.player2.attackRight:
+                        player2_attack_hitbox = pygame.Rect(self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y + self.player2.image.get_height() / 2, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
+                        # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
+                        self.screen.blit(self.player2.slash_right_image, (self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y))
+                        if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
+                            self.player_hit(self.player, True)
+                            self.player.isHit = True
+                            self.player.knockbackRight = True
+                    elif not self.player2.attackRight:
+                        player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
+                        # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
+                        self.screen.blit(self.player2.slash_left_image, (self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y))
+                        if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
+                            self.player_hit(self.player, True)
+                            self.player.isHit = True
+                            self.player.knockbackRight = False
+                    if time.time() - self.attacking_start2 > 0.1:
+                        self.player2.attacking = False
+                        self.attacking_start2 = time.time()
+                else:
+                    if self.player2.facingRight:
+                        self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 5, self.player2.rect.y + 45))
+                    else:
+                        self.screen.blit(self.player2.weapon.image, (self.player2.rect.x - 5, self.player2.rect.y + 45))
+
+            #####
                     
             if self.player2.isInvincible:
                 if time.time() - self.invincibility_start2 > 0.3:

@@ -58,7 +58,8 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
         # Make the default weapon.
-        self.weapon = SlashWeapon(os.path.join(base_directory, 'assets/img/sword.png'), (30,90))
+        #self.weapon = SlashWeapon(os.path.join(base_directory, 'assets/img/sword.png'), (30,90), 0.7)
+        self.weapon = ThrustWeapon(os.path.join(base_directory, 'assets/img/spear.png'), (150,60), 0.7)
 
 
     def move(self, pressed_keys): 

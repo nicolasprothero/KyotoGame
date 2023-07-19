@@ -1,11 +1,7 @@
 # Game Name: Weaponize
 
 ## Description
-<<<<<<< HEAD
-Weaponize is an exciting 2D platform game that pits two players against each other in a thrilling battle. The goal of the game is simple: hit your opponent with your weapon before they hit you. The game is currently under development and will feature additional mechanics, levels, and a random case opening system to obtain various weapons.
-=======
 Weaponize is a 2D platform/combat game that allows two players to duel against each other. The gameplay revolves around multiple short combat rounds with quick and precise movement. After the preliminary rounds, players will be given a randomized weapon based on their performance. The game will feature a variety of weapons with unique characteristics, such as range, damage, and attack speed, etc. The game will also feature a random case opening system to obtain various weapons. The game is developed using the Pygame library and is currently under development.
->>>>>>> aad86c32c891e3877db44dc1a507c7ff407531cf
 
 ## Gameplay
 1. Spawning: The game begins by spawning the two players on opposite sides of the map.
@@ -17,17 +13,6 @@ Weaponize is a 2D platform/combat game that allows two players to duel against e
 7. Dash Ability: Players have a dash ability that allows them to quickly evade attacks or close the distance between them and their opponent. 
 8. Game End: As of now, the game ends when a player is hit by their opponent while in the damaged state. The players are then prompted with the option to play again or return to the menu.
 
-<<<<<<< HEAD
-## Future Updates
-The development team has planned the following features for future updates:
-- Random case opening system: Players will have the opportunity to obtain various weapons of various types through the case opening system.
-- Additional levels: More diverse and challenging levels will be introduced, providing a variety of environments and obstacles for players to navigate.
-- Enhanced mechanics: The game will see the addition of new gameplay mechanics, power-ups, and interactive elements, further enriching the player experience.
-
-## Installation and Setup Instructions
-
-
-=======
 
 ## Installation and Setup Instructions
 
@@ -44,4 +29,3 @@ weaponize
 
 ## Github Link
 https://github.com/nicolasprothero/KyotoGame
->>>>>>> aad86c32c891e3877db44dc1a507c7ff407531cf
