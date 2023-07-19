@@ -287,10 +287,14 @@ class Game():
             player_max_y = max(self.player.rect.y, self.player2.rect.y)
             player_min_x = min(self.player.rect.x, self.player2.rect.x)
             player_max_x = max(self.player.rect.x, self.player2.rect.x) + self.player.rect.width
-            dist = max(player_max_x - player_min_x, player_max_y - player_min_y)
-            if dist < 1200:
+            x_dist = player_max_x - player_min_x
+
+            offset = C.SCREEN_WIDTH - 1200
+            # if the distance between the players is less than 1200 pixels, zoom in
+            if x_dist < 1200:
                 # slowly decrease camera width and height to zoom in
-                self.camera_width = max(dist * 1.5, 900)
+                # stop zooming once camera width reaches minimum
+                self.camera_width = max(x_dist + offset, 600 + offset)
                 self.camera_height = int(self.camera_width * 0.625)
 
                 # adjust position based on player center
@@ -313,45 +317,12 @@ class Game():
                 self.camera_height = C.SCREEN_HEIGHT
                 self.camera_x = 0
                 self.camera_y = 0
-            # if either player off screen, move camera
-            # player 1 is too high or too low
-           
-
-            # restrict camera border to screen
-          
-
-            # camera_view = pygame.Surface((camera_width, camera_height))
-            # camera_view.blit(self.world, (midpoint[0], midpoint[1]), (self.camera_x, self.camera_y, camera_width, camera_height))
-
-            """
-            camera_view.blit() is messing up rn
-            might have something to do with self.screen surface object
-
-            """
-            # draw red box around camera
-            pygame.draw.rect(self.screen, (255, 0, 0), (self.camera_x, self.camera_y, self.camera_width, self.camera_height), 2)
-            # draw dot at self.camera_x, self.camera_y
-            pygame.draw.circle(self.screen, (0, 255, 0), (self.camera_x, self.camera_y), 10)
-            # make a subsurface of self.screen, using dimensions of camera
-            subsurface = self.screen.subsurface((self.camera_x, self.camera_y, self.camera_width, self.camera_height))
-            self.draw_text(str(subsurface.get_width()) + " x " + str(subsurface.get_height()), self.color_default, 50, 200, 100)
-            # display the subsurface and scale it to the screen size
-            self.screen.blit(pygame.transform.scale(subsurface, (C.SCREEN_WIDTH, C.SCREEN_HEIGHT)), (0, 0))
-
             
-
-            # cam_rec = pygame.Rect(self.camera_x, self.camera_y, camera_width, camera_height)
-            # make a pygame.Surface object from cam_rec
-
-
-
-            # self.screen.blit(self.screen, (C.SCREEN_WIDTH//10, C.SCREEN_HEIGHT//10), (self.camera_x, self.camera_y, camera_width, camera_height))
+            # limit camera to level boundaries
+            self.camera_width = min(self.camera_width, C.SCREEN_WIDTH)
+            self.camera_height = min(self.camera_height, C.SCREEN_HEIGHT)
+    
             
-            # draw players on camera
-            # self.screen.blit(pygame.transform.scale(self.camera, (C.SCREEN_WIDTH, C.SCREEN_HEIGHT)), (0, 0))
-            
-            # self.screen.blit(self.player.image, self.player.pos)
-            # self.screen.blit(self.player2.image, self.player2.pos)
             if pressed_keys[pygame.K_x] and self.player.canAttack:
                 if pressed_keys[pygame.K_d]:
                     self.player.attackRight = True
@@ -435,6 +406,20 @@ class Game():
                     self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 5, self.player2.rect.y - 30))
                 else:
                     self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 30, self.player2.rect.y - 30))
+
+
+
+            # draw red box around camera
+            pygame.draw.rect(self.screen, (255, 0, 0), (self.camera_x, self.camera_y, self.camera_width, self.camera_height), 2)
+            # draw dot at self.camera_x, self.camera_y
+            pygame.draw.circle(self.screen, (0, 255, 0), (self.camera_x, self.camera_y), 10)
+            # make a subsurface of self.screen, using dimensions of camera
+            subsurface = self.screen.subsurface((self.camera_x, self.camera_y, self.camera_width, self.camera_height))
+            self.draw_text(str(subsurface.get_width()) + " x " + str(subsurface.get_height()), self.color_default, 50, 200, 100)
+            # display the subsurface and scale it to the screen size
+            # THIS IS WHAT ZOOMS IN AND OUT
+            self.screen.blit(pygame.transform.scale(subsurface, (C.SCREEN_WIDTH, C.SCREEN_HEIGHT)), (0, 0))
+
 
             # player 1 attack cooldown
             if self.player.canAttack is False:
