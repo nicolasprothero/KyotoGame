@@ -9,4 +9,6 @@
 06/21: 1:30PM - 3:30PM Doing research on animations and trying to make it change on the screen (unsuccesful...)
 06/21: 6:15PM - 8:00PM Couldn't really figure out the weapons and animations so nic will need to help menu_running
 06/22: 2:45PM - 7:00PM Rewrote player class, and make collisions with tiles work.
-06/25: 3:00PM - 
+06/25: 3:00PM - 12:00PM worked on making an executable for the game
+07/13: 2:30PM - 6:30PM working on putting animations and attacking into Weapon and Player
+07/19: 3:00PM - 7:00PM working on putting animations and attacking into Weapon and Player

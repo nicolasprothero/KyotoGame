@@ -47,9 +47,9 @@ class Game():
         # Instantiate player. Right now, this is just a rectangle.
         self.players = pygame.sprite.Group()
         abs_path = os.path.join(base_directory, "assets/img/character.png")
-        self.player = Player(C.key_presses_1, abs_path, (C.SCREEN_WIDTH/6, 100))
+        self.player = Player(C.key_presses_1, abs_path, (C.SCREEN_WIDTH/6, 100), self)
         self.players.add(self.player)
-        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, 100))
+        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, 100), self)
         self.players.add(self.player2)
         
         
@@ -64,8 +64,9 @@ class Game():
         self.select_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Select.wav"))
         self.select_sound.set_volume(0.1)
         
-        self.attack_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/swoosh.wav'))
-        self.attack_sound.set_volume(0.1)
+        # Nathan
+        # self.attack_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/swoosh.wav'))
+        # self.attack_sound.set_volume(0.1)
 
         self.menu_running = True
         self.game_running = False
@@ -77,17 +78,18 @@ class Game():
         self.color_select = (255, 77, 112)
         self.color_default = (245, 244, 228)
 
-        self.attack_start = time.time()
-        self.attack_start2 = time.time()
+        # Nathan
+        # self.attack_start = time.time()
+        # self.attack_start2 = time.time()
         
-        self.attacking_start = time.time()
-        self.attacking_start2 = time.time()
+        # self.attacking_start = time.time()
+        # self.attacking_start2 = time.time()
         
-        self.invincibility_start = time.time()
-        self.invincibility_start2 = time.time()
+        # self.invincibility_start = time.time()
+        # self.invincibility_start2 = time.time()
         
-        self.damaged_start = time.time()
-        self.damaged_start2 = time.time()
+        # self.damaged_start = time.time()
+        # self.damaged_start2 = time.time()
         
         self.winner = 1
             
@@ -250,44 +252,51 @@ class Game():
             
             # self.screen.blit(self.player.image, self.player.pos)
             # self.screen.blit(self.player2.image, self.player2.pos)
-            if pressed_keys[pygame.K_x] and self.player.canAttack:
-                if pressed_keys[pygame.K_d]:
-                    self.player.attackRight = True
-                elif pressed_keys[pygame.K_a]:
-                    self.player.attackRight = False
-                else:
-                    if self.player.facingRight:
-                        self.player.attackRight = True
-                    else:
-                        self.player.attackRight = False                 
-                self.player.attacking = True
-                self.player.canAttack = False
-                pygame.mixer.Sound.play(self.attack_sound)
-                self.attacking_start = time.time()
-                self.attack_start = time.time()
+            
+            # Nathan
+            # if pressed_keys[pygame.K_x] and self.player.canAttack:
+            #     self.player.attack()
+                # Nathan
+                # if pressed_keys[pygame.K_d]:
+                #     self.player.attackRight = True
+                # elif pressed_keys[pygame.K_a]:
+                #     self.player.attackRight = False
+                # else:
+                #     if self.player.facingRight:
+                #         self.player.attackRight = True
+                #     else:
+                #         self.player.attackRight = False                 
+                # self.player.attacking = True
+                # self.player.canAttack = False
+                # pygame.mixer.Sound.play(self.attack_sound)
+                # self.attacking_start = time.time()
+                # self.attack_start = time.time()
                 
-            if pressed_keys[pygame.K_PERIOD] and self.player2.canAttack:
-                if pressed_keys[pygame.K_RIGHT]:
-                    self.player2.attackRight = True
-                elif pressed_keys[pygame.K_LEFT]:
-                    self.player2.attackRight = False
-                else:
-                    if self.player2.facingRight:
-                        self.player2.attackRight = True
-                    else:
-                        self.player2.attackRight = False                 
-                self.player2.attacking = True
-                self.player2.canAttack = False
-                pygame.mixer.Sound.play(self.attack_sound)
-                self.attacking_start2 = time.time()
-                self.attack_start2 = time.time()
+            # if pressed_keys[pygame.K_PERIOD] and self.player2.canAttack:
+            #     self.player2.attack()
+                # Nathan
+                # if pressed_keys[pygame.K_RIGHT]:
+                #     self.player2.attackRight = True
+                # elif pressed_keys[pygame.K_LEFT]:
+                #     self.player2.attackRight = False
+                # else:
+                #     if self.player2.facingRight:
+                #         self.player2.attackRight = True
+                #     else:
+                #         self.player2.attackRight = False                 
+                # self.player2.attacking = True
+                # self.player2.canAttack = False
+                # pygame.mixer.Sound.play(self.attack_sound)
+                # self.attacking_start2 = time.time()
+                # self.attack_start2 = time.time()
             
             if self.player.attacking:
                 if self.player.attackRight:
-                    player_attack_hitbox = pygame.Rect(self.player.rect.x + self.player.image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                    # Nathan
+                    # player_attack_hitbox = pygame.Rect(self.player.rect.x + self.player.image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
-                    self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y))
-                    if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
+                    # self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y))
+                    if pygame.Rect.colliderect(self.player.attack_hitbox, self.player2.rect):
                         self.player_hit(self.player2, False)
                         self.player2.isHit = True
                         self.player2.knockbackRight = True
@@ -299,7 +308,7 @@ class Game():
                         self.player_hit(self.player2, False)
                         self.player2.isHit = True
                         self.player2.knockbackRight = False
-                if time.time() - self.attacking_start > 0.1:
+                if time.time() - self.attacking_start > 0.1 :
                     self.player.attacking = False
                     self.attacking_start = time.time()
             else:
@@ -651,7 +660,7 @@ class Game():
                     pygame.draw.rect(self.screen, self.color_select, pygame.Rect(player.rect.x - self.player.image.get_width(), player.rect.y, self.player.image.get_width(), self.player.image.get_height()))
                     #player.weapon.image = pygame.transform.rotate(player.weapon.image, 10)
                     player.canAttack = False
-
+    # Nathan
     def player_hit(self, player, isPlayer1):
         if not player.isInvincible:
             if player.isDamaged:
@@ -667,9 +676,9 @@ class Game():
                 player.isInvincible = True
                 player.isDamaged = True
                 if isPlayer1:
-                    self.invincibility_start = time.time()
-                    self.damaged_start = time.time()
+                    self.player.invincibility_start = time.time()
+                    self.player.damaged_start = time.time()
                 else:
-                    self.invincibility_start2 = time.time()
-                    self.damaged_start2 = time.time()
+                    self.player2.invincibility_start = time.time()
+                    self.player2.damaged_start = time.time()
                 
