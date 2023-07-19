@@ -17,8 +17,6 @@ import platform
 
 base_directory = os.path.dirname(os.path.abspath(__file__))
 
-
-
 #windows solution to scaling issues with high ppi display
 if platform.system() == 'Windows':
     ctypes.windll.user32.SetProcessDPIAware()
@@ -136,7 +134,23 @@ class Game():
         self.player_one_wins = 0
         self.player_two_wins = 0
         
-            
+        # Used for Dynamic Camera Tracking
+        self.player_distance = 0
+        self.player_midpoint = pygame.math.Vector2(0, 0)
+        self.camera_x = 0
+        self.camera_y = 0
+        self.camera_width = C.SCREEN_WIDTH
+        self.camera_height = C.SCREEN_HEIGHT
+        self.cam_dim = [self.camera_width, self.camera_height]
+        self.zoom = True
+        
+        
+    def getPlayerMidpoint(self, Player1, Player2):
+        midpoint = ((Player1.rect.x + Player2.rect.x)/2, (Player1.rect.y + Player2.rect.y)/2)
+        roundedMidPoint = tuple(map(lambda x: round(x), midpoint))
+        res = [roundedMidPoint[0], roundedMidPoint[1]]
+        return res
+
     def horizontal_movement_collision(self):
         players = self.players.sprites()
         for player in players:
@@ -242,7 +256,7 @@ class Game():
             self.screen.blit(title_img, ((C.SCREEN_WIDTH/2 - (title_img.get_width()/2)), 100))
             
             #C.SCREEN_WIDTH/2 - ((C.SCREEN_WIDTH* 0.6)/2
-            self.draw_text("START", start_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (150))
+            self.draw_text("PLAY", start_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (150))
             self.draw_text("OPTIONS", settings_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (300))
             self.draw_text("QUIT", quit_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (450))
             pygame.display.flip()
@@ -375,28 +389,7 @@ class Game():
             self.players.update(pressed_keys)
             self.horizontal_movement_collision()
             self.vertical_movement_collision()
-            self.players.draw(self.screen) 
-            
-            #HUD
-            #round_hud = pygame.Rect((C.SCREEN_WIDTH/2 - 150), 0, 350, 175)
-            #pygame.draw.rect(self.screen, (34, 34, 34), round_hud)
-                        
-            self.draw_text("ROUND", self.color_default, 105, C.SCREEN_WIDTH/2, 60)
-            self.draw_text(str(self.round_num), self.color_select, 105, C.SCREEN_WIDTH/2, 120)
-
-            self.screen.blit(self.character1_hud, (120 , C.SCREEN_HEIGHT - 180))
-            self.screen.blit(self.character_icon, (222 , C.SCREEN_HEIGHT - 160))
-            
-            self.screen.blit(self.character2_hud, (C.SCREEN_WIDTH - 430 , C.SCREEN_HEIGHT - 180))
-            self.screen.blit(self.character2_icon, ((C.SCREEN_WIDTH - 320) ,  C.SCREEN_HEIGHT - 160))
-
-            self.draw_text(str(self.player_one_wins), self.color_default, 110, 384, C.SCREEN_HEIGHT - 85)
-            self.draw_text(str(self.player_two_wins), self.color_default, 100, C.SCREEN_WIDTH - 378, C.SCREEN_HEIGHT - 85)
-            
-            self.screen.blit(self.player_weapon, (146, C.SCREEN_HEIGHT - 163))
-            self.screen.blit(self.player2_weapon, (C.SCREEN_WIDTH - 182, C.SCREEN_HEIGHT - 163))
-
-
+            self.players.draw(self.screen)
             
             # self.screen.blit(self.player.image, self.player.pos)
             # self.screen.blit(self.player2.image, self.player2.pos)
@@ -484,6 +477,80 @@ class Game():
                 else:
                     self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 30, self.player2.rect.y - 30))
 
+            if self.zoom:
+                # calculate player distance and midpoint
+                # self.player_distance = self.getPlayerDistance(self.player, self.player2)
+                self.player_midpoint = self.getPlayerMidpoint(self.player, self.player2)
+                # self.draw_text("Distance: " + str(self.player_distance), self.color_default, 50, 200, 100)
+                # self.draw_text("Midpoint: " + str(self.player_midpoint), self.color_default, 50, 300, 200)
+
+                # move camera, resize as needed
+                min_x = min(self.player.rect.x, self.player2.rect.x)
+                min_y = min(self.player.rect.y, self.player2.rect.y)
+                max_x = max(self.player.rect.x, self.player2.rect.x)
+                max_y = max(self.player.rect.y, self.player2.rect.y)
+                
+                PADDING = 300
+
+                # maintain a 1.6 : 1 aspect ratio
+                player_min_y = min(self.player.rect.y, self.player2.rect.y) + self.player.rect.height
+                player_max_y = max(self.player.rect.y, self.player2.rect.y)
+                player_min_x = min(self.player.rect.x, self.player2.rect.x)
+                player_max_x = max(self.player.rect.x, self.player2.rect.x) + self.player.rect.width
+                x_dist = player_max_x - player_min_x
+
+                offset = C.SCREEN_WIDTH - 1200
+                # if the distance between the players is less than 1200 pixels, zoom in
+                if x_dist < 1200:
+                    # slowly decrease camera width and height to zoom in
+                    # stop zooming once camera width reaches minimum
+                    self.camera_width = max(x_dist + offset, 600 + offset)
+                    self.camera_height = int(self.camera_width * 0.625)
+
+                    # adjust position based on player center
+                    midpoint = self.player_midpoint
+                    midpoint[0] = midpoint[0] + self.player.rect.width // 2
+                    midpoint[1] = midpoint[1] + self.player.rect.height // 2
+                    self.camera_x = midpoint[0] - self.camera_width // 2
+                    self.camera_y = midpoint[1] - self.camera_height // 2
+                    # self.camera_x, self.camera_y is top left corner of viewport
+                    if self.camera_x < 0:
+                        self.camera_x = 0
+                    elif self.camera_x + self.camera_width > C.SCREEN_WIDTH:
+                        self.camera_x = C.SCREEN_WIDTH - self.camera_width
+                    if self.camera_y < 0:
+                        self.camera_y = 0
+                    elif self.camera_y + self.camera_height > C.SCREEN_HEIGHT:
+                        self.camera_y = C.SCREEN_HEIGHT - self.camera_height
+                else:
+                    self.camera_width = C.SCREEN_WIDTH
+                    self.camera_height = C.SCREEN_HEIGHT
+                    self.camera_x = 0
+                    self.camera_y = 0
+                
+                # limit camera to level boundaries
+                self.camera_width = min(self.camera_width, C.SCREEN_WIDTH)
+                self.camera_height = min(self.camera_height, C.SCREEN_HEIGHT)
+
+                # draw red box around camera
+                # pygame.draw.rect(self.screen, (255, 0, 0), (self.camera_x, self.camera_y, self.camera_width, self.camera_height), 2)
+                # draw dot at self.camera_x, self.camera_y
+                # pygame.draw.circle(self.screen, (0, 255, 0), (self.camera_x, self.camera_y), 10)
+                # make a subsurface of self.screen, using dimensions of camera
+                subsurface = self.screen.subsurface((self.camera_x, self.camera_y, self.camera_width, self.camera_height))
+                # make a textbox rect object to display the dimensions of self.camera
+                #dim_rect = pygame.Rect(50, 50, 200, 100)
+                #font = pygame.font.Font(os.path.join(base_directory, "assets/fonts/ThaleahFat.ttf"), 40)
+                #text_surface = font.render(str(subsurface.get_width()) + " x " + str(subsurface.get_height()), True, (255, 255, 255))
+                #text_rect = text_surface.get_rect(center = dim_rect.center)
+                #pygame.draw.rect(subsurface, (0, 0, 0), dim_rect)
+                #subsurface.blit(text_surface, text_rect)
+
+                # self.draw_text(str(subsurface.get_width()) + " x " + str(subsurface.get_height()), self.color_default, 50, 200, 100)
+                # display the subsurface and scale it to the screen size
+                # THIS IS WHAT ZOOMS IN AND OUT
+                self.screen.blit(pygame.transform.scale(subsurface, (C.SCREEN_WIDTH, C.SCREEN_HEIGHT)), (0, 0))
+
             # player 1 attack cooldown
             if self.player.canAttack is False:
                 if time.time() - self.attack_start > 0.7:
@@ -527,6 +594,26 @@ class Game():
             elif self.player2.rect.y > C.SCREEN_HEIGHT + 250:
                 self.player2.isDamaged = True
                 self.player_hit(self.player2, False)
+                
+            #HUD
+            #round_hud = pygame.Rect((C.SCREEN_WIDTH/2 - 150), 0, 350, 175)
+            #pygame.draw.rect(self.screen, (34, 34, 34), round_hud)
+                        
+            self.draw_text("ROUND", self.color_default, 105, C.SCREEN_WIDTH/2, 60)
+            self.draw_text(str(self.round_num), self.color_select, 105, C.SCREEN_WIDTH/2, 120)
+
+            self.screen.blit(self.character1_hud, (120 , C.SCREEN_HEIGHT - 180))
+            self.screen.blit(self.character_icon, (222 , C.SCREEN_HEIGHT - 160))
+            
+            self.screen.blit(self.character2_hud, (C.SCREEN_WIDTH - 430 , C.SCREEN_HEIGHT - 180))
+            self.screen.blit(self.character2_icon, ((C.SCREEN_WIDTH - 320) ,  C.SCREEN_HEIGHT - 160))
+
+            self.draw_text(str(self.player_one_wins), self.color_default, 110, 384, C.SCREEN_HEIGHT - 85)
+            self.draw_text(str(self.player_two_wins), self.color_default, 100, C.SCREEN_WIDTH - 378, C.SCREEN_HEIGHT - 85)
+            
+            self.screen.blit(self.player_weapon, (146, C.SCREEN_HEIGHT - 163))
+            self.screen.blit(self.player2_weapon, (C.SCREEN_WIDTH - 182, C.SCREEN_HEIGHT - 163))
+
             
             pygame.display.flip()
                     
@@ -683,12 +770,13 @@ class Game():
                     self.run_menu()
             
             self.screen.fill(self.color_menu)
-            self.draw_text("PRE GAME MENU", self.color_default, 90, C.SCREEN_WIDTH/2, 150)
-            self.draw_text("PLAY", start_text_color, 50, C.SCREEN_WIDTH/2, 400)
-            self.draw_text("PRACTICE", (130,130,130), 50, C.SCREEN_WIDTH/2, 500)
-            self.draw_text("ARMORY", (130,130,130), 50, C.SCREEN_WIDTH/2, 600)
-            self.draw_text("CONTROLS", controls_text_color, 50, C.SCREEN_WIDTH/2, 700)
-            self.draw_text("RETURN TO MENU", quit_text_color, 50, C.SCREEN_WIDTH/2, 800)
+            round_hud = pygame.Rect((C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/4)), (C.SCREEN_HEIGHT/2 - (C.SCREEN_HEIGHT/4 + 100)), C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 200)
+            pygame.draw.rect(self.screen, (34,34,34), round_hud)
+            self.draw_text("PRE GAME MENU", self.color_default, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 850)
+            self.draw_text("START", start_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 650)
+            self.draw_text("ARMORY", (130,130,130), 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 550)
+            self.draw_text("CONTROLS", controls_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 450)
+            self.draw_text("RETURN TO MENU", quit_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 350)
             pygame.display.flip()
             
     def controls_menu(self):  
@@ -738,6 +826,7 @@ class Game():
     def game_over(self):
         self.game_is_over = True
         self.round_is_over = False
+        playedSound = False
         while self.game_is_over:
             background_image = pygame.image.load(os.path.join(base_directory, "assets/img/menuBackground.png")).convert()
             background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
@@ -756,8 +845,12 @@ class Game():
                         self.menu_running = True
                         self.run_menu()
             
-            final_script = f"PLAYER {self.winner} WON THE GAME!"
-            self.draw_text(final_script, (255, 255, 255), 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 100)
+            final_script = f"PLAYER {self.winner}"
+            if not playedSound:
+                pygame.mixer.Sound.play(self.sword_get_sound)
+                playedSound = True
+            self.draw_text(final_script, self.color_select, 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 20)
+            self.draw_text("WON THE GAME", (255, 255, 255), 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 20)
             pygame.display.flip()
 
     def round_over(self, player):

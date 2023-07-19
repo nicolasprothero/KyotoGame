@@ -32,4 +32,4 @@ BEFORE 6/15: Created menu system, menu interface control system, created game st
 7/14: 11:34PM - 2:48PM: Created new tiles to make maps look nicer: rocks, plants, tiles in background, weapon opening screen, chest animation!!
 
 7/19: 11:37PM - 3:03PM: Created sprites for HUD, Redid the HUD; Made the characters larger and at bottom, show weapon they have, made 5 more maps (hard mode), made final map (only at 4v4), Made game over screen appear, Map randomizer, game resets on end 
-7/19: 3:36PM - 5:36PM: Changed weapon recieving screen, added music, centered chests
+7/19: 3:36PM - 6:36PM: Changed weapon recieving screen, added music, centered chests, combined code with Shawn's dynamic camera!!, updated pre game menu looks, started on the sword art
