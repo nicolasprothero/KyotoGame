@@ -4,7 +4,7 @@ BEFORE 6/15: Created menu system, menu interface control system, created game st
 6/15: 12:00PM - 6:00PM : Added sound effects in menu, easier color changing, image as title, tried to fix player file but didn't work so I reverted, ok I fixed the player, implemented double jump using differnet keyboard input, character image flip based on direction
 6/15: 11:30PM - 12:40: Started on player and environment/player collision. Got player on player sprite mask collision working
 
-6/16: 1:45PM - : Edited some player collision, edited some of the game colors.
+6/16: 1:45PM - 4:40PM: Edited some player collision, edited some of the game colors.
 
 6/20: 9:00AM - 11:00AM: Created tileset and wrote code to put correct tile in correct place
 6/20: 1:20PM - 2:40PM: Edited screen resolution and edited tilemap more.
@@ -18,4 +18,18 @@ BEFORE 6/15: Created menu system, menu interface control system, created game st
 6/25: 2:00PM - 5:55PM: Working on making game itself look nicer, menu, images, buttons, added controls display, fixed combat for new code
 6/25: 7:26PM - 11:10PM: Worked on player attack hitbox, player and attack collision detection, damaged state, invincibility frames, background music setup, game over screen, game over event, damaged state hair, damaged state timer
 
-6/26: 11:50PM - 12:25PM: Created controls menu
+6/26: 11:50PM - 12:25PM: Created controls menu, sprites for the menu too
+
+6/27: 12:35PM - 4:30PM: Created powerpoint for our presentation.
+
+
+
+7/11: 2:35PM - 6:15PM: Created 3 new maps, created in game HUD, Player icons, Round system, Round over screen, Gun giving screen (WIP)
+
+7/12: 11:23PM - 1:23PM: Player death on falling out of map bounds, two new maps, randomized spawn locations
+7/13: 1:45PM - 4:00PM: Made new sprites for characters! Also made idle animations
+
+7/14: 11:34PM - 2:48PM: Created new tiles to make maps look nicer: rocks, plants, tiles in background, weapon opening screen, chest animation!!
+
+7/19: 11:37PM - 3:03PM: Created sprites for HUD, Redid the HUD; Made the characters larger and at bottom, show weapon they have, made 5 more maps (hard mode), made final map (only at 4v4), Made game over screen appear, Map randomizer, game resets on end 
+7/19: 3:36PM - 6:36PM: Changed weapon recieving screen, added music, centered chests, combined code with Shawn's dynamic camera!!, updated pre game menu looks, started on the sword art
