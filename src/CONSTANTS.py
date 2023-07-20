@@ -367,6 +367,38 @@ key_presses_2 = {
 
 # dictionary for all weapons
 weapon_dict = {
-    "defaultSword": SlashWeapon("The Default Sword", "Common", os.path.join(base_directory, "assets/img/sword.png"), os.path.join(base_directory, "assets/sound/swoosh.wav"), 0.1, (30, 90), (100, 100)),
-    "godSword": SlashWeapon("GOD SWORD", "Mythic", os.path.join(base_directory, "assets/img/godsword.png"), os.path.join(base_directory, "assets/sound/toot.mp3"), 0.2, (30, 90), (300, 300), 0.2, 25, -20, True, 7),
+    "defaultSword": Weapon(
+        "The Default Sword", 
+        "Common",
+        "Slash",
+        os.path.join(base_directory, "assets/img/sword.png"), 
+        os.path.join(base_directory, "assets/sound/swoosh.wav"), 
+        0.1, 
+        5,
+        30,
+        -30,
+        (30, 90), 
+        (100, 100)
+    ),
+    "godSword": Weapon(
+        "GOD SWORD", 
+        "Mythic",
+        "Slash",
+        os.path.join(base_directory, 
+        "assets/img/godsword.png"), 
+        os.path.join(base_directory, 
+        "assets/sound/toot.mp3"), 
+        0.2, 
+        5,
+        30,
+        -30,
+        (30, 90), 
+        (300, 300), 
+        0.2, 
+        25, 
+        -20, 
+        True, 
+        10,
+        True
+    ),
 }

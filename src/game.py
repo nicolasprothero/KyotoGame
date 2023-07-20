@@ -96,6 +96,12 @@ class Game():
 
         self.select_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Select.wav"))
         self.select_sound.set_volume(0.1)
+
+        self.shieldbreak_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/shieldbreak.mp3"))
+        self.shieldbreak_sound.set_volume(0.2) 
+
+        self.death_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Hurt_grunt.wav"))
+        self.death_sound.set_volume(0.2)
         
         self.chest_open_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/chest_open.mp3'))
         self.chest_open_sound.set_volume(0.1)
@@ -158,6 +164,8 @@ class Game():
                         player.isOnGround = True
                         player.hasDash = True
                         player.hasDoubleJump = True
+                        if player.weapon.extra_jump:
+                            player.extra_jump = True
                         player.gravity = 0.9
                     if player.direction.y < 0:
                         player.rect.top = sprite.rect.bottom
@@ -402,8 +410,6 @@ class Game():
             
             self.screen.blit(self.player_weapon, (146, C.SCREEN_HEIGHT - 163))
             self.screen.blit(self.player2_weapon, (C.SCREEN_WIDTH - 182, C.SCREEN_HEIGHT - 163))
-
-
             
             # self.screen.blit(self.player.image, self.player.pos)
             # self.screen.blit(self.player2.image, self.player2.pos)
@@ -448,6 +454,7 @@ class Game():
                         self.player_hit(self.player2, False)
                         self.player2.isHit = True
                         self.player2.knockbackRight = True
+                        self.player2.knockback(self.player.weapon.knockback, self.player2.knockbackRight)
                 elif not self.player.attackRight:
                     player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
@@ -456,14 +463,15 @@ class Game():
                         self.player_hit(self.player2, False)
                         self.player2.isHit = True
                         self.player2.knockbackRight = False
+                        self.player2.knockback(self.player.weapon.knockback, self.player2.knockbackRight)
                 if time.time() - self.attacking_start > 0.1:
                     self.player.attacking = False
                     self.attacking_start = time.time()
             else:
                 if self.player.facingRight:
-                    self.screen.blit(self.player.weapon.image, (self.player.rect.x + 5, self.player.rect.y - 30))
+                    self.screen.blit(self.player.weapon.image, (self.player.rect.x + self.player.weapon.x_pos_facingright, self.player.rect.y + self.player.weapon.y_pos))
                 else:
-                    self.screen.blit(self.player.weapon.image, (self.player.rect.x + 30, self.player.rect.y - 30))
+                    self.screen.blit(self.player.weapon.image, (self.player.rect.x + self.player.weapon.x_pos_facingleft, self.player.rect.y + self.player.weapon.y_pos))
                     
             if self.player2.attacking:
                 if self.player2.attackRight:
@@ -474,6 +482,7 @@ class Game():
                         self.player_hit(self.player, True)
                         self.player.isHit = True
                         self.player.knockbackRight = True
+                        self.player.knockback(self.player2.weapon.knockback, self.player.knockbackRight)
                 elif not self.player2.attackRight:
                     player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
@@ -482,14 +491,15 @@ class Game():
                         self.player_hit(self.player, True)
                         self.player.isHit = True
                         self.player.knockbackRight = False
+                        self.player.knockback(self.player2.weapon.knockback, self.player.knockbackRight)
                 if time.time() - self.attacking_start2 > 0.1:
                     self.player2.attacking = False
                     self.attacking_start2 = time.time()
             else:
                 if self.player2.facingRight:
-                    self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 5, self.player2.rect.y - 30))
+                    self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + self.player2.weapon.x_pos_facingright , self.player2.rect.y + self.player2.weapon.y_pos))
                 else:
-                    self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + 30, self.player2.rect.y - 30))
+                    self.screen.blit(self.player2.weapon.image, (self.player2.rect.x + self.player2.weapon.x_pos_facingleft, self.player2.rect.y + self.player2.weapon.y_pos)) 
 
             # player 1 attack cooldown
             if self.player.canAttack is False:
@@ -502,7 +512,7 @@ class Game():
                 if time.time() - self.attack_start2 > self.player2.weapon.cooldown:
                     self.player2.canAttack = True
                     self.attack_start2 = time.time()
-                    
+                
             if self.player2.isInvincible:
                 if time.time() - self.invincibility_start2 > 0.3:
                     self.player2.isInvincible = False
@@ -916,8 +926,8 @@ class Game():
 
     def player_hit(self, player, isPlayer1):
         if not player.isInvincible:
-            if player.isDamaged:
-                pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Hurt_grunt.wav"))).set_volume(0.2)
+            if player.isDamaged and not player.extra_shield:
+                pygame.mixer.Sound.play(self.death_sound)
                 if isPlayer1:
                     self.player_two_wins += 1
                     self.round_num += 1
@@ -937,8 +947,20 @@ class Game():
                         self.game_over()
                     else:
                         self.round_over(1)
+            elif player.isDamaged and player.extra_shield:
+                pygame.mixer.Sound.play(self.shieldbreak_sound)
+                player.image = player.Damagedimage
+                player.isInvincible = True
+                player.isDamaged = True
+                player.extra_shield = False
+                if isPlayer1:
+                    self.invincibility_start = time.time()
+                    self.damaged_start = time.time()
+                else:
+                    self.invincibility_start2 = time.time()
+                    self.damaged_start2 = time.time()
             else:
-                pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/shieldbreak.mp3"))).set_volume(0.2)
+                pygame.mixer.Sound.play(self.shieldbreak_sound)
                 player.image = player.Damagedimage
                 player.isInvincible = True
                 player.isDamaged = True
@@ -950,4 +972,3 @@ class Game():
                     self.invincibility_start2 = time.time()
                     self.damaged_start2 = time.time()
                     self.character2_icon = self.character2_damaged_img
-                
