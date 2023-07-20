@@ -589,7 +589,7 @@ class Game():
                     self.character2_icon = self.character2_img
                     self.damaged_start2 = time.time()
                     
-            if self.player.rect.y > C.SCREEN_HEIGHT + 250:
+            if self.player.rect.y > C.SCREEN_HEIGHT + 250 and not self.theGam:
                 self.player.isDamaged = True
                 self.player_hit(self.player, True)
             elif self.player2.rect.y > C.SCREEN_HEIGHT + 250:
