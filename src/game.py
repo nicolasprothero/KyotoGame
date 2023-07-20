@@ -100,10 +100,7 @@ class Game():
         self.camera_height = C.SCREEN_HEIGHT
         self.cam_dim = [self.camera_width, self.camera_height]
         self.zoom = False
-            
-    def getPlayerDistance(self, Player1, Player2):
-        return round(((Player1.rect.x - Player2.rect.x)**2 + (Player1.rect.y - Player2.rect.y)**2)**0.5)
-
+        
     def getPlayerMidpoint(self, Player1, Player2):
         midpoint = ((Player1.rect.x + Player2.rect.x)/2, (Player1.rect.y + Player2.rect.y)/2)
         roundedMidPoint = tuple(map(lambda x: round(x), midpoint))
