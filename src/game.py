@@ -129,6 +129,7 @@ class Game():
         
         self.winner = 1
         self.isPostGame = False
+        self.theGameIsOver = False
         
         self.round_num = 1
         self.player_one_wins = 0
@@ -752,6 +753,7 @@ class Game():
                             self.player_two_wins = 0
                             self.pregame_running = False
                             self.isPostGame = False
+                            self.theGameIsOver = False
                             pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(0.1)
                             self.run_game()
                         elif(current_selection == "controls"):
@@ -1015,13 +1017,15 @@ class Game():
                     if self.isPostGame and self.player_two_wins is 5:
                         self.winner = 2
                         self.game_over()
-                    else:
+                        self.theGameIsOver = True
+                    elif not self.theGameIsOver:
                         self.round_over(2)
                 else:
                     if self.isPostGame and self.player_one_wins is 5:
                         self.winner = 1
                         self.game_over()
-                    else:
+                        self.theGameIsOver = False
+                    elif not self.theGameIsOver:
                         self.round_over(1)
             else:
                 pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/shieldbreak.mp3"))).set_volume(0.2)
