@@ -104,7 +104,6 @@ class Game():
         self.sword_get_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/sword_get.wav'))
         self.sword_get_sound.set_volume(0.1)
 
-
         self.menu_running = True
         self.game_running = False
         self.paused = False
@@ -365,8 +364,15 @@ class Game():
         particle1 = Particle()
         PARTICLE_EVNET = pygame.USEREVENT + 1
         pygame.time.set_timer(PARTICLE_EVNET, 100)
+        
+        player1idle_current_frame = 0
+        player1run_current_frame = 0
+        player1idle_last_time = pygame.time.get_ticks()
 
-
+        player2idle_current_frame = 0
+        player2run_current_frame = 0
+        player2idle_last_time = pygame.time.get_ticks()
+        
         while self.game_running:
             
             clock.tick(60) # limit fps to 60
@@ -596,6 +602,107 @@ class Game():
                 self.player2.isDamaged = True
                 self.player_hit(self.player2, False)
                 
+            
+            player1_idle_image = pygame.image.load(os.path.join(base_directory, "assets/img/character_animations/character_idle.png"))
+            player1_idle_image = pygame.transform.scale(player1_idle_image, (420, 90))
+            
+            player2_idle_image = pygame.image.load(os.path.join(base_directory, "assets/img/character_animations/character2_idle.png"))
+            player2_idle_image = pygame.transform.scale(player2_idle_image, (420, 90))
+            
+            player1_run_image = pygame.image.load(os.path.join(base_directory, "assets/img/character_animations/character_run2.png"))
+            player1_run_image = pygame.transform.scale(player1_run_image, (300, 90))
+            
+            player2_run_image = pygame.image.load(os.path.join(base_directory, "assets/img/character_animations/character2_run.png"))
+            player2_run_image = pygame.transform.scale(player2_run_image, (300, 90))
+            
+            player1_idle_image_flipped = pygame.transform.flip(player1_idle_image, True, False)
+            player1_run_image_flipped = pygame.transform.flip(player1_run_image, True, False)
+            
+            player2_idle_image_flipped = pygame.transform.flip(player2_idle_image, True, False)
+            player2_run_image_flipped = pygame.transform.flip(player2_run_image, True, False)
+            
+            if self.player.isRunning and self.player.isOnGround:
+                if self.player.facingRight:
+                    player1idle_current_time = pygame.time.get_ticks()
+                    if player1idle_current_time - player1idle_last_time >= 45:
+                        player1run_current_frame += 1
+                        if player1run_current_frame > 4:
+                            player1run_current_frame = 0
+                        player1idle_last_time = player1idle_current_time
+                    self.player.image = player1_run_image.subsurface(player1run_current_frame * 60, 0, 60, 90)
+                else:
+                    player1idle_current_time = pygame.time.get_ticks()
+                    if player1idle_current_time - player1idle_last_time >= 45:
+                        player1run_current_frame += 1
+                        if player1run_current_frame > 4:
+                            player1run_current_frame = 0
+                        player1idle_last_time = player1idle_current_time
+                    self.player.image = player1_run_image_flipped.subsurface(240 - player1run_current_frame * 60, 0, 60, 90)
+            elif not self.player.isRunning and self.player.isOnGround:
+                if self.player.facingRight:
+                    player1idle_current_time = pygame.time.get_ticks()
+                    if player1idle_current_time - player1idle_last_time >= 160:
+                        player1idle_current_frame += 1
+                        if player1idle_current_frame > 6:
+                            player1idle_current_frame = 0
+                        player1idle_last_time = player1idle_current_time
+                    self.player.image = player1_idle_image.subsurface(player1idle_current_frame * 60, 0, 60, 90)
+                else:
+                    player1idle_current_time = pygame.time.get_ticks()
+                    if player1idle_current_time - player1idle_last_time >= 160:
+                        player1idle_current_frame += 1
+                        if player1idle_current_frame > 6:
+                            player1idle_current_frame = 0
+                        player1idle_last_time = player1idle_current_time
+                    self.player.image = player1_idle_image_flipped.subsurface(360 - player1idle_current_frame * 60, 0, 60, 90)
+            
+            if self.player2.isRunning and self.player2.isOnGround:
+                if self.player2.facingRight:
+                    player2idle_current_time = pygame.time.get_ticks()
+                    if player2idle_current_time - player2idle_last_time >= 45:
+                        player2run_current_frame += 1
+                        if player2run_current_frame > 4:
+                            player2run_current_frame = 0
+                        player2idle_last_time = player2idle_current_time
+                    self.player2.image = player2_run_image.subsurface(player2run_current_frame * 60, 0, 60, 90)
+                else:
+                    player2idle_current_time = pygame.time.get_ticks()
+                    if player2idle_current_time - player2idle_last_time >= 45:
+                        player2run_current_frame += 1
+                        if player2run_current_frame > 4:
+                            player2run_current_frame = 0
+                        player2idle_last_time = player2idle_current_time
+                    self.player2.image = player2_run_image_flipped.subsurface(240 - player2run_current_frame * 60, 0, 60, 90)
+            elif not self.player2.isRunning and self.player2.isOnGround:
+                if self.player2.facingRight:
+                    player2idle_current_time = pygame.time.get_ticks()
+                    if player2idle_current_time - player2idle_last_time >= 160:
+                        player2idle_current_frame += 1
+                        if player2idle_current_frame > 6:
+                            player2idle_current_frame = 0
+                        player2idle_last_time = player2idle_current_time
+                    self.player2.image = player2_idle_image.subsurface(player2idle_current_frame * 60, 0, 60, 90)
+                else:
+                    player2idle_current_time = pygame.time.get_ticks()
+                    if player2idle_current_time - player2idle_last_time >= 160:
+                        player2idle_current_frame += 1
+                        if player2idle_current_frame > 6:
+                            player2idle_current_frame = 0
+                        player2idle_last_time = player2idle_current_time
+                    self.player2.image = player2_idle_image_flipped.subsurface(360 - player2idle_current_frame * 60, 0, 60, 90)
+            
+            
+            
+            # Checks if the player is moving
+            # if self.player.direction.x > 0.03 or self.player.direction.x < -0.03 or self.player.direction.y != 0:
+            #     self.player.isRunning = True
+            # else:
+            #     self.player.isRunning = False
+                
+            # if self.player2.direction.x > 0.03 or self.player2.direction.x < -0.03 or self.player2.direction.y != 0:
+            #     self.player2.isRunning = True
+            # else:
+            #     self.player2.isRunning = False
             #HUD
             #round_hud = pygame.Rect((C.SCREEN_WIDTH/2 - 150), 0, 350, 175)
             #pygame.draw.rect(self.screen, (34, 34, 34), round_hud)
@@ -614,8 +721,7 @@ class Game():
             
             self.screen.blit(self.player_weapon, (146, C.SCREEN_HEIGHT - 163))
             self.screen.blit(self.player2_weapon, (C.SCREEN_WIDTH - 182, C.SCREEN_HEIGHT - 163))
-
-            
+                        
             pygame.display.flip()
                     
     def pause_menu(self):
