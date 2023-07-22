@@ -69,30 +69,62 @@ class Level:
                 elif col == 'K':
                     tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/botrightcorner_tile.png'))
                     self.tile_group.add(tile)
-                elif col == 'N':
+                elif col == '7':
                     tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/grass_tile.png'))
                     self.no_collide_group.add(tile)
-                elif col == 'M':
+                elif col == '8':
                     tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/vine_tile.png'))
                     self.no_collide_group.add(tile)
-                # T: TOP TILE
-                # B: BOTTOM TILE
-                # L: LEFT TILE
-                # R: RIGHT TILE
-                # X: MIDDLE TILE
+                elif col == '9':
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/vine_two.png'))
+                    self.no_collide_group.add(tile)
+                elif col == '#':
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/brick.png'))
+                    self.no_collide_group.add(tile)
+                elif col == '$':
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/brick_two.png'))
+                    self.no_collide_group.add(tile)
+                elif col == '<':
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/leaf_left.png'))
+                    self.no_collide_group.add(tile)
+                elif col == '>':
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/leaf_right.png'))
+                    self.no_collide_group.add(tile)
+                elif col == 'Z':
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/rock.png'))
+                    self.no_collide_group.add(tile)
+                elif col == 'V':
+                    tile = Tile((x,y), TILE_SIZE, os.path.join(base_directory, 'assets/img/tileset/rock_leaf.png'))
+                    self.no_collide_group.add(tile)
+# T: TOP TILE
+# B: BOTTOM TILE
+# L: LEFT TILE
+# R: RIGHT TILE
 
-                # 1: TOP LEFT
-                # 2: TOP RIGHT
-                # 3: BOT LEFT
-                # 4: BOT RIGHT
+# X: MIDDLE TILE
 
-                # G: LEFT CORNER
-                # H: RIGHT CORNER
-                # J: BOTLEFT CORNER
-                # K: BOTRIGHT CORNER
+# 1: TOP LEFT
+# 2: TOP RIGHT
+# 3: BOT LEFT
+# 4: BOT RIGHT
 
-                # N: Grass
-                # M: Vine
+# G: LEFT CORNER
+# H: RIGHT CORNER
+# J: BOTLEFT CORNER
+# K: BOTRIGHT CORNER
+
+# 7: Grass
+# 8: Vine
+# 9: Vine 2
+
+# #: Brick One
+# $: Brick Two
+
+# <: Leaf Left 
+# >: Leaf Right 
+
+# Z: Inside Rock 
+# V: Inside Leaf 
 
     def run(self):
         self.display_surface.blit(self.background_image, (0, 0))
