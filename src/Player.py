@@ -47,6 +47,7 @@ class Player(pygame.sprite.Sprite):
         self.hasDash = True
         
         self.facingRight = True
+        self.isDashing = False
 
         self.attackRight = True
         self.attacking = False
@@ -66,6 +67,7 @@ class Player(pygame.sprite.Sprite):
             self.knockback(3, self.knockbackRight)
         elif pressed_keys[self.keyBinds["dash"]] and self.isOnGround == False:
             if self.hasDash:
+                self.isDashing = True
                 self.dash()
         elif abs(self.direction.x) <= 1:
             if pressed_keys[self.keyBinds["left"]]:

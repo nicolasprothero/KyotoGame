@@ -262,6 +262,12 @@ class Game():
             pygame.display.flip()
 
     def run_game(self):
+
+        right_image = pygame.image.load(os.path.join(base_directory, "assets/img/character.png")).convert_alpha()
+        right_image = pygame.transform.scale(right_image, (65, 90))
+        left_image = pygame.transform.flip(right_image, True, False)
+
+
         # Setup the level        
         self.game_running = True
         
@@ -366,8 +372,16 @@ class Game():
         pygame.time.set_timer(PARTICLE_EVNET, 100)
 
 
+        dashFrameCounter = 0
+        # list of coordinates for player dash animation
+        player_dashcoords = []
+        player2_dashcoords = []
+        player_images = []
+        dec = 150
+        drawTime = time.time()
+        fadeTime = time.time()
+
         while self.game_running:
-            
             clock.tick(60) # limit fps to 60
             pressed_keys = pygame.key.get_pressed()
             # for loop through the event queue
@@ -391,7 +405,48 @@ class Game():
             self.horizontal_movement_collision()
             self.vertical_movement_collision()
             self.players.draw(self.screen)
+            self.draw_text(str(self.player.isDashing), (255, 255, 255), 100, C.SCREEN_WIDTH//2, C.SCREEN_HEIGHT//2)
+            self.draw_text(str(dashFrameCounter), (255, 255, 255), 100, C.SCREEN_WIDTH//2, C.SCREEN_HEIGHT//2 + 100)
+            if self.player.isDashing == True:
+                dashFrameCounter += 1
+
+                if dashFrameCounter % 5 == 0:
+                    if self.player.facingRight:
+                        player_images.append(right_image)
+                    else:
+                        player_images.append(left_image)
+                    player_dashcoords.append((self.player.rect.x, self.player.rect.y))
+                    
+                if dashFrameCounter > 15:
+                    self.player.isDashing = False
+                    dashFrameCounter = 0
+
+
+            # draw player dash animation at dash coordinates
+
+            # change alpha level of dash animation
+            for x in player_images:
+                x.set_alpha(dec)
             
+            if time.time() - fadeTime > 0.5:
+                dec -= 50
+                if dec <= 0:
+                    dec = 150
+                fadeTime = time.time()
+
+            for image, coords in zip(player_images, player_dashcoords):
+                self.screen.blit(image, coords)
+
+            if time.time() - drawTime > 5.0:
+                player_images.clear()
+                player_dashcoords.clear()
+                drawTime = time.time()
+                print("clearing dash animation")
+
+            
+
+            
+
             # self.screen.blit(self.player.image, self.player.pos)
             # self.screen.blit(self.player2.image, self.player2.pos)
             if pressed_keys[pygame.K_x] and self.player.canAttack:
