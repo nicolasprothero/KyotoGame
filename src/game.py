@@ -40,16 +40,16 @@ class Game():
         pygame.init()
         pygame.mixer.init()
         
-        flags = pygame.SCALED | pygame.FULLSCREEN
-        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
-        self.camera = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
+        self.flags = pygame.SCALED | pygame.FULLSCREEN
+        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), self.flags)
+        self.camera = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), self.flags)
         
         # Instantiate player. Right now, this is just a rectangle.
         self.players = pygame.sprite.Group()
         abs_path = os.path.join(base_directory, "assets/img/character.png")
-        self.player = Player(C.key_presses_1, abs_path, (C.SCREEN_WIDTH/6, 100))
+        self.player = Player(C.key_presses_1, abs_path, (C.SCREEN_WIDTH/6, C.SCREEN_HEIGHT/6))
         self.players.add(self.player)
-        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, 100))
+        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, C.SCREEN_HEIGHT/6))
         self.players.add(self.player2)
         
         
@@ -191,7 +191,7 @@ class Game():
             self.screen.fill(self.color_menu)
             # create a surface object, image is drawn on it.
             title_img = pygame.image.load(os.path.join(base_directory, "assets/img/title.png"))
-            title_img = pygame.transform.scale(title_img,((C.SCREEN_WIDTH * 0.6), (((C.SCREEN_WIDTH* 0.6)/3))))
+            title_img = pygame.transform.scale(title_img,((C.SCREEN_WIDTH * 0.6), ((C.SCREEN_WIDTH* 0.6)/3)))
             self.screen.blit(title_img, ((C.SCREEN_WIDTH/2 - (title_img.get_width()/2)), 100))
             
             #C.SCREEN_WIDTH/2 - ((C.SCREEN_WIDTH* 0.6)/2
@@ -500,6 +500,10 @@ class Game():
             self.draw_text("RETURN TO MENU", quit_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 150)
             pygame.display.flip()
 
+    # def change_res(self, x, y):
+    #     C.SCREEN_WIDTH, C.SCREEN_HEIGHT = (x, y)
+    #     self.screen = pygame.display.set_mode((x, y), pygame.RESIZABLE)
+    
     def options_menu(self):
         
         self.options_running = True
@@ -512,6 +516,10 @@ class Game():
                     # If the Esc key is pressed, then exit the main loop
                     if event.key == K_ESCAPE:
                             self.options_running = False
+                    elif event.key == K_RETURN:
+                            C.change_res(1366, 768)
+                            #self.level.display_surface = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.FULLSCREEN | pygame.SCALED)
+                            self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
                 # Check for QUIT event. If QUIT, then set running to false.
                 elif event.type == QUIT:
                     self.options_running = False

@@ -53,6 +53,11 @@ SCREEN_HEIGHT = 1200
 GRAVITY = 15
 FRICTION = 0.8
 
+def change_res(x, y):
+    global SCREEN_WIDTH, SCREEN_HEIGHT
+    SCREEN_WIDTH = x
+    SCREEN_HEIGHT = y
+
 # create a dictionary to store key presses for player 1 and player 2
 key_presses_1 = {
     "up": pygame.K_w,
