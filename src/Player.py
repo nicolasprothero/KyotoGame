@@ -57,6 +57,8 @@ class Player(pygame.sprite.Sprite):
         self.isInvincible = False
         
         self.mask = pygame.mask.from_surface(self.image)
+        
+        self.isRunning = False
 
         # Make the default weapon.
         self.weapon = SlashWeapon(os.path.join(base_directory, 'assets/img/swords/shard.png'), (30,90))
@@ -78,6 +80,7 @@ class Player(pygame.sprite.Sprite):
                     self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
                     self.facingRight = False
                 self.direction.x = -1 
+                self.isRunning = True
             elif pressed_keys[self.keyBinds["right"]]:
                 if not self.facingRight:
                     self.image = pygame.transform.flip(self.image, True, False)
@@ -86,6 +89,9 @@ class Player(pygame.sprite.Sprite):
                     self.weapon.image = pygame.transform.flip(self.weapon.image, True, False)
                     self.facingRight = True
                 self.direction.x = 1
+                self.isRunning = True
+            else:
+                self.isRunning = False
 
         if pressed_keys[self.keyBinds["down"]]:
             self.FastFall = True
