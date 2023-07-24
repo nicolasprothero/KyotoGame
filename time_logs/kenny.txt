@@ -9,3 +9,6 @@
 7/13 1:45pm - 3:00pm Create weapon type, cooldown attributes, prototype thrust weapon
 7/19 5:00pm - 6:00pm 8:00pm - 11:05pm Tried to get different resolution to scale fullscreen on keypress
 7/20 3:00pm - 5:00pm Resolution again, need to implement with square screen and black bars, might not work with Shawn's camera
+7/22 5:30pm - 9:00pm Randomize weapons in gun screen, issue with weapon assignment
+7/23 5:20pm - 8:20pm Hud images and current holding weapon match randomized weapon, adjusted player starting positions
+7/24 
