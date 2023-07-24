@@ -14,6 +14,7 @@ from Weapons import *
 import ctypes
 import os
 import platform
+#import copy
 
 base_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -43,16 +44,16 @@ class Game():
         pygame.init()
         pygame.mixer.init()
         
-        flags = pygame.SCALED | pygame.FULLSCREEN
-        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
-        self.camera = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
+        self.flags = pygame.SCALED | pygame.FULLSCREEN
+        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), self.flags)
+        self.camera = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), self.flags)
         
         # Instantiate player. Right now, this is just a rectangle.
         self.players = pygame.sprite.Group()
         abs_path = os.path.join(base_directory, "assets/img/character.png")
-        self.player = Player(C.key_presses_1, abs_path, (C.SCREEN_WIDTH/6, 100))
+        self.player = Player(C.key_presses_1, abs_path, (C.SCREEN_WIDTH/6, C.SCREEN_HEIGHT/6))
         self.players.add(self.player)
-        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, 100))
+        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, C.SCREEN_HEIGHT/6))
         self.players.add(self.player2)
         
         self.character1_img = pygame.image.load('src/assets/img/character_icon.png')
@@ -79,8 +80,8 @@ class Game():
         self.round_hud = pygame.image.load('src/assets/img/round_hud.png')
         self.round_hud = pygame.transform.scale(self.round_hud, (310, 140))
         
-        self.player_weapon = pygame.transform.scale(self.player.weapon.image, (36, 108))
-        self.player2_weapon = pygame.transform.scale(self.player2.weapon.image, (36, 108))
+        # self.player_weapon = pygame.transform.scale(self.player.weapon.image, (36, 108))
+        # self.player2_weapon = pygame.transform.scale(self.player2.weapon.image, (36, 108))
 
         self.the_map_list = []
         
@@ -257,7 +258,7 @@ class Game():
             self.screen.fill(self.color_menu)
             # create a surface object, image is drawn on it.
             title_img = pygame.image.load(os.path.join(base_directory, "assets/img/title.png"))
-            title_img = pygame.transform.scale(title_img,((C.SCREEN_WIDTH * 0.6), (((C.SCREEN_WIDTH* 0.6)/3))))
+            title_img = pygame.transform.scale(title_img,((C.SCREEN_WIDTH * 0.6), ((C.SCREEN_WIDTH* 0.6)/3)))
             self.screen.blit(title_img, ((C.SCREEN_WIDTH/2 - (title_img.get_width()/2)), 100))
             
             #C.SCREEN_WIDTH/2 - ((C.SCREEN_WIDTH* 0.6)/2
@@ -269,7 +270,6 @@ class Game():
     def run_game(self):
         # Setup the level        
         self.game_running = True
-        
         if self.round_num is 1:
             self.the_map_list = C.map_list[:]
         elif self.round_num is 6:
@@ -282,85 +282,61 @@ class Game():
             self.the_map_list.remove(current_map)
             
         if current_map == C.LEVEL_MAP:
-            self.players.empty()
             spawn_options = [1, 2]
             choice = random.choice(spawn_options)
             if choice == 1:
-                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800))
-                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800))
+                self.player.changePos((200, 800))
+                self.player2.changePos((1650, 800))
             elif choice == 2:
-                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
-                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
-            self.players.add(self.player)
-            self.players.add(self.player2)
+                self.player.changePos((200, 300))
+                self.player2.changePos((1650,300))
+           
         elif current_map == C.LEVEL_MAP1:
-            self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
-            self.players.add(self.player)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
-            self.players.add(self.player2)
+            
+            self.player.changePos((200,300))
+            self.player2.changePos((1650, 300))
+    
         elif current_map == C.LEVEL_MAP2:
-            self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
-            self.players.add(self.player)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
-            self.players.add(self.player2)
+
+            self.player.changePos((450,800))
+            self.player2.changePos((1400, 800))
+
         elif current_map == C.LEVEL_MAP3:
-            self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
-            self.players.add(self.player)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
-            self.players.add(self.player2)
+
+            self.player.changePos((600,800))
+            self.player2.changePos((1450, 800))
+
         elif current_map ==C.LEVEL_MAP4:
-            self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
-            self.players.add(self.player)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
-            self.players.add(self.player2)
+            self.player.changePos((200,300))
+            self.player2.changePos((1650, 300))
+
         elif current_map == C.LEVEL_MAP5:
-            self.players.empty()
             spawn_options = [1, 2]
             choice = random.choice(spawn_options)
             if choice == 1:
-                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800))
-                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800))
+                self.player.changePos((200,800))
+                self.player2.changePos((1650, 800))
             elif choice == 2:
-                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
-                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
-            self.players.add(self.player)
-            self.players.add(self.player2) 
+                self.player.changePos((200,300))
+                self.player2.changePos((1650, 300))
         elif current_map == C.LEVEL_MAP6:
-            self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
-            self.players.add(self.player)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
-            self.players.add(self.player2)
+            self.player.changePos((400,800))
+            self.player2.changePos((1450, 800))
         elif current_map ==C.LEVEL_MAP7:
-            self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
-            self.players.add(self.player)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
-            self.players.add(self.player2)
+            self.player.changePos((200,300))
+            self.player2.changePos((1650, 300))
         elif current_map == C.LEVEL_MAP8:
-            self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
-            self.players.add(self.player)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
-            self.players.add(self.player2)
+            self.player.changePos((200,300))
+            self.player2.changePos((1650, 300))
         elif current_map == C.LEVEL_MAP9:
-            self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 0))
-            self.players.add(self.player)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 0))
-            self.players.add(self.player2)
+            self.player.changePos((200,0))
+            self.player2.changePos((1650, 0))
         
         self.level = Level(current_map, self.screen, os.path.join(base_directory, "assets/img/DefaultBackground.png"))
 
         
         self.character_icon = self.character1_img
         self.character2_icon = self.character2_img
-
-        self.player.changeWeapon(C.weapon_dict["godSword"])
 
         self.player_attack_sound = pygame.mixer.Sound(os.path.join(base_directory, self.player.weapon.attack_sound_path))
         self.player_attack_sound.set_volume(self.player.weapon.attack_sound_level)
@@ -388,7 +364,6 @@ class Game():
         player2idle_last_time = pygame.time.get_ticks()
         
         while self.game_running:
-            
             clock.tick(60) # limit fps to 60
             pressed_keys = pygame.key.get_pressed()
             # for loop through the event queue
@@ -739,8 +714,8 @@ class Game():
             self.draw_text(str(self.player_one_wins), self.color_default, 110, 384, C.SCREEN_HEIGHT - 85)
             self.draw_text(str(self.player_two_wins), self.color_default, 100, C.SCREEN_WIDTH - 378, C.SCREEN_HEIGHT - 85)
             
-            self.screen.blit(self.player_weapon, (146, C.SCREEN_HEIGHT - 163))
-            self.screen.blit(self.player2_weapon, (C.SCREEN_WIDTH - 182, C.SCREEN_HEIGHT - 163))
+            self.screen.blit(pygame.transform.scale(self.player.weapon.image, (36, 108)), (146, C.SCREEN_HEIGHT - 163))
+            self.screen.blit(pygame.transform.scale(self.player2.weapon.image, (36, 108)), (C.SCREEN_WIDTH - 182, C.SCREEN_HEIGHT - 163))
                         
             pygame.display.flip()
                     
@@ -810,6 +785,10 @@ class Game():
             self.draw_text("RETURN TO MENU", quit_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 150)
             pygame.display.flip()
 
+    # def change_res(self, x, y):
+    #     C.SCREEN_WIDTH, C.SCREEN_HEIGHT = (x, y)
+    #     self.screen = pygame.display.set_mode((x, y), pygame.RESIZABLE)
+    
     def options_menu(self):
         
         self.options_running = True
@@ -822,6 +801,10 @@ class Game():
                     # If the Esc key is pressed, then exit the main loop
                     if event.key == K_ESCAPE:
                             self.options_running = False
+                    elif event.key == K_RETURN:
+                            C.change_res(1366, 768)
+                            #self.level.display_surface = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.FULLSCREEN | pygame.SCALED)
+                            self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
                 # Check for QUIT event. If QUIT, then set running to false.
                 elif event.type == QUIT:
                     self.options_running = False
@@ -1007,7 +990,16 @@ class Game():
             self.draw_text(final_script, (255, 255, 255), 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 50)
             self.draw_text("Press ENTER to continue.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 75)
             pygame.display.flip()
-            
+
+    def randomize_weapon(self, player):
+        random_key = random.choice(list(C.weapon_dict.keys()))
+
+        while player.weapon == C.weapon_dict[random_key]:
+            random_key = random.choice(list(C.weapon_dict.keys()))
+
+        new_weapon = C.weapon_dict[random_key]
+        return new_weapon
+    
     def gun_screen(self):
         self.giving_gun = True
         chest_last_time = pygame.time.get_ticks()
@@ -1015,8 +1007,8 @@ class Game():
         chest_current_frame = 0
         chest2_current_frame = 0
         
-        self.player_one_wins = 0
-        self.player_two_wins = 0
+        # self.player_one_wins = 0
+        # self.player_two_wins = 0
         
         self.isPostGame = True
         
@@ -1025,6 +1017,16 @@ class Game():
 
         chest_opened = False
         chest2_opened = False
+
+        new_weapon_1 = self.randomize_weapon(self.player)
+        self.player.changeWeapon(new_weapon_1)
+        print("new weapon 1: ", new_weapon_1.name)
+        new_weapon_2 = self.randomize_weapon(self.player2)
+        self.player2.changeWeapon(new_weapon_2)
+        print("new wepaon 2: ", new_weapon_2.name)
+
+        print("self.player weapon: ", self.player.weapon.name)
+        print("self.player2.weapon: ", self.player2.weapon.name)
         
         while self.giving_gun:
             background_image = pygame.image.load(os.path.join(base_directory, "assets/img/menuBackground.png")).convert()
@@ -1036,8 +1038,8 @@ class Game():
             player2_chest_image = player1_chest_image
             player1_chest_image = pygame.transform.flip(player1_chest_image, True, False)
             
-            player_weapon = pygame.transform.scale(self.player.weapon.image, (90, 270))
-            player2_weapon = pygame.transform.scale(self.player2.weapon.image, (90, 270))
+            player_weapon = pygame.transform.scale(new_weapon_1.image, (90, 270))
+            player2_weapon = pygame.transform.scale(new_weapon_2.image, (90, 270))
             
             if not chest_opened:
                 self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (3600,0,400,240))

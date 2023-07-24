@@ -4,5 +4,11 @@
 6/20 6pm - 9pm Aligned weapon with hand coordinates, researched hitboxes, mask overlapping
 6/21 1:30pm - 3:45pm Tweaked attack structure, created hitboxes and solved display issue with blits
 6/22 2:45pm - 6pm Made it so that resolution dynamically updates based on user's dimensions 
-6/25 Looked into setup.py and packaging, redid scaling as bc it didn't work
-6/26 2:30pm - 
+6/25 3:00pm - 7pm 9pm - 12am Looked into setup.py and packaging, redid scaling bc it didn't work, fixed player start positions
+6/26 2:30pm - 4:20pm 4:50pm - 8:00pm 9:00pm - Fixed scaling, fixed bug with windows system and scaling, minor fixes with CONSTANTS, add list of levels and 1 new level, add player death attribute, update README.txt
+7/13 1:45pm - 3:00pm Create weapon type, cooldown attributes, prototype thrust weapon
+7/19 5:00pm - 6:00pm 8:00pm - 11:05pm Tried to get different resolution to scale fullscreen on keypress
+7/20 3:00pm - 5:00pm Resolution again, need to implement with square screen and black bars, might not work with Shawn's camera
+7/22 5:30pm - 9:00pm Randomize weapons in gun screen, issue with weapon assignment
+7/23 5:20pm - 8:20pm Hud images and current holding weapon match randomized weapon, adjusted player starting positions
+7/24 
