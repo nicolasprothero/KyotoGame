@@ -762,12 +762,18 @@ class Game():
                         elif(current_selection == "quit"):
                             current_selection = "settings"
                             pygame.mixer.Sound.play(self.select_sound)
+                        elif(current_selection == "resume"):
+                            current_selection = "quit"
+                            pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_s or event.key == K_DOWN:
                         if(current_selection == "resume"):
                             current_selection = "settings"
                             pygame.mixer.Sound.play(self.select_sound)
                         elif(current_selection == "settings"):
                             current_selection = "quit"
+                            pygame.mixer.Sound.play(self.select_sound)
+                        elif(current_selection == "quit"):
+                            current_selection = "resume"
                             pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_RETURN:
                         if(current_selection == "resume"):
@@ -779,6 +785,9 @@ class Game():
                             self.game_running = False
                             self.paused = False
                             self.menu_running = True
+                        if(current_selection == "settings"):
+                            self.game_running = False
+                            pass
                         
             self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 150)
             self.draw_text("SETTINGS", settings_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
@@ -824,14 +833,22 @@ class Game():
                 start_text_color = self.color_select
                 quit_text_color = self.color_default
                 controls_text_color = self.color_default
+                armory_text_color = self.color_default
             elif(current_selection == "quit"):
                 start_text_color = self.color_default
                 quit_text_color = self.color_select
                 controls_text_color = self.color_default
+                armory_text_color = self.color_default
+            elif(current_selection == "armory"):
+                start_text_color = self.color_default
+                quit_text_color = self.color_default
+                controls_text_color = self.color_default
+                armory_text_color = self.color_select
             elif(current_selection == "controls"):
                 controls_text_color = self.color_select
                 start_text_color = self.color_default
                 quit_text_color = self.color_default
+                armory_text_color = self.color_default
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
@@ -846,14 +863,21 @@ class Game():
                             current_selection = "controls"
                         elif(current_selection == "controls"):
                             pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "armory"
+                        elif(current_selection == "armory"):
                             current_selection = "play"
+                            pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_s or event.key == K_DOWN:
                         if(current_selection == "play"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "armory"
+                        elif(current_selection == "armory"):
                             pygame.mixer.Sound.play(self.select_sound)
                             current_selection = "controls"
                         elif(current_selection == "controls"):
                             pygame.mixer.Sound.play(self.select_sound)
                             current_selection = "quit"
+
                     elif event.key == K_RETURN:
                         if(current_selection == "play"):
                             pygame.mixer.Sound.play(self.select_sound)
@@ -865,6 +889,10 @@ class Game():
                             self.theGameIsOver = False
                             pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(0.1)
                             self.run_game()
+                        elif(current_selection == "armory"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            self.pregame_running = False
+                            self.armory()
                         elif(current_selection == "controls"):
                             pygame.mixer.Sound.play(self.select_sound)
                             self.pregame_running = False
@@ -885,9 +913,28 @@ class Game():
             pygame.draw.rect(self.screen, (34,34,34), round_hud)
             self.draw_text("PRE GAME MENU", self.color_default, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 850)
             self.draw_text("START", start_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 650)
-            self.draw_text("ARMORY", (130,130,130), 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 550)
+            self.draw_text("ARMORY", armory_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 550)
             self.draw_text("CONTROLS", controls_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 450)
             self.draw_text("RETURN TO MENU", quit_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 350)
+            pygame.display.flip()
+
+    def armory(self):
+        self.armory_showing = True
+        while self.armory_showing:
+            # for loop through the event queue
+            for event in pygame.event.get():
+                # Check for KEYDOWN event
+                if event.type == KEYDOWN:
+                    # If the Esc key is pressed, then exit the main loop
+                    if event.key == K_ESCAPE:
+                        self.armory_showing = False
+                        self.pregame_menu()
+                    elif event.key == K_RETURN:
+                            self.armory_showing = False
+                            self.pregame_menu()
+            self.screen.fill(self.color_menu)
+            self.draw_text("ARMORY", self.color_default, 90, C.SCREEN_WIDTH/2, 150)
+
             pygame.display.flip()
             
     def controls_menu(self):  
