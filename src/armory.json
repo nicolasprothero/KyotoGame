@@ -1,8 +1,13 @@
 [
     {
-        "name": "defaultSword"
+        "name": "shard",
+        "value": 0
     },
     {
-        "name": "godSword"
+        "name": "devSword",
+        "value": 0
+    },
+    {
+        
     }
 ]

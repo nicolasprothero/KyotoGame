@@ -14,7 +14,7 @@ from Weapons import *
 import ctypes
 import os
 import platform
-#import copy
+import copy
 
 base_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -82,8 +82,8 @@ class Game():
         self.round_hud = pygame.image.load('src/assets/img/round_hud.png')
         self.round_hud = pygame.transform.scale(self.round_hud, (310, 140))
         
-        # self.player_weapon = pygame.transform.scale(self.player.weapon.image, (36, 108))
-        # self.player2_weapon = pygame.transform.scale(self.player2.weapon.image, (36, 108))
+        # self.player.weapon = pygame.transform.scale(self.player.weapon.image, (36, 108))
+        # self.player2.weapon = pygame.transform.scale(self.player2.weapon.image, (36, 108))
 
         self.the_map_list = []
         
@@ -181,7 +181,7 @@ class Game():
                         player.isOnGround = True
                         player.hasDash = True
                         player.hasDoubleJump = True
-                        if player.weapon.extra_jump:
+                        if self.player.weapon.extra_jump:
                             player.extra_jump = True
                         player.gravity = 0.9
                     if player.direction.y < 0:
@@ -191,6 +191,21 @@ class Game():
         if player.direction.y > 0:
             player.isOnGround = False
 
+    def center_and_scale_image(self, screen, image, boundary_rect, scaling_factor=1.0):
+        # Get the dimensions of the image and the boundary rectangle
+        image_width, image_height = image.get_width(), image.get_height()
+        boundary_width, boundary_height = boundary_rect.width, boundary_rect.height
+
+        # Calculate the scaled image dimensions
+        scaled_width, scaled_height = int(image_width * scaling_factor), int(image_height * scaling_factor)
+
+        # Calculate the position to center the image inside the boundary rectangle
+        x_offset = (boundary_width - scaled_width) // 2
+        y_offset = (boundary_height - scaled_height) // 2
+
+        # Blit the scaled and centered image onto the screen
+        scaled_image = pygame.transform.scale(image, (scaled_width, scaled_height))
+        screen.blit(scaled_image, (boundary_rect.x + x_offset, boundary_rect.y + y_offset))
 
 
     def draw_text(self, text, color, size, x, y):
@@ -287,6 +302,7 @@ class Game():
 
         # Setup the level        
         self.game_running = True
+
         if self.round_num is 1:
             self.the_map_list = C.map_list[:]
         elif self.round_num is 6:
@@ -299,55 +315,97 @@ class Game():
             self.the_map_list.remove(current_map)
             
         if current_map == C.LEVEL_MAP:
+            self.players.empty()
             spawn_options = [1, 2]
             choice = random.choice(spawn_options)
             if choice == 1:
-                self.player.changePos((200, 800))
-                self.player2.changePos((1650, 800))
+                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800))
+                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800))
             elif choice == 2:
-                self.player.changePos((200, 300))
-                self.player2.changePos((1650,300))
-           
+                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
+            self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP1:
-            
-            self.player.changePos((200,300))
-            self.player2.changePos((1650, 300))
-    
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+            self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP2:
-
-            self.player.changePos((450,800))
-            self.player2.changePos((1400, 800))
-
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
+            self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
+            self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP3:
-
-            self.player.changePos((600,800))
-            self.player2.changePos((1450, 800))
-
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
+            self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
+            self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map ==C.LEVEL_MAP4:
-            self.player.changePos((200,300))
-            self.player2.changePos((1650, 300))
-
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+            self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP5:
+            self.players.empty()
             spawn_options = [1, 2]
             choice = random.choice(spawn_options)
             if choice == 1:
-                self.player.changePos((200,800))
-                self.player2.changePos((1650, 800))
+                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800))
+                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800))
             elif choice == 2:
-                self.player.changePos((200,300))
-                self.player2.changePos((1650, 300))
+                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
+            self.players.add(self.player2) 
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP6:
-            self.player.changePos((400,800))
-            self.player2.changePos((1450, 800))
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
+            self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
+            self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map ==C.LEVEL_MAP7:
-            self.player.changePos((200,300))
-            self.player2.changePos((1650, 300))
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+            self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP8:
-            self.player.changePos((200,300))
-            self.player2.changePos((1650, 300))
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+            self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP9:
-            self.player.changePos((200,0))
-            self.player2.changePos((1650, 0))
+            self.players.empty()
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 0))
+            self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 0))
+            self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         
         self.level = Level(current_map, self.screen, os.path.join(base_directory, "assets/img/DefaultBackground.png"))
 
@@ -355,10 +413,10 @@ class Game():
         self.character_icon = self.character1_img
         self.character2_icon = self.character2_img
 
-        self.player_attack_sound = pygame.mixer.Sound(os.path.join(base_directory, self.player.weapon.attack_sound_path))
+        self.player_attack_sound = pygame.mixer.Sound(self.player.weapon.attack_sound_path)
         self.player_attack_sound.set_volume(self.player.weapon.attack_sound_level)
 
-        self.player2_attack_sound = pygame.mixer.Sound(os.path.join(base_directory, self.player2.weapon.attack_sound_path))
+        self.player2_attack_sound = pygame.mixer.Sound(self.player2.weapon.attack_sound_path)
         self.player2_attack_sound.set_volume(self.player2.weapon.attack_sound_level)
 
         # Main loop
@@ -420,8 +478,7 @@ class Game():
             self.horizontal_movement_collision()
             self.vertical_movement_collision()
             self.players.draw(self.screen)
-            self.draw_text(str(self.player.isDashing), (255, 255, 255), 100, C.SCREEN_WIDTH//2, C.SCREEN_HEIGHT//2)
-            self.draw_text(str(alphas), (255, 255, 255), 100, C.SCREEN_WIDTH//2, C.SCREEN_HEIGHT//2 + 100)
+           
             if self.player.pressedDash == True:
                 dec = 150
                 alphas = [dec] * 3
@@ -569,23 +626,27 @@ class Game():
             
             if self.player.attacking:
                 if self.player.attackRight:
-                    player_attack_hitbox = pygame.Rect(self.player.rect.x + self.player.image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                    player_attack_hitbox = pygame.Rect(self.player.rect.x + self.player.image.get_width(), self.player.rect.y + self.player.weapon.y_pos, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
-                    self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y))
+                    self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y + self.player.weapon.y_pos))
                     if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
                         self.player_hit(self.player2, False)
                         self.player2.isHit = True
                         self.player2.knockbackRight = True
                         self.player2.knockback(self.player.weapon.knockback, self.player2.knockbackRight)
+                        if self.player.weapon.slow:
+                            self.player2.speed = 6
                 elif not self.player.attackRight:
-                    player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                    player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y + self.player.weapon.y_pos, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
-                    self.screen.blit(self.player.slash_left_image, (self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y))
+                    self.screen.blit(self.player.slash_left_image, (self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y + self.player.weapon.y_pos))
                     if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
                         self.player_hit(self.player2, False)
                         self.player2.isHit = True
                         self.player2.knockbackRight = False
                         self.player2.knockback(self.player.weapon.knockback, self.player2.knockbackRight)
+                        if self.player.weapon.slow:
+                            self.player2.speed = 6
                 if time.time() - self.attacking_start > 0.1:
                     self.player.attacking = False
                     self.attacking_start = time.time()
@@ -597,23 +658,27 @@ class Game():
                     
             if self.player2.attacking:
                 if self.player2.attackRight:
-                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
+                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y + self.player2.weapon.y_pos, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
-                    self.screen.blit(self.player2.slash_right_image, (self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y))
+                    self.screen.blit(self.player2.slash_right_image, (self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y + self.player2.weapon.y_pos))
                     if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
                         self.player_hit(self.player, True)
                         self.player.isHit = True
                         self.player.knockbackRight = True
                         self.player.knockback(self.player2.weapon.knockback, self.player.knockbackRight)
+                        if self.player2.weapon.slow:
+                            self.player.speed = 6
                 elif not self.player2.attackRight:
-                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
+                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y + self.player2.weapon.y_pos, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
-                    self.screen.blit(self.player2.slash_left_image, (self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y))
+                    self.screen.blit(self.player2.slash_left_image, (self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y + self.player2.weapon.y_pos))
                     if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
                         self.player_hit(self.player, True)
                         self.player.isHit = True
                         self.player.knockbackRight = False
                         self.player.knockback(self.player2.weapon.knockback, self.player.knockbackRight)
+                        if self.player2.weapon.slow:
+                            self.player.speed = 6
                 if time.time() - self.attacking_start2 > 0.1:
                     self.player2.attacking = False
                     self.attacking_start2 = time.time()
@@ -727,6 +792,7 @@ class Game():
                     self.player.isDamaged = False
                     self.player.image = self.player.OriginalImage
                     self.character_icon = self.character1_img
+                    self.player.speed = self.player.original_speed
                     self.damaged_start = time.time()
                                         
             if self.player2.isDamaged:
@@ -734,6 +800,7 @@ class Game():
                     self.player2.isDamaged = False
                     self.player2.image = self.player2.OriginalImage
                     self.character2_icon = self.character2_img
+                    self.player2.speed = self.player2.original_speed
                     self.damaged_start2 = time.time()
                     
             if self.player.rect.y > C.SCREEN_HEIGHT + 250 and not self.theGameIsOver:
@@ -860,8 +927,14 @@ class Game():
             self.draw_text(str(self.player_one_wins), self.color_default, 110, 384, C.SCREEN_HEIGHT - 85)
             self.draw_text(str(self.player_two_wins), self.color_default, 100, C.SCREEN_WIDTH - 378, C.SCREEN_HEIGHT - 85)
             
-            self.screen.blit(pygame.transform.scale(self.player.weapon.image, (36, 108)), (146, C.SCREEN_HEIGHT - 163))
-            self.screen.blit(pygame.transform.scale(self.player2.weapon.image, (36, 108)), (C.SCREEN_WIDTH - 182, C.SCREEN_HEIGHT - 163))
+            # self.screen.blit(self.player.weapon.original_image, (146, C.SCREEN_HEIGHT - 163))
+            # self.screen.blit(self.player2.weapon.original_image, (C.SCREEN_WIDTH - 182, C.SCREEN_HEIGHT - 163))
+
+            player_weapon_hud_rect = pygame.Rect(120,C.SCREEN_HEIGHT - 180,90,140)
+            player2_weapon_hud_rect = pygame.Rect(C.SCREEN_WIDTH-210,C.SCREEN_HEIGHT-180,90,140)
+
+            self.center_and_scale_image(self.screen, self.player.weapon.original_image, player_weapon_hud_rect, self.player.weapon.character_icon_scale_factor)
+            self.center_and_scale_image(self.screen, self.player2.weapon.original_image, player2_weapon_hud_rect, self.player2.weapon.character_icon_scale_factor)
                         
             pygame.display.flip()
                     
@@ -908,12 +981,18 @@ class Game():
                         elif(current_selection == "quit"):
                             current_selection = "settings"
                             pygame.mixer.Sound.play(self.select_sound)
+                        elif(current_selection == "resume"):
+                            current_selection = "quit"
+                            pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_s or event.key == K_DOWN:
                         if(current_selection == "resume"):
                             current_selection = "settings"
                             pygame.mixer.Sound.play(self.select_sound)
                         elif(current_selection == "settings"):
                             current_selection = "quit"
+                            pygame.mixer.Sound.play(self.select_sound)
+                        elif(current_selection == "quit"):
+                            current_selection = "resume"
                             pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_RETURN:
                         if(current_selection == "resume"):
@@ -922,9 +1001,13 @@ class Game():
                         if(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
                             pygame.mixer.stop()
+                            self.menu_running = True
                             self.game_running = False
                             self.paused = False
-                            self.menu_running = True
+
+                        if(current_selection == "settings"):
+                            self.game_running = False
+                            pass
                         
             self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 150)
             self.draw_text("SETTINGS", settings_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
@@ -970,14 +1053,22 @@ class Game():
                 start_text_color = self.color_select
                 quit_text_color = self.color_default
                 controls_text_color = self.color_default
+                armory_text_color = self.color_default
             elif(current_selection == "quit"):
                 start_text_color = self.color_default
                 quit_text_color = self.color_select
                 controls_text_color = self.color_default
+                armory_text_color = self.color_default
+            elif(current_selection == "armory"):
+                start_text_color = self.color_default
+                quit_text_color = self.color_default
+                controls_text_color = self.color_default
+                armory_text_color = self.color_select
             elif(current_selection == "controls"):
                 controls_text_color = self.color_select
                 start_text_color = self.color_default
                 quit_text_color = self.color_default
+                armory_text_color = self.color_default
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
@@ -992,14 +1083,21 @@ class Game():
                             current_selection = "controls"
                         elif(current_selection == "controls"):
                             pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "armory"
+                        elif(current_selection == "armory"):
                             current_selection = "play"
+                            pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_s or event.key == K_DOWN:
                         if(current_selection == "play"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "armory"
+                        elif(current_selection == "armory"):
                             pygame.mixer.Sound.play(self.select_sound)
                             current_selection = "controls"
                         elif(current_selection == "controls"):
                             pygame.mixer.Sound.play(self.select_sound)
                             current_selection = "quit"
+
                     elif event.key == K_RETURN:
                         if(current_selection == "play"):
                             pygame.mixer.Sound.play(self.select_sound)
@@ -1010,7 +1108,13 @@ class Game():
                             self.isPostGame = False
                             self.theGameIsOver = False
                             pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(0.1)
+                            self.player_rand = C.weapon_dict["shard"]
+                            self.player2_rand = C.weapon_dict["shard"]
                             self.run_game()
+                        elif(current_selection == "armory"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            self.pregame_running = False
+                            self.armory()
                         elif(current_selection == "controls"):
                             pygame.mixer.Sound.play(self.select_sound)
                             self.pregame_running = False
@@ -1031,9 +1135,28 @@ class Game():
             pygame.draw.rect(self.screen, (34,34,34), round_hud)
             self.draw_text("PRE GAME MENU", self.color_default, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 850)
             self.draw_text("START", start_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 650)
-            self.draw_text("ARMORY", (130,130,130), 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 550)
+            self.draw_text("ARMORY", armory_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 550)
             self.draw_text("CONTROLS", controls_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 450)
             self.draw_text("RETURN TO MENU", quit_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 350)
+            pygame.display.flip()
+
+    def armory(self):
+        self.armory_showing = True
+        while self.armory_showing:
+            # for loop through the event queue
+            for event in pygame.event.get():
+                # Check for KEYDOWN event
+                if event.type == KEYDOWN:
+                    # If the Esc key is pressed, then exit the main loop
+                    if event.key == K_ESCAPE:
+                        self.armory_showing = False
+                        self.pregame_menu()
+                    elif event.key == K_RETURN:
+                            self.armory_showing = False
+                            self.pregame_menu()
+            self.screen.fill(self.color_menu)
+            self.draw_text("ARMORY", self.color_default, 90, C.SCREEN_WIDTH/2, 150)
+
             pygame.display.flip()
             
     def controls_menu(self):  
@@ -1108,6 +1231,7 @@ class Game():
                 playedSound = True
             self.draw_text(final_script, self.color_select, 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 20)
             self.draw_text("WON THE GAME", (255, 255, 255), 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 20)
+
             pygame.display.flip()
 
     def round_over(self, player):
@@ -1153,8 +1277,8 @@ class Game():
         chest_current_frame = 0
         chest2_current_frame = 0
         
-        # self.player_one_wins = 0
-        # self.player_two_wins = 0
+        self.player_one_wins = 0
+        self.player_two_wins = 0
         
         self.isPostGame = True
         
@@ -1165,14 +1289,12 @@ class Game():
         chest2_opened = False
 
         new_weapon_1 = self.randomize_weapon(self.player)
-        self.player.changeWeapon(new_weapon_1)
-        print("new weapon 1: ", new_weapon_1.name)
+        self.player_rand = new_weapon_1
         new_weapon_2 = self.randomize_weapon(self.player2)
-        self.player2.changeWeapon(new_weapon_2)
-        print("new wepaon 2: ", new_weapon_2.name)
+        self.player2_rand = new_weapon_2
 
-        print("self.player weapon: ", self.player.weapon.name)
-        print("self.player2.weapon: ", self.player2.weapon.name)
+        self.player.changeWeapon(self.player_rand)
+        self.player2.changeWeapon(self.player2_rand)
         
         while self.giving_gun:
             background_image = pygame.image.load(os.path.join(base_directory, "assets/img/menuBackground.png")).convert()
@@ -1183,9 +1305,15 @@ class Game():
             player1_chest_image = pygame.transform.scale(player1_chest_image, (4000, 240))
             player2_chest_image = player1_chest_image
             player1_chest_image = pygame.transform.flip(player1_chest_image, True, False)
+
+            player_weapon = self.player_rand.original_image
+            player2_weapon = self.player2_rand.original_image
             
-            player_weapon = pygame.transform.scale(new_weapon_1.image, (90, 270))
-            player2_weapon = pygame.transform.scale(new_weapon_2.image, (90, 270))
+            player_weapon = pygame.transform.scale(player_weapon, (self.player.weapon.scaling[0]*3, self.player.weapon.scaling[1]*3))
+            player2_weapon = pygame.transform.scale(player2_weapon, (self.player2.weapon.scaling[0]*3, self.player2.weapon.scaling[1]*3))
+
+            player_weapon_hud_rect = pygame.Rect(C.SCREEN_WIDTH/2 - 580, C.SCREEN_HEIGHT/2 - 250, 260, 450)
+            player2_weapon_hud_rect = pygame.Rect(C.SCREEN_WIDTH/2 + 320, C.SCREEN_HEIGHT/2 - 250, 260, 450)
             
             if not chest_opened:
                 self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (3600,0,400,240))
@@ -1197,7 +1325,7 @@ class Game():
                 if chest_current_frame < 10:
                     self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (4000 - (chest_current_frame*400),0,400,240))
                 else:
-                    self.screen.blit(player_weapon, (C.SCREEN_WIDTH/2 - 500, C.SCREEN_HEIGHT/2 - 120))
+                    self.center_and_scale_image(self.screen, player_weapon, player_weapon_hud_rect, self.player_rand.gun_screen_scale_factor)
                     if not playedSound:
                         pygame.mixer.Sound.play(self.sword_get_sound)
                         playedSound = True
@@ -1213,7 +1341,7 @@ class Game():
                 if chest2_current_frame < 10:
                     self.screen.blit(player2_chest_image, (C.SCREEN_WIDTH/2 + 300, C.SCREEN_HEIGHT/2 + 150), ((chest2_current_frame*400),0,400,240))
                 else:
-                    self.screen.blit(player2_weapon, (C.SCREEN_WIDTH/2 + 410, C.SCREEN_HEIGHT/2 - 120))
+                    self.center_and_scale_image(self.screen, player2_weapon, player2_weapon_hud_rect, self.player2_rand.gun_screen_scale_factor)
                     if not playedSound2:
                         pygame.mixer.Sound.play(self.sword_get_sound)
                         playedSound2 = True
