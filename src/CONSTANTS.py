@@ -1,4 +1,6 @@
 import pygame
+import os
+from Weapons import *
 
 LEVEL_MAP = [
     'XXKBBBBBBBBBBBBJXXXXXXZXKBBBBBBBBBBBBJXX',
@@ -346,6 +348,11 @@ SCREEN_HEIGHT = 1200
 GRAVITY = 15
 FRICTION = 0.8
 
+def change_res(x, y):
+    global SCREEN_WIDTH, SCREEN_HEIGHT
+    SCREEN_WIDTH = x
+    SCREEN_HEIGHT = y
+
 # create a dictionary to store key presses for player 1 and player 2
 key_presses_1 = {
     "up": pygame.K_w,
@@ -361,4 +368,42 @@ key_presses_2 = {
     "left": pygame.K_LEFT,
     "right": pygame.K_RIGHT,
     "dash": pygame.K_COMMA,
+}
+
+# dictionary for all weapons
+weapon_dict = {
+    "defaultSword": Weapon(
+        "The Default Sword", 
+        "Common",
+        "Slash",
+        os.path.join(base_directory, "assets/img/swords/shard.png"), 
+        os.path.join(base_directory, "assets/sound/swoosh.wav"), 
+        0.1, 
+        5,
+        30,
+        -30,
+        (30, 90), 
+        (100, 100)
+    ),
+    "godSword": Weapon(
+        "GOD SWORD", 
+        "Mythic",
+        "Slash",
+        os.path.join(base_directory, 
+        "assets/img/swords/dev_sword.png"), 
+        os.path.join(base_directory, 
+        "assets/sound/toot.mp3"), 
+        0.2, 
+        5,
+        30,
+        -30,
+        (30, 90), 
+        (300, 300), 
+        0.2, 
+        25, 
+        -20, 
+        True, 
+        10,
+        True
+    ),
 }
