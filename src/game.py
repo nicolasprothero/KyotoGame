@@ -188,6 +188,21 @@ class Game():
         if player.direction.y > 0:
             player.isOnGround = False
 
+    def center_and_scale_image(self, screen, image, boundary_rect, scaling_factor=1.0):
+        # Get the dimensions of the image and the boundary rectangle
+        image_width, image_height = image.get_width(), image.get_height()
+        boundary_width, boundary_height = boundary_rect.width, boundary_rect.height
+
+        # Calculate the scaled image dimensions
+        scaled_width, scaled_height = int(image_width * scaling_factor), int(image_height * scaling_factor)
+
+        # Calculate the position to center the image inside the boundary rectangle
+        x_offset = (boundary_width - scaled_width) // 2
+        y_offset = (boundary_height - scaled_height) // 2
+
+        # Blit the scaled and centered image onto the screen
+        scaled_image = pygame.transform.scale(image, (scaled_width, scaled_height))
+        screen.blit(scaled_image, (boundary_rect.x + x_offset, boundary_rect.y + y_offset))
 
 
     def draw_text(self, text, color, size, x, y):
@@ -360,12 +375,13 @@ class Game():
         self.character_icon = self.character1_img
         self.character2_icon = self.character2_img
 
-        self.player.changeWeapon(C.weapon_dict["godSword"])
+        self.player.changeWeapon(C.weapon_dict["theifsTorch"])
+        self.player2.changeWeapon(C.weapon_dict["iceSword"])
 
-        self.player_attack_sound = pygame.mixer.Sound(os.path.join(base_directory, self.player.weapon.attack_sound_path))
+        self.player_attack_sound = pygame.mixer.Sound(self.player.weapon.attack_sound_path)
         self.player_attack_sound.set_volume(self.player.weapon.attack_sound_level)
 
-        self.player2_attack_sound = pygame.mixer.Sound(os.path.join(base_directory, self.player2.weapon.attack_sound_path))
+        self.player2_attack_sound = pygame.mixer.Sound(self.player2.weapon.attack_sound_path)
         self.player2_attack_sound.set_volume(self.player2.weapon.attack_sound_level)
 
         # Main loop
@@ -412,6 +428,7 @@ class Game():
             self.vertical_movement_collision()
             self.players.draw(self.screen)
             
+            
             # self.screen.blit(self.player.image, self.player.pos)
             # self.screen.blit(self.player2.image, self.player2.pos)
             if pressed_keys[pygame.K_x] and self.player.canAttack:
@@ -448,23 +465,27 @@ class Game():
             
             if self.player.attacking:
                 if self.player.attackRight:
-                    player_attack_hitbox = pygame.Rect(self.player.rect.x + self.player.image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                    player_attack_hitbox = pygame.Rect(self.player.rect.x + self.player.image.get_width(), self.player.rect.y + self.player.weapon.y_pos, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
-                    self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y))
+                    self.screen.blit(self.player.slash_right_image, (self.player.rect.x + self.player.image.get_width(), self.player.rect.y + self.player.weapon.y_pos))
                     if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
                         self.player_hit(self.player2, False)
                         self.player2.isHit = True
                         self.player2.knockbackRight = True
                         self.player2.knockback(self.player.weapon.knockback, self.player2.knockbackRight)
+                        if self.player.weapon.slow:
+                            self.player2.speed = 6
                 elif not self.player.attackRight:
-                    player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
+                    player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y + self.player.weapon.y_pos, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
-                    self.screen.blit(self.player.slash_left_image, (self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y))
+                    self.screen.blit(self.player.slash_left_image, (self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y + self.player.weapon.y_pos))
                     if pygame.Rect.colliderect(player_attack_hitbox, self.player2.rect):
                         self.player_hit(self.player2, False)
                         self.player2.isHit = True
                         self.player2.knockbackRight = False
                         self.player2.knockback(self.player.weapon.knockback, self.player2.knockbackRight)
+                        if self.player.weapon.slow:
+                            self.player2.speed = 6
                 if time.time() - self.attacking_start > 0.1:
                     self.player.attacking = False
                     self.attacking_start = time.time()
@@ -476,23 +497,27 @@ class Game():
                     
             if self.player2.attacking:
                 if self.player2.attackRight:
-                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
+                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y + self.player2.weapon.y_pos, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
-                    self.screen.blit(self.player2.slash_right_image, (self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y))
+                    self.screen.blit(self.player2.slash_right_image, (self.player2.rect.x + self.player2.image.get_width(), self.player2.rect.y + self.player2.weapon.y_pos))
                     if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
                         self.player_hit(self.player, True)
                         self.player.isHit = True
                         self.player.knockbackRight = True
                         self.player.knockback(self.player2.weapon.knockback, self.player.knockbackRight)
+                        if self.player2.weapon.slow:
+                            self.player.speed = 6
                 elif not self.player2.attackRight:
-                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
+                    player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y + self.player2.weapon.y_pos, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
-                    self.screen.blit(self.player2.slash_left_image, (self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y))
+                    self.screen.blit(self.player2.slash_left_image, (self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y + self.player2.weapon.y_pos))
                     if pygame.Rect.colliderect(player2_attack_hitbox, self.player.rect):
                         self.player_hit(self.player, True)
                         self.player.isHit = True
                         self.player.knockbackRight = False
                         self.player.knockback(self.player2.weapon.knockback, self.player.knockbackRight)
+                        if self.player2.weapon.slow:
+                            self.player.speed = 6
                 if time.time() - self.attacking_start2 > 0.1:
                     self.player2.attacking = False
                     self.attacking_start2 = time.time()
@@ -606,6 +631,7 @@ class Game():
                     self.player.isDamaged = False
                     self.player.image = self.player.OriginalImage
                     self.character_icon = self.character1_img
+                    self.player.speed = self.player.original_speed
                     self.damaged_start = time.time()
                                         
             if self.player2.isDamaged:
@@ -613,6 +639,7 @@ class Game():
                     self.player2.isDamaged = False
                     self.player2.image = self.player2.OriginalImage
                     self.character2_icon = self.character2_img
+                    self.player2.speed = self.player2.original_speed
                     self.damaged_start2 = time.time()
                     
             if self.player.rect.y > C.SCREEN_HEIGHT + 250 and not self.theGameIsOver:
@@ -739,8 +766,14 @@ class Game():
             self.draw_text(str(self.player_one_wins), self.color_default, 110, 384, C.SCREEN_HEIGHT - 85)
             self.draw_text(str(self.player_two_wins), self.color_default, 100, C.SCREEN_WIDTH - 378, C.SCREEN_HEIGHT - 85)
             
-            self.screen.blit(self.player_weapon, (146, C.SCREEN_HEIGHT - 163))
-            self.screen.blit(self.player2_weapon, (C.SCREEN_WIDTH - 182, C.SCREEN_HEIGHT - 163))
+            # self.screen.blit(self.player.weapon.original_image, (146, C.SCREEN_HEIGHT - 163))
+            # self.screen.blit(self.player2.weapon.original_image, (C.SCREEN_WIDTH - 182, C.SCREEN_HEIGHT - 163))
+
+            player_weapon_hud_rect = pygame.Rect(120,C.SCREEN_HEIGHT - 180,90,140)
+            player2_weapon_hud_rect = pygame.Rect(C.SCREEN_WIDTH-210,C.SCREEN_HEIGHT-180,90,140)
+
+            self.center_and_scale_image(self.screen, self.player.weapon.original_image, player_weapon_hud_rect, self.player.weapon.character_icon_scale_factor)
+            self.center_and_scale_image(self.screen, self.player2.weapon.original_image, player2_weapon_hud_rect, self.player2.weapon.character_icon_scale_factor)
                         
             pygame.display.flip()
                     
@@ -1035,9 +1068,15 @@ class Game():
             player1_chest_image = pygame.transform.scale(player1_chest_image, (4000, 240))
             player2_chest_image = player1_chest_image
             player1_chest_image = pygame.transform.flip(player1_chest_image, True, False)
+
+            player_weapon = self.player.weapon.original_image
+            player2_weapon = self.player2.weapon.original_image
             
-            player_weapon = pygame.transform.scale(self.player.weapon.image, (90, 270))
-            player2_weapon = pygame.transform.scale(self.player2.weapon.image, (90, 270))
+            player_weapon = pygame.transform.scale(player_weapon, (self.player.weapon.scaling[0]*3, self.player.weapon.scaling[1]*3))
+            player2_weapon = pygame.transform.scale(player2_weapon, (self.player2.weapon.scaling[0]*3, self.player2.weapon.scaling[1]*3))
+
+            player_weapon_hud_rect = pygame.Rect(C.SCREEN_WIDTH/2 - 580, C.SCREEN_HEIGHT/2 - 250, 260, 450)
+            player2_weapon_hud_rect = pygame.Rect(C.SCREEN_WIDTH/2 + 320, C.SCREEN_HEIGHT/2 - 250, 260, 450)
             
             if not chest_opened:
                 self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (3600,0,400,240))
@@ -1049,7 +1088,7 @@ class Game():
                 if chest_current_frame < 10:
                     self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (4000 - (chest_current_frame*400),0,400,240))
                 else:
-                    self.screen.blit(player_weapon, (C.SCREEN_WIDTH/2 - 500, C.SCREEN_HEIGHT/2 - 120))
+                    self.center_and_scale_image(self.screen, player_weapon, player_weapon_hud_rect, self.player.weapon.gun_screen_scale_factor)
                     if not playedSound:
                         pygame.mixer.Sound.play(self.sword_get_sound)
                         playedSound = True
@@ -1065,7 +1104,7 @@ class Game():
                 if chest2_current_frame < 10:
                     self.screen.blit(player2_chest_image, (C.SCREEN_WIDTH/2 + 300, C.SCREEN_HEIGHT/2 + 150), ((chest2_current_frame*400),0,400,240))
                 else:
-                    self.screen.blit(player2_weapon, (C.SCREEN_WIDTH/2 + 410, C.SCREEN_HEIGHT/2 - 120))
+                    self.center_and_scale_image(self.screen, player2_weapon, player2_weapon_hud_rect, self.player2.weapon.gun_screen_scale_factor)
                     if not playedSound2:
                         pygame.mixer.Sound.play(self.sword_get_sound)
                         playedSound2 = True

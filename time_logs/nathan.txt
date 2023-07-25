@@ -15,3 +15,7 @@
 07/19: 8:00PM - 11:00PM added weapon attributes that can affect the player stats, hitbox, and cooldowns.
 07/20: 11:30AM - 2:00PM added extra sheild and different knockbacks.
 07/20: 4:00PM - 7:30PM added an extra jump attribute, weapon position, and attempted at scaling (confused ask nic).
+07/21: 3:00PM - 8:00PM Fixing scaling, adding weapons
+07/23: 1:00PM - 10:00PM added more attributes, weapons, and fixing hitboxes
+07/24: 4:00PM - 11:00PM fixed hitboxes, added more weapons, added rotation to thrust weapons
+07/24: 4:00PM - 9:30PM added momotaro sword, made weapons centered and scaled on hud and gun menu, added color changing.
