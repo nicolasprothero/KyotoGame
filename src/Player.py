@@ -159,6 +159,4 @@ class Player(pygame.sprite.Sprite):
             self.extra_shield = True
         if self.weapon.get_extra_jump():
             self.extra_jump = True
-        
-    def changePos(self, pos):
-        self.rect.topleft = pos
+
