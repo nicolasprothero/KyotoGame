@@ -157,4 +157,4 @@ class Player(pygame.sprite.Sprite):
             self.extra_jump = True
         
     def changePos(self, pos):
-        self.rect = self.image.get_rect(topleft = pos)
+        self.rect.topleft = pos
