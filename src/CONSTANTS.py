@@ -572,9 +572,24 @@ weapon_dict = {
     )
 }
 
-def writeToJson(dict, filename):
-    keys = [{"name": key} for key in dict.keys()]
-    json_data = json.dumps(keys, indent=4)
-    # write to json file
-    with open(filename, "w") as f:
-        f.write(json_data)
+
+def writeToJson(data_dict, output_file):
+    try:
+        # Load the existing JSON data from the file if it exists
+        with open(output_file, 'r') as file:
+            existing_data = json.load(file)
+    except FileNotFoundError:
+        # If the file doesn't exist, set existing_data to an empty list
+        existing_data = []
+
+    # Create a set of existing names to keep track of names already in the JSON
+    existing_names = set(item["name"] for item in existing_data)
+
+    # Update existing_data with new keys and default "seen" value if the name does not exist
+    for key in data_dict.keys():
+        if key not in existing_names:
+            existing_data.append({"name": key, "seen": 0})
+
+    # Write the updated JSON data to the output file
+    with open(output_file, 'w') as file:
+        json.dump(existing_data, file, indent=4)
