@@ -14,6 +14,7 @@ from Weapons import *
 import ctypes
 import os
 import platform
+import copy
 
 base_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -43,16 +44,18 @@ class Game():
         pygame.init()
         pygame.mixer.init()
         
-        flags = pygame.SCALED | pygame.FULLSCREEN
-        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
-        self.camera = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), flags)
+
+        self.flags = pygame.SCALED | pygame.FULLSCREEN
+        self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), self.flags)
+        self.camera = pygame.Surface((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), self.flags)
+
         
         # Instantiate player. Right now, this is just a rectangle.
         self.players = pygame.sprite.Group()
         abs_path = os.path.join(base_directory, "assets/img/character.png")
-        self.player = Player(C.key_presses_1, abs_path, (C.SCREEN_WIDTH/6, 100))
+        self.player = Player(C.key_presses_1, abs_path, (C.SCREEN_WIDTH/6, C.SCREEN_HEIGHT/6))
         self.players.add(self.player)
-        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, 100))
+        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, C.SCREEN_HEIGHT/6))
         self.players.add(self.player2)
         
         self.character1_img = pygame.image.load('src/assets/img/character_icon.png')
@@ -79,8 +82,8 @@ class Game():
         self.round_hud = pygame.image.load('src/assets/img/round_hud.png')
         self.round_hud = pygame.transform.scale(self.round_hud, (310, 140))
         
-        self.player_weapon = pygame.transform.scale(self.player.weapon.image, (36, 108))
-        self.player2_weapon = pygame.transform.scale(self.player2.weapon.image, (36, 108))
+        # self.player.weapon = pygame.transform.scale(self.player.weapon.image, (36, 108))
+        # self.player2.weapon = pygame.transform.scale(self.player2.weapon.image, (36, 108))
 
         self.the_map_list = []
         
@@ -178,7 +181,7 @@ class Game():
                         player.isOnGround = True
                         player.hasDash = True
                         player.hasDoubleJump = True
-                        if player.weapon.extra_jump:
+                        if self.player.weapon.extra_jump:
                             player.extra_jump = True
                         player.gravity = 0.9
                     if player.direction.y < 0:
@@ -272,7 +275,7 @@ class Game():
             self.screen.fill(self.color_menu)
             # create a surface object, image is drawn on it.
             title_img = pygame.image.load(os.path.join(base_directory, "assets/img/title.png"))
-            title_img = pygame.transform.scale(title_img,((C.SCREEN_WIDTH * 0.6), (((C.SCREEN_WIDTH* 0.6)/3))))
+            title_img = pygame.transform.scale(title_img,((C.SCREEN_WIDTH * 0.6), ((C.SCREEN_WIDTH* 0.6)/3)))
             self.screen.blit(title_img, ((C.SCREEN_WIDTH/2 - (title_img.get_width()/2)), 100))
             
             #C.SCREEN_WIDTH/2 - ((C.SCREEN_WIDTH* 0.6)/2
@@ -282,9 +285,21 @@ class Game():
             pygame.display.flip()
 
     def run_game(self):
+
+        right_image = pygame.image.load(os.path.join(base_directory, "assets/img/character_dash.png")).convert_alpha()
+        right_image = pygame.transform.scale(right_image, (65, 90))
+        left_image = pygame.transform.flip(right_image, True, False)
+        right_image2 = pygame.image.load(os.path.join(base_directory, "assets/img/character2_dash.png")).convert_alpha()
+        right_image2 = pygame.transform.scale(right_image2, (65, 90))
+        left_image2 = pygame.transform.flip(right_image2, True, False)
+        damaged_image = pygame.image.load(os.path.join(base_directory, "assets/img/damaged_dash.png")).convert_alpha()
+        damaged_image = pygame.transform.scale(damaged_image, (65, 90))
+        damaged_image2 = pygame.transform.flip(damaged_image, True, False)
+
+
         # Setup the level        
         self.game_running = True
-        
+
         if self.round_num is 1:
             self.the_map_list = C.map_list[:]
         elif self.round_num is 6:
@@ -307,31 +322,41 @@ class Game():
                 self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
                 self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
             self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
             self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP1:
             self.players.empty()
             self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
             self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
             self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
             self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP2:
             self.players.empty()
             self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
             self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
             self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
             self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP3:
             self.players.empty()
             self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
             self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
             self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
             self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map ==C.LEVEL_MAP4:
             self.players.empty()
             self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
             self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
             self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
             self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP5:
             self.players.empty()
             spawn_options = [1, 2]
@@ -343,40 +368,47 @@ class Game():
                 self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
                 self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
             self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
             self.players.add(self.player2) 
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP6:
             self.players.empty()
             self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
             self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
             self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
             self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map ==C.LEVEL_MAP7:
             self.players.empty()
             self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
             self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
             self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
             self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP8:
             self.players.empty()
             self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
             self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
             self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
             self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP9:
             self.players.empty()
             self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 0))
             self.players.add(self.player)
+            self.player.changeWeapon(self.player_rand)
             self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 0))
             self.players.add(self.player2)
+            self.player2.changeWeapon(self.player2_rand)
         
         self.level = Level(current_map, self.screen, os.path.join(base_directory, "assets/img/DefaultBackground.png"))
 
         
         self.character_icon = self.character1_img
         self.character2_icon = self.character2_img
-
-        self.player.changeWeapon(C.weapon_dict["theifsTorch"])
-        self.player2.changeWeapon(C.weapon_dict["iceSword"])
 
         self.player_attack_sound = pygame.mixer.Sound(self.player.weapon.attack_sound_path)
         self.player_attack_sound.set_volume(self.player.weapon.attack_sound_level)
@@ -403,8 +435,23 @@ class Game():
         player2run_current_frame = 0
         player2idle_last_time = pygame.time.get_ticks()
         
+        dashFrameCounter = 0
+        dashFrameCounter2 = 0
+        # list of coordinates for player dash animation
+        player_dashcoords = []
+        player2_dashcoords = []
+        player_images = []
+        player2_images = []
+        dec = 150
+        dec2 = 150
+        drawTime = time.time()
+        fadeTime = time.time()
+        fadeTime2 = time.time()
+        fadecounter = 0
+        alphas = [dec] * 3 # store alpha levels
+        alphas2 = [dec2] * 3 # store alpha levels
+
         while self.game_running:
-            
             clock.tick(60) # limit fps to 60
             pressed_keys = pygame.key.get_pressed()
             # for loop through the event queue
@@ -418,7 +465,8 @@ class Game():
                          self.player.jump()
                     elif event.key == K_UP:
                          self.player2.jump()
-
+                    elif event.key == pygame.K_y:
+                        self.zoom = not self.zoom
             # Run the Level
             self.level.run()
 
@@ -427,8 +475,118 @@ class Game():
             self.horizontal_movement_collision()
             self.vertical_movement_collision()
             self.players.draw(self.screen)
+           
+            if self.player.pressedDash == True:
+                dec = 150
+                alphas = [dec] * 3
+                self.player.pressedDash = False
+
+            if self.player2.pressedDash == True:
+                dec2 = 150
+                alphas2 = [dec2] * 3
+                self.player2.pressedDash = False
             
+            if self.player.isDashing == True:
+                dashFrameCounter += 1
+
+                if dashFrameCounter == 1 or dashFrameCounter == 3 or dashFrameCounter == 5:
+                    if self.player.isDamaged:
+                        if self.player.facingRight:
+                            player_images.append(damaged_image)
+                        else:
+                            player_images.append(damaged_image2)
+                    else:
+                        if self.player.facingRight:
+                            player_images.append(right_image)
+                        else:
+                            player_images.append(left_image)
+                    player_dashcoords.append((self.player.rect.x, self.player.rect.y))
+                    
+                if dashFrameCounter > 15:
+                    self.player.isDashing = False
+                    dashFrameCounter = 0
+
+            if self.player2.isDashing == True:
+                dashFrameCounter2 += 1
+                if dashFrameCounter2 == 1 or dashFrameCounter2 == 3 or dashFrameCounter2 == 5:
+                    if self.player2.isDamaged:
+                        if self.player2.facingRight:
+                            player2_images.append(damaged_image)
+                        else:
+                            player2_images.append(damaged_image2)
+                    else:
+                        if self.player2.facingRight:
+                            player2_images.append(right_image2)
+                        else:
+                            player2_images.append(left_image2)
+                    player2_dashcoords.append((self.player2.rect.x, self.player2.rect.y))
+                
+                if dashFrameCounter2 > 15:
+                    self.player2.isDashing = False
+                    dashFrameCounter2 = 0
+
+            # set alpha level of dash animation using alphas[i]
+            player_images[0].set_alpha(alphas[0]) if len(player_images) > 0 else None
+            player_images[1].set_alpha(alphas[1]) if len(player_images) > 1 else None
+            player_images[2].set_alpha(alphas[2]) if len(player_images) > 2 else None
+
+            player2_images[0].set_alpha(alphas2[0]) if len(player2_images) > 0 else None
+            player2_images[1].set_alpha(alphas2[1]) if len(player2_images) > 1 else None
+            player2_images[2].set_alpha(alphas2[2]) if len(player2_images) > 2 else None
+
+
+            # change alpha level of dash animation
+            # for x in player_images:
+            #     x.set_alpha(dec)
+
+            # every 0.02 seconds, decrease alpha level by 10
+            if time.time() - fadeTime > 0.02:
+                alphas[0] -= 150
+                alphas[0] = max(alphas[0], 0)
+                alphas[1] -= 12
+                alphas[1] = max(alphas[1], 0)
+                alphas[2] -= 10
+                alphas[2] = max(alphas[2], 0)
+                dec -= 10
+                if dec <= 0:
+                    player_images.clear()
+                    player_dashcoords.clear()
+                    dec = 0
+
+                fadeTime = time.time()
+
+            if time.time() - fadeTime2 > 0.02:
+                alphas2[0] -= 150
+                alphas2[0] = max(alphas2[0], 0)
+                alphas2[1] -= 12
+                alphas2[1] = max(alphas2[1], 0)
+                alphas2[2] -= 10
+                alphas2[2] = max(alphas2[2], 0)
+                dec2 -= 10
+                if dec2 <= 0:
+                    player2_images.clear()
+                    player2_dashcoords.clear()
+                    dec2 = 0
+
+                fadeTime2 = time.time()
+
+          
+            for image, coords in zip(player_images, player_dashcoords):
+                self.screen.blit(image, coords)
+           
+            for image, coords in zip(player2_images, player2_dashcoords):
+                self.screen.blit(image, coords)
+
+            # if time.time() - drawTime > 0.75:
+            #     player_images.clear()
+            #     player_dashcoords.clear()
+            #     drawTime = time.time()
+                # print("clearing dash animation")
+
             
+
+            
+
             # self.screen.blit(self.player.image, self.player.pos)
             # self.screen.blit(self.player2.image, self.player2.pos)
             if pressed_keys[pygame.K_x] and self.player.canAttack:
@@ -820,12 +978,18 @@ class Game():
                         elif(current_selection == "quit"):
                             current_selection = "settings"
                             pygame.mixer.Sound.play(self.select_sound)
+                        elif(current_selection == "resume"):
+                            current_selection = "quit"
+                            pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_s or event.key == K_DOWN:
                         if(current_selection == "resume"):
                             current_selection = "settings"
                             pygame.mixer.Sound.play(self.select_sound)
                         elif(current_selection == "settings"):
                             current_selection = "quit"
+                            pygame.mixer.Sound.play(self.select_sound)
+                        elif(current_selection == "quit"):
+                            current_selection = "resume"
                             pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_RETURN:
                         if(current_selection == "resume"):
@@ -834,15 +998,23 @@ class Game():
                         if(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
                             pygame.mixer.stop()
+                            self.menu_running = True
                             self.game_running = False
                             self.paused = False
-                            self.menu_running = True
+
+                        if(current_selection == "settings"):
+                            self.game_running = False
+                            pass
                         
             self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 150)
             self.draw_text("SETTINGS", settings_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
             self.draw_text("RETURN TO MENU", quit_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 150)
             pygame.display.flip()
 
+    # def change_res(self, x, y):
+    #     C.SCREEN_WIDTH, C.SCREEN_HEIGHT = (x, y)
+    #     self.screen = pygame.display.set_mode((x, y), pygame.RESIZABLE)
+    
     def options_menu(self):
         
         self.options_running = True
@@ -855,6 +1027,10 @@ class Game():
                     # If the Esc key is pressed, then exit the main loop
                     if event.key == K_ESCAPE:
                             self.options_running = False
+                    elif event.key == K_RETURN:
+                            C.change_res(1366, 768)
+                            #self.level.display_surface = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.FULLSCREEN | pygame.SCALED)
+                            self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
                 # Check for QUIT event. If QUIT, then set running to false.
                 elif event.type == QUIT:
                     self.options_running = False
@@ -874,14 +1050,22 @@ class Game():
                 start_text_color = self.color_select
                 quit_text_color = self.color_default
                 controls_text_color = self.color_default
+                armory_text_color = self.color_default
             elif(current_selection == "quit"):
                 start_text_color = self.color_default
                 quit_text_color = self.color_select
                 controls_text_color = self.color_default
+                armory_text_color = self.color_default
+            elif(current_selection == "armory"):
+                start_text_color = self.color_default
+                quit_text_color = self.color_default
+                controls_text_color = self.color_default
+                armory_text_color = self.color_select
             elif(current_selection == "controls"):
                 controls_text_color = self.color_select
                 start_text_color = self.color_default
                 quit_text_color = self.color_default
+                armory_text_color = self.color_default
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
@@ -896,14 +1080,21 @@ class Game():
                             current_selection = "controls"
                         elif(current_selection == "controls"):
                             pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "armory"
+                        elif(current_selection == "armory"):
                             current_selection = "play"
+                            pygame.mixer.Sound.play(self.select_sound)
                     elif event.key == K_s or event.key == K_DOWN:
                         if(current_selection == "play"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "armory"
+                        elif(current_selection == "armory"):
                             pygame.mixer.Sound.play(self.select_sound)
                             current_selection = "controls"
                         elif(current_selection == "controls"):
                             pygame.mixer.Sound.play(self.select_sound)
                             current_selection = "quit"
+
                     elif event.key == K_RETURN:
                         if(current_selection == "play"):
                             pygame.mixer.Sound.play(self.select_sound)
@@ -914,7 +1105,13 @@ class Game():
                             self.isPostGame = False
                             self.theGameIsOver = False
                             pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(0.1)
+                            self.player_rand = C.weapon_dict["shard"]
+                            self.player2_rand = C.weapon_dict["shard"]
                             self.run_game()
+                        elif(current_selection == "armory"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            self.pregame_running = False
+                            self.armory()
                         elif(current_selection == "controls"):
                             pygame.mixer.Sound.play(self.select_sound)
                             self.pregame_running = False
@@ -935,9 +1132,28 @@ class Game():
             pygame.draw.rect(self.screen, (34,34,34), round_hud)
             self.draw_text("PRE GAME MENU", self.color_default, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 850)
             self.draw_text("START", start_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 650)
-            self.draw_text("ARMORY", (130,130,130), 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 550)
+            self.draw_text("ARMORY", armory_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 550)
             self.draw_text("CONTROLS", controls_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 450)
             self.draw_text("RETURN TO MENU", quit_text_color, 60, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 350)
+            pygame.display.flip()
+
+    def armory(self):
+        self.armory_showing = True
+        while self.armory_showing:
+            # for loop through the event queue
+            for event in pygame.event.get():
+                # Check for KEYDOWN event
+                if event.type == KEYDOWN:
+                    # If the Esc key is pressed, then exit the main loop
+                    if event.key == K_ESCAPE:
+                        self.armory_showing = False
+                        self.pregame_menu()
+                    elif event.key == K_RETURN:
+                            self.armory_showing = False
+                            self.pregame_menu()
+            self.screen.fill(self.color_menu)
+            self.draw_text("ARMORY", self.color_default, 90, C.SCREEN_WIDTH/2, 150)
+
             pygame.display.flip()
             
     def controls_menu(self):  
@@ -1012,6 +1228,7 @@ class Game():
                 playedSound = True
             self.draw_text(final_script, self.color_select, 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 20)
             self.draw_text("WON THE GAME", (255, 255, 255), 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 20)
+
             pygame.display.flip()
 
     def round_over(self, player):
@@ -1040,7 +1257,16 @@ class Game():
             self.draw_text(final_script, (255, 255, 255), 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 50)
             self.draw_text("Press ENTER to continue.", (255, 255, 255), 30, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 75)
             pygame.display.flip()
-            
+
+    def randomize_weapon(self, player):
+        random_key = random.choice(list(C.weapon_dict.keys()))
+
+        while player.weapon == C.weapon_dict[random_key]:
+            random_key = random.choice(list(C.weapon_dict.keys()))
+
+        new_weapon = C.weapon_dict[random_key]
+        return new_weapon
+    
     def gun_screen(self):
         self.giving_gun = True
         chest_last_time = pygame.time.get_ticks()
@@ -1058,6 +1284,14 @@ class Game():
 
         chest_opened = False
         chest2_opened = False
+
+        new_weapon_1 = self.randomize_weapon(self.player)
+        self.player_rand = new_weapon_1
+        new_weapon_2 = self.randomize_weapon(self.player2)
+        self.player2_rand = new_weapon_2
+
+        self.player.changeWeapon(self.player_rand)
+        self.player2.changeWeapon(self.player2_rand)
         
         while self.giving_gun:
             background_image = pygame.image.load(os.path.join(base_directory, "assets/img/menuBackground.png")).convert()
@@ -1069,8 +1303,8 @@ class Game():
             player2_chest_image = player1_chest_image
             player1_chest_image = pygame.transform.flip(player1_chest_image, True, False)
 
-            player_weapon = self.player.weapon.original_image
-            player2_weapon = self.player2.weapon.original_image
+            player_weapon = self.player_rand.original_image
+            player2_weapon = self.player2_rand.original_image
             
             player_weapon = pygame.transform.scale(player_weapon, (self.player.weapon.scaling[0]*3, self.player.weapon.scaling[1]*3))
             player2_weapon = pygame.transform.scale(player2_weapon, (self.player2.weapon.scaling[0]*3, self.player2.weapon.scaling[1]*3))
@@ -1088,7 +1322,7 @@ class Game():
                 if chest_current_frame < 10:
                     self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (4000 - (chest_current_frame*400),0,400,240))
                 else:
-                    self.center_and_scale_image(self.screen, player_weapon, player_weapon_hud_rect, self.player.weapon.gun_screen_scale_factor)
+                    self.center_and_scale_image(self.screen, player_weapon, player_weapon_hud_rect, self.player_rand.gun_screen_scale_factor)
                     if not playedSound:
                         pygame.mixer.Sound.play(self.sword_get_sound)
                         playedSound = True
@@ -1104,7 +1338,7 @@ class Game():
                 if chest2_current_frame < 10:
                     self.screen.blit(player2_chest_image, (C.SCREEN_WIDTH/2 + 300, C.SCREEN_HEIGHT/2 + 150), ((chest2_current_frame*400),0,400,240))
                 else:
-                    self.center_and_scale_image(self.screen, player2_weapon, player2_weapon_hud_rect, self.player2.weapon.gun_screen_scale_factor)
+                    self.center_and_scale_image(self.screen, player2_weapon, player2_weapon_hud_rect, self.player2_rand.gun_screen_scale_factor)
                     if not playedSound2:
                         pygame.mixer.Sound.play(self.sword_get_sound)
                         playedSound2 = True
