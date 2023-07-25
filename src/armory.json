@@ -1,38 +1,182 @@
 [
     {
-        "name": "shard",
+        "name": "The Shard",
+        "seen": 1
+    },
+    {
+        "name": "Dev Sword",
         "seen": 0
     },
     {
-        "name": "devSword",
+        "name": "Dagger",
         "seen": 0
     },
     {
-        "name": "dagger",
+        "name": "Katana",
         "seen": 0
     },
     {
-        "name": "katana",
+        "name": "Winged Sword",
         "seen": 0
     },
     {
-        "name": "wingedSword",
+        "name": "Mom's Knife",
+        "seen": 1
+    },
+    {
+        "name": "Theif's Torch",
         "seen": 0
     },
     {
-        "name": "momsKnife",
+        "name": "Ice Sword",
         "seen": 0
     },
     {
-        "name": "theifsTorch",
+        "name": "Momotaro's Sword",
         "seen": 0
     },
     {
-        "name": "iceSword",
+        "name": "The Shard",
         "seen": 0
     },
     {
-        "name": "momoSword",
+        "name": "Dev Sword",
+        "seen": 0
+    },
+    {
+        "name": "Dagger",
+        "seen": 0
+    },
+    {
+        "name": "Katana",
+        "seen": 0
+    },
+    {
+        "name": "Winged Sword",
+        "seen": 0
+    },
+    {
+        "name": "Mom's Knife",
+        "seen": 0
+    },
+    {
+        "name": "Theif's Torch",
+        "seen": 0
+    },
+    {
+        "name": "Ice Sword",
+        "seen": 0
+    },
+    {
+        "name": "Momotaro's Sword",
+        "seen": 0
+    },
+    {
+        "name": "The Shard",
+        "seen": 0
+    },
+    {
+        "name": "Dev Sword",
+        "seen": 0
+    },
+    {
+        "name": "Dagger",
+        "seen": 0
+    },
+    {
+        "name": "Katana",
+        "seen": 0
+    },
+    {
+        "name": "Winged Sword",
+        "seen": 0
+    },
+    {
+        "name": "Mom's Knife",
+        "seen": 0
+    },
+    {
+        "name": "Theif's Torch",
+        "seen": 0
+    },
+    {
+        "name": "Ice Sword",
+        "seen": 0
+    },
+    {
+        "name": "Momotaro's Sword",
+        "seen": 0
+    },
+    {
+        "name": "The Shard",
+        "seen": 0
+    },
+    {
+        "name": "Dev Sword",
+        "seen": 0
+    },
+    {
+        "name": "Dagger",
+        "seen": 0
+    },
+    {
+        "name": "Katana",
+        "seen": 0
+    },
+    {
+        "name": "Winged Sword",
+        "seen": 0
+    },
+    {
+        "name": "Mom's Knife",
+        "seen": 0
+    },
+    {
+        "name": "Theif's Torch",
+        "seen": 0
+    },
+    {
+        "name": "Ice Sword",
+        "seen": 0
+    },
+    {
+        "name": "Momotaro's Sword",
+        "seen": 0
+    },
+    {
+        "name": "The Shard",
+        "seen": 0
+    },
+    {
+        "name": "Dev Sword",
+        "seen": 0
+    },
+    {
+        "name": "Dagger",
+        "seen": 0
+    },
+    {
+        "name": "Katana",
+        "seen": 0
+    },
+    {
+        "name": "Winged Sword",
+        "seen": 0
+    },
+    {
+        "name": "Mom's Knife",
+        "seen": 0
+    },
+    {
+        "name": "Theif's Torch",
+        "seen": 0
+    },
+    {
+        "name": "Ice Sword",
+        "seen": 0
+    },
+    {
+        "name": "Momotaro's Sword",
         "seen": 0
     }
 ]

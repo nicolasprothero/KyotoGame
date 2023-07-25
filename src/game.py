@@ -15,6 +15,7 @@ import ctypes
 import os
 import platform
 import copy
+import json
 
 base_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -1295,6 +1296,10 @@ class Game():
 
         self.player.changeWeapon(self.player_rand)
         self.player2.changeWeapon(self.player2_rand)
+
+        # modify json file to chage new_weapon1 and new_weapon2 to seen
+        self.updateArmory(new_weapon_1.name, os.path.join(base_directory, "armory.json"))
+        self.updateArmory(new_weapon_2.name, os.path.join(base_directory, "armory.json"))
         
         while self.giving_gun:
             background_image = pygame.image.load(os.path.join(base_directory, "assets/img/menuBackground.png")).convert()
@@ -1454,3 +1459,25 @@ class Game():
                     self.invincibility_start2 = time.time()
                     self.damaged_start2 = time.time()
                     self.character2_icon = self.character2_damaged_img
+
+    def updateArmory(self, weaponName, file):
+        try:
+            # Load the existing JSON data from the file if it exists
+            with open(file, 'r') as f:
+                existing_data = json.load(f)
+        except json.JSONDecodeError:
+        # If the file exists but is empty, set existing_data to an empty list
+            existing_data = []
+        except FileNotFoundError:
+            # If the file doesn't exist, set existing_data to an empty list
+            existing_data = []
+
+        # Find the entry with the target_string and update its "seen" field to 1
+        for entry in existing_data:
+            if entry.get("name") == weaponName:
+                entry["seen"] = 1
+                break
+
+        # Write the updated JSON data to the output file
+        with open(file, 'w') as f:
+            json.dump(existing_data, f, indent=4)

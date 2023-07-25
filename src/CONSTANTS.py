@@ -578,6 +578,9 @@ def writeToJson(data_dict, output_file):
         # Load the existing JSON data from the file if it exists
         with open(output_file, 'r') as file:
             existing_data = json.load(file)
+    except json.JSONDecodeError:
+        # If the file exists but is empty, set existing_data to an empty list
+        existing_data = []
     except FileNotFoundError:
         # If the file doesn't exist, set existing_data to an empty list
         existing_data = []
@@ -588,7 +591,7 @@ def writeToJson(data_dict, output_file):
     # Update existing_data with new keys and default "seen" value if the name does not exist
     for key in data_dict.keys():
         if key not in existing_names:
-            existing_data.append({"name": key, "seen": 0})
+            existing_data.append({"name": data_dict[key].name, "seen": 0})
 
     # Write the updated JSON data to the output file
     with open(output_file, 'w') as file:
