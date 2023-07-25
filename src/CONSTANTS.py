@@ -1,6 +1,7 @@
 import pygame
 import os
 from Weapons import *
+import json
 
 LEVEL_MAP = [
     'XXKBBBBBBBBBBBBJXXXXXXZXKBBBBBBBBBBBBJXX',
@@ -570,3 +571,10 @@ weapon_dict = {
         False
     )
 }
+
+def writeToJson(dict, filename):
+    keys = [{"name": key} for key in dict.keys()]
+    json_data = json.dumps(keys, indent=4)
+    # write to json file
+    with open(filename, "w") as f:
+        f.write(json_data)

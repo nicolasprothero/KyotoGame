@@ -219,6 +219,9 @@ class Game():
     
             
     def run_menu(self):
+        # update armory
+        C.writeToJson(C.weapon_dict, os.path.join(base_directory, "armory.json"))
+
         current_selection = "start"
         
         self.menu_running = True
