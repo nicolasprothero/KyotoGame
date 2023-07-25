@@ -50,6 +50,8 @@ class Player(pygame.sprite.Sprite):
         self.extra_jump = False
         
         self.facingRight = True
+        self.isDashing = False
+        self.pressedDash = False
 
         self.attackRight = True
         self.attacking = False
@@ -73,6 +75,8 @@ class Player(pygame.sprite.Sprite):
     def move(self, pressed_keys): 
         if pressed_keys[self.keyBinds["dash"]] and self.isOnGround == False:
             if self.hasDash:
+                self.isDashing = True
+                self.pressedDash = True
                 self.dash()
         elif abs(self.direction.x) <= 1:
             if pressed_keys[self.keyBinds["left"]]:

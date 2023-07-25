@@ -4,4 +4,8 @@
 06/25: IN: 2:00PM OUT: 6:00PM - Merged old code with new player movement code. Created non-collidable tiles. Working on particle effects
 06/25 IN: 9:00PM OUT: 12:00AM - Fix player dash bug. Implement player knockback from attacking
 06/26 IN 4:00PM OUT: 12:00AM - FINALIZE PACKAGING
-07/11 IN: 2:00PM OUT: 
+07/11 IN: 2:00PM OUT: 6:00PM - Brainstorming ideas for how to implement dynamic camera
+07/13 IN: 2:00PM OUT: 6:30PM - Implemented dynamic camera. Rescaling to fit screen works. Next task is to integrate the HUD elements with the scaling screen and make dynamic cam toggleable
+07/19 IN: 12:00PM OUT: 6:00PM - Polish dynamic camera, merge with on screen HUD. Working on dash animation
+07/24 IN: 12:00PM OUT: 6:00PM - Added player dashing animation, make the images fade out and follow character movement. Made different dash colors for player/damage states
+0725: IN: 7:00PM OUT: 
