@@ -48,6 +48,7 @@ class Player(pygame.sprite.Sprite):
         
         self.facingRight = True
         self.isDashing = False
+        self.pressedDash = False
 
         self.attackRight = True
         self.attacking = False
@@ -70,6 +71,7 @@ class Player(pygame.sprite.Sprite):
         elif pressed_keys[self.keyBinds["dash"]] and self.isOnGround == False:
             if self.hasDash:
                 self.isDashing = True
+                self.pressedDash = True
                 self.dash()
         elif abs(self.direction.x) <= 1:
             if pressed_keys[self.keyBinds["left"]]:
