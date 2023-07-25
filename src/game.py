@@ -273,6 +273,7 @@ class Game():
     def run_game(self):
         # Setup the level        
         self.game_running = True
+
         if self.round_num is 1:
             self.the_map_list = C.map_list[:]
         elif self.round_num is 6:
@@ -297,7 +298,7 @@ class Game():
             self.players.add(self.player)
             self.player.changeWeapon(self.player_rand)
             self.players.add(self.player2)
-            self.player.changeWeapon(self.player2_rand)
+            self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP1:
             self.players.empty()
             self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
@@ -827,9 +828,10 @@ class Game():
                         if(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
                             pygame.mixer.stop()
+                            self.menu_running = True
                             self.game_running = False
                             self.paused = False
-                            self.menu_running = True
+
                         if(current_selection == "settings"):
                             self.game_running = False
                             pass
@@ -933,6 +935,8 @@ class Game():
                             self.isPostGame = False
                             self.theGameIsOver = False
                             pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(0.1)
+                            self.player_rand = C.weapon_dict["defaultSword"]
+                            self.player2_rand = C.weapon_dict["defaultSword"]
                             self.run_game()
                         elif(current_selection == "armory"):
                             pygame.mixer.Sound.play(self.select_sound)
@@ -1055,10 +1059,6 @@ class Game():
             self.draw_text(final_script, self.color_select, 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 20)
             self.draw_text("WON THE GAME", (255, 255, 255), 70, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 20)
 
-            #reset weapons
-            self.player_rand = copy.copy(C.weapon_dict["defaultSword"])
-            self.player2_rand = copy.copy(C.weapon_dict["defaultSword"])
-            
             pygame.display.flip()
 
     def round_over(self, player):
