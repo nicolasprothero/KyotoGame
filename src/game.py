@@ -906,7 +906,6 @@ class Game():
                         if player1idle_current_frame > 6:
                             player1idle_current_frame = 0
                         player1idle_last_time = player1idle_current_time
-                    print(player1idle_current_frame)
                     self.player.image = player_idle_usable_image_flipped.subsurface(360 - player1idle_current_frame * 60, 0, 60, 90)
             
             if self.player2.isRunning and self.player2.isOnGround:

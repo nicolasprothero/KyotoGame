@@ -1,5 +1,4 @@
 import pygame
-import CONSTANTS as C
 from CONSTANTS import *
 import os
 
