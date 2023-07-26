@@ -1,6 +1,6 @@
 import pygame
 import os
-from src.Weapons import *
+from Weapons import *
 import json
 
 LEVEL_MAP = [
@@ -695,7 +695,7 @@ def writeToJson(data_dict, output_file):
     # Update existing_data with new keys and default "seen" value if the name does not exist
     for key in data_dict.keys():
         if data_dict[key].name not in existing_names:
-            existing_data.append({"name": data_dict[key].name, "seen": 0})
+            # existing_data.append({"name": data_dict[key].name, "seen": 0})
             if data_dict[key].name != "The Shard":
                 existing_data.append({"name": data_dict[key].name, "seen": 0})
             else:

@@ -4,35 +4,51 @@
         "seen": 1
     },
     {
-        "name": "Dev Sword",
-        "seen": 1
+        "name": "Relic Sword",
+        "seen": 0
     },
     {
         "name": "Dagger",
-        "seen": 1
+        "seen": 0
     },
     {
         "name": "Katana",
-        "seen": 1
+        "seen": 0
     },
     {
         "name": "Winged Sword",
-        "seen": 1
+        "seen": 0
     },
     {
         "name": "Mom's Knife",
-        "seen": 1
+        "seen": 0
     },
     {
-        "name": "Theif's Torch",
-        "seen": 1
+        "name": "Thief's Torch",
+        "seen": 0
     },
     {
         "name": "Ice Sword",
-        "seen": 1
+        "seen": 0
     },
     {
         "name": "Momotaro's Sword",
+        "seen": 0
+    },
+    {
+        "name": "Death Scythe",
+        "seen": 0
+    },
+    {
+        "name": "Holy Mantle",
+        "seen": 0
+    },
+    {
+        "name": "Magic Stick",
+        "seen": 0
+    },
+    {
+        "name": "Blade of the Traveller",
         "seen": 0
     }
 ]

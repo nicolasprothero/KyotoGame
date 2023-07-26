@@ -3,14 +3,14 @@ from distutils.spawn import spawn
 from operator import truediv
 from select import select
 from tkinter import Menu
-from src.Particle import Particle
+from Particle import Particle
 import time
 import random
 import pygame
-import src.CONSTANTS as C
-from src.Player import Player
-from src.Level import Level
-from src.Weapons import *
+import CONSTANTS as C
+from Player import Player
+from Level import Level
+from Weapons import *
 import ctypes
 import os
 import platform
@@ -159,6 +159,8 @@ class Game():
         self.camera_height = C.SCREEN_HEIGHT
         self.cam_dim = [self.camera_width, self.camera_height]
         self.zoom = True
+
+        C.writeToJson(C.weapon_dict, os.path.join(base_directory, "armory.json"))
         
         
     def getPlayerMidpoint(self, Player1, Player2):
@@ -239,7 +241,6 @@ class Game():
     def run_menu(self):
         # update armory
         
-        C.writeToJson(C.weapon_dict, os.path.join(base_directory, "armory.json"))
 
         current_selection = "start"
         
