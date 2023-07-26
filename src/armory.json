@@ -38,5 +38,21 @@
     {
         "name": "Thief's Torch",
         "seen": 1
+    },
+    {
+        "name": "Death Scythe",
+        "seen": 0
+    },
+    {
+        "name": "Holy Mantle",
+        "seen": 0
+    },
+    {
+        "name": "Magic Stick",
+        "seen": 1
+    },
+    {
+        "name": "Blade of the Traveller",
+        "seen": 0
     }
 ]

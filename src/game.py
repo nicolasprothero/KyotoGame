@@ -14,7 +14,6 @@ from Weapons import *
 import ctypes
 import os
 import platform
-import copy
 import json
 
 base_directory = os.path.dirname(os.path.abspath(__file__))
@@ -135,6 +134,9 @@ class Game():
         
         self.damaged_start = time.time()
         self.damaged_start2 = time.time()
+
+        self.slow_start = time.time()
+        self.slow_start2 = time.time()
         
         self.winner = 1
         self.isPostGame = False
@@ -650,6 +652,8 @@ class Game():
                         self.player2.knockback(self.player.weapon.knockback, self.player2.knockbackRight)
                         if self.player.weapon.slow:
                             self.player2.speed = 6
+                            self.player2.isSlow = True
+                            self.slow_start2 = time.time()
                 elif not self.player.attackRight:
                     player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y + self.player.weapon.y_pos, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
@@ -661,6 +665,8 @@ class Game():
                         self.player2.knockback(self.player.weapon.knockback, self.player2.knockbackRight)
                         if self.player.weapon.slow:
                             self.player2.speed = 6
+                            self.player2.isSlow = True
+                            self.slow_start2 = time.time()
                 if time.time() - self.attacking_start > 0.1:
                     self.player.attacking = False
                     self.attacking_start = time.time()
@@ -682,6 +688,8 @@ class Game():
                         self.player.knockback(self.player2.weapon.knockback, self.player.knockbackRight)
                         if self.player2.weapon.slow:
                             self.player.speed = 6
+                            self.player.isSlow = True
+                            self.slow_start = time.time()
                 elif not self.player2.attackRight:
                     player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y + self.player2.weapon.y_pos, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
@@ -693,6 +701,8 @@ class Game():
                         self.player.knockback(self.player2.weapon.knockback, self.player.knockbackRight)
                         if self.player2.weapon.slow:
                             self.player.speed = 6
+                            self.player.isSlow = True
+                            self.slow_start = time.time()
                 if time.time() - self.attacking_start2 > 0.1:
                     self.player2.attacking = False
                     self.attacking_start2 = time.time()
@@ -806,7 +816,6 @@ class Game():
                     self.player.isDamaged = False
                     self.player.image = self.player.OriginalImage
                     self.character_icon = self.character1_img
-                    self.player.speed = self.player.original_speed
                     self.damaged_start = time.time()
                                         
             if self.player2.isDamaged:
@@ -814,8 +823,21 @@ class Game():
                     self.player2.isDamaged = False
                     self.player2.image = self.player2.OriginalImage
                     self.character2_icon = self.character2_img
-                    self.player2.speed = self.player2.original_speed
                     self.damaged_start2 = time.time()
+
+            if self.player.isSlow:
+                if time.time() - self.slow_start > 5:
+                    self.player.isSlow = False
+                    self.player.speed = self.player.original_speed
+                    self.slow_start = time.time()
+                
+
+            if self.player2.isSlow:
+                if time.time() - self.slow_start2 > 5:
+                    self.player2.isSlow = False
+                    self.player2.speed = self.player2.original_speed
+                    self.slow_start2 = time.time()
+               
                     
             if self.player.rect.y > C.SCREEN_HEIGHT + 250 and not self.theGameIsOver:
                 self.player.isDamaged = True
@@ -872,6 +894,7 @@ class Game():
                 player2_idle_usable_image = player2_idle_image
                 player2_run_usable_image_flipped = player2_run_image_flipped
                 player2_idle_usable_image_flipped = player2_idle_image_flipped
+            
             
             if self.player.isRunning and self.player.isOnGround:
                 if self.player.facingRight:
@@ -943,7 +966,17 @@ class Game():
                         player2idle_last_time = player2idle_current_time
                     self.player2.image = player2_idle_usable_image_flipped.subsurface(360 - player2idle_current_frame * 60, 0, 60, 90)
             
+            if self.player.extra_shield:
+                self.player.image.fill((125, 165, 210), special_flags=pygame.BLEND_MAX)
+
+            if self.player2.extra_shield:
+                self.player2.image.fill((125, 165, 210), special_flags=pygame.BLEND_MAX)
             
+            if self.player.isSlow:
+                self.player.image.fill((0,0,205), special_flags=pygame.BLEND_MAX)
+
+            if self.player2.isSlow:
+                self.player2.image.fill((0,0,205), special_flags=pygame.BLEND_MAX)
             
             # Checks if the player is moving
             # if self.player.direction.x > 0.03 or self.player.direction.x < -0.03 or self.player.direction.y != 0:
@@ -979,6 +1012,7 @@ class Game():
 
             self.center_and_scale_image(self.screen, self.player.weapon.original_image, player_weapon_hud_rect, self.player.weapon.character_icon_scale_factor)
             self.center_and_scale_image(self.screen, self.player2.weapon.original_image, player2_weapon_hud_rect, self.player2.weapon.character_icon_scale_factor)
+
                         
             pygame.display.flip()
                     
@@ -1449,8 +1483,10 @@ class Game():
             player_weapon = pygame.transform.scale(player_weapon, (self.player.weapon.scaling[0]*3, self.player.weapon.scaling[1]*3))
             player2_weapon = pygame.transform.scale(player2_weapon, (self.player2.weapon.scaling[0]*3, self.player2.weapon.scaling[1]*3))
 
-            player_weapon_hud_rect = pygame.Rect(C.SCREEN_WIDTH/2 - 580, C.SCREEN_HEIGHT/2 - 250, 260, 450)
-            player2_weapon_hud_rect = pygame.Rect(C.SCREEN_WIDTH/2 + 320, C.SCREEN_HEIGHT/2 - 250, 260, 450)
+            player_weapon_hud_rect = pygame.Rect((C.SCREEN_WIDTH/2 - C.SCREEN_WIDTH/4) - 120, C.SCREEN_HEIGHT/2 - 250, 280, 430)
+            player2_weapon_hud_rect = pygame.Rect((C.SCREEN_WIDTH/2 + C.SCREEN_WIDTH/4)- 170, C.SCREEN_HEIGHT/2 - 250, 280, 430)
+            
+            
             
             if not chest_opened:
                 self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (3600,0,400,240))
@@ -1514,6 +1550,8 @@ class Game():
                             self.giving_gun = False
                             self.run_game()
         
+            # pygame.draw.rect(self.screen, (255,0,0), player_weapon_hud_rect, 2)
+            # pygame.draw.rect(self.screen, (255,0,0), player2_weapon_hud_rect, 2)
             pygame.display.flip()
             
     def check_player_collisions(self):
@@ -1547,8 +1585,14 @@ class Game():
                     player.canAttack = False
 
     def player_hit(self, player, isPlayer1):
+        if isPlayer1 and self.player2.weapon.name == "Death Scythe":
+            self.player.isDamaged = True
+        elif not isPlayer1 and self.player.weapon.name == "Death Scythe":
+            self.player2.isDamaged = True
+
         if not player.isInvincible:
-            if player.isDamaged and not player.extra_shield:
+                
+            if player.isDamaged:
                 pygame.mixer.Sound.play(self.death_sound)
                 if isPlayer1:
                     self.player_two_wins += 1
@@ -1571,12 +1615,22 @@ class Game():
                         self.theGameIsOver = False
                     elif not self.theGameIsOver:
                         self.round_over(1)
-            elif player.isDamaged and player.extra_shield:
+            elif player.isDamaged:
                 pygame.mixer.Sound.play(self.shieldbreak_sound)
                 player.image = player.Damagedimage
                 player.isInvincible = True
                 player.isDamaged = True
                 player.extra_shield = False
+                if isPlayer1:
+                    self.invincibility_start = time.time()
+                    self.damaged_start = time.time()
+                else:
+                    self.invincibility_start2 = time.time()
+                    self.damaged_start2 = time.time()
+            elif player.extra_shield:
+                pygame.mixer.Sound.play(self.shieldbreak_sound)
+                player.extra_shield = False
+                player.isInvincible = True
                 if isPlayer1:
                     self.invincibility_start = time.time()
                     self.damaged_start = time.time()
