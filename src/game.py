@@ -944,10 +944,7 @@ class Game():
                         if player1idle_current_frame > 6:
                             player1idle_current_frame = 0
                         player1idle_last_time = player1idle_current_time
-<<<<<<< HEAD
                     
-=======
->>>>>>> eda57fedbce0088fb54dc498d026cffb88d48946
                     self.player.image = player_idle_usable_image_flipped.subsurface(360 - player1idle_current_frame * 60, 0, 60, 90)
             elif not self.player.isOnGround:
                 if not self.player.extra_shield:
