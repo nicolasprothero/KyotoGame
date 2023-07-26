@@ -428,7 +428,7 @@ class Game():
         
         self.character_icon = self.character1_img
         self.character2_icon = self.character2_img
-        
+
         self.player_attack_sound = pygame.mixer.Sound(self.player.weapon.attack_sound_path)
         self.player_attack_sound.set_volume(self.sfx_level)
 
