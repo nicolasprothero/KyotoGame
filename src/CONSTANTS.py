@@ -595,6 +595,9 @@ def writeToJson(data_dict, output_file):
                 existing_data.append({"name": data_dict[key].name, "seen": 0})
             else:
                 existing_data.append({"name": data_dict[key].name, "seen": 1})
+        for entry in existing_data:
+            if entry["name"] == "The Shard":
+                entry["seen"] = 1
                 
     # Write the updated JSON data to the output file
     # override previous json data
