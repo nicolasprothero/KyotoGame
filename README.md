@@ -21,7 +21,7 @@ python setup.py sdist
 
 
 ### 1. Install the package
-pip install ./Weaponize-1.0.tar.gz
+pip install ./Weaponize-2.0.tar.gz
 
 ### 2. Run the game
 weaponize

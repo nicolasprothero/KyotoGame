@@ -3,18 +3,17 @@ from distutils.spawn import spawn
 from operator import truediv
 from select import select
 from tkinter import Menu
-from Particle import Particle
+from src.Particle import Particle
 import time
 import random
 import pygame
-import CONSTANTS as C
-from Player import Player
-from Level import Level
-from Weapons import *
+import src.CONSTANTS as C
+from src.Player import Player
+from src.Level import Level
+from src.Weapons import *
 import ctypes
 import os
 import platform
-import copy
 import json
 
 base_directory = os.path.dirname(os.path.abspath(__file__))
@@ -45,7 +44,6 @@ class Game():
         # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
         pygame.init()
         pygame.mixer.init()
-        
 
         self.flags = pygame.SCALED | pygame.FULLSCREEN
         self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), self.flags)
@@ -98,20 +96,26 @@ class Game():
         
         self.level = Level(C.LEVEL_MAP, self.screen, os.path.join(base_directory, "assets/img/DefaultBackground.png"))
 
+        # ! Sound level defaults to 0.1
+        self.music_level = 0.2
+        self.sfx_level = 0.2
+
+        self.change_music_volume = False
+
         self.select_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Select.wav"))
-        self.select_sound.set_volume(0.1)
+        self.select_sound.set_volume(self.sfx_level)
 
         self.shieldbreak_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/shieldbreak.mp3"))
-        self.shieldbreak_sound.set_volume(0.2) 
+        self.shieldbreak_sound.set_volume(self.sfx_level) 
 
         self.death_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Hurt_grunt.wav"))
-        self.death_sound.set_volume(0.2)
+        self.death_sound.set_volume(self.sfx_level)
         
         self.chest_open_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/chest_open.mp3'))
-        self.chest_open_sound.set_volume(0.1)
+        self.chest_open_sound.set_volume(self.sfx_level)
         
         self.sword_get_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/sword_get.wav'))
-        self.sword_get_sound.set_volume(0.1)
+        self.sword_get_sound.set_volume(self.sfx_level)
 
         self.menu_running = True
         self.game_running = False
@@ -134,6 +138,9 @@ class Game():
         
         self.damaged_start = time.time()
         self.damaged_start2 = time.time()
+
+        self.slow_start = time.time()
+        self.slow_start2 = time.time()
         
         self.winner = 1
         self.isPostGame = False
@@ -219,7 +226,15 @@ class Game():
         text_rect = scaled_text_image.get_rect()
         text_rect.center = (x, y)
         self.screen.blit(scaled_text_image, text_rect)
-    
+
+    def draw_text_left_justified(self, text, color, size, x, y):
+        font = pygame.font.Font(os.path.join(base_directory, "assets/fonts/ThaleahFat.ttf"), size)
+        text_surface = font.render(text, True, color)
+        #scale surface
+        scaled_text_image = pygame.transform.scale(text_surface, (int(text_surface.get_width()), int(text_surface.get_height())))
+        text_rect = scaled_text_image.get_rect()
+        text_rect.topleft = (x, y)
+        self.screen.blit(scaled_text_image, text_rect)
             
     def run_menu(self):
         # update armory
@@ -271,7 +286,9 @@ class Game():
                             self.pregame_menu()
                         if(current_selection == "settings"):
                             pygame.mixer.Sound.play(self.select_sound)
-                            self.gun_screen()
+                            # TODO: change this to the settings menu
+                            self.options_menu()
+                            # self.gun_screen()
                         elif(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
                             self.menu_running = False
@@ -423,10 +440,10 @@ class Game():
         self.character2_icon = self.character2_img
 
         self.player_attack_sound = pygame.mixer.Sound(self.player.weapon.attack_sound_path)
-        self.player_attack_sound.set_volume(self.player.weapon.attack_sound_level)
+        self.player_attack_sound.set_volume(self.sfx_level)
 
         self.player2_attack_sound = pygame.mixer.Sound(self.player2.weapon.attack_sound_path)
-        self.player2_attack_sound.set_volume(self.player2.weapon.attack_sound_level)
+        self.player2_attack_sound.set_volume(self.sfx_level)
 
         # Main loop
 
@@ -464,6 +481,11 @@ class Game():
         alphas2 = [dec2] * 3 # store alpha levels
 
         while self.game_running:
+            # set the volume of the music to the music level
+            if self.change_music_volume:
+                pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(self.music_level)
+                self.change_music_volume = False
+
             clock.tick(60) # limit fps to 60
             pressed_keys = pygame.key.get_pressed()
             # for loop through the event queue
@@ -613,7 +635,7 @@ class Game():
                         self.player.attackRight = False                 
                 self.player.attacking = True
                 self.player.canAttack = False
-                pygame.mixer.Sound.play(self.player_attack_sound)
+                pygame.mixer.Sound.play(self.player_attack_sound).set_volume(self.sfx_level)
                 self.attacking_start = time.time()
                 self.attack_start = time.time()
                 
@@ -629,7 +651,7 @@ class Game():
                         self.player2.attackRight = False                 
                 self.player2.attacking = True
                 self.player2.canAttack = False
-                pygame.mixer.Sound.play(self.player2_attack_sound)
+                pygame.mixer.Sound.play(self.player2_attack_sound).set_volume(self.sfx_level)
                 self.attacking_start2 = time.time()
                 self.attack_start2 = time.time()
             
@@ -645,6 +667,8 @@ class Game():
                         self.player2.knockback(self.player.weapon.knockback, self.player2.knockbackRight)
                         if self.player.weapon.slow:
                             self.player2.speed = 6
+                            self.player2.isSlow = True
+                            self.slow_start2 = time.time()
                 elif not self.player.attackRight:
                     player_attack_hitbox = pygame.Rect(self.player.rect.x - self.player.slash_left_image.get_width(), self.player.rect.y + self.player.weapon.y_pos, self.player.slash_right_image.get_width(), self.player.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player_attack_hitbox)
@@ -656,6 +680,8 @@ class Game():
                         self.player2.knockback(self.player.weapon.knockback, self.player2.knockbackRight)
                         if self.player.weapon.slow:
                             self.player2.speed = 6
+                            self.player2.isSlow = True
+                            self.slow_start2 = time.time()
                 if time.time() - self.attacking_start > 0.1:
                     self.player.attacking = False
                     self.attacking_start = time.time()
@@ -677,6 +703,8 @@ class Game():
                         self.player.knockback(self.player2.weapon.knockback, self.player.knockbackRight)
                         if self.player2.weapon.slow:
                             self.player.speed = 6
+                            self.player.isSlow = True
+                            self.slow_start = time.time()
                 elif not self.player2.attackRight:
                     player2_attack_hitbox = pygame.Rect(self.player2.rect.x - self.player2.slash_left_image.get_width(), self.player2.rect.y + self.player2.weapon.y_pos, self.player2.slash_right_image.get_width(), self.player2.slash_right_image.get_height())
                     # pygame.draw.rect(self.screen, (136, 8, 8), player2_attack_hitbox)
@@ -688,6 +716,8 @@ class Game():
                         self.player.knockback(self.player2.weapon.knockback, self.player.knockbackRight)
                         if self.player2.weapon.slow:
                             self.player.speed = 6
+                            self.player.isSlow = True
+                            self.slow_start = time.time()
                 if time.time() - self.attacking_start2 > 0.1:
                     self.player2.attacking = False
                     self.attacking_start2 = time.time()
@@ -801,7 +831,6 @@ class Game():
                     self.player.isDamaged = False
                     self.player.image = self.player.OriginalImage
                     self.character_icon = self.character1_img
-                    self.player.speed = self.player.original_speed
                     self.damaged_start = time.time()
                                         
             if self.player2.isDamaged:
@@ -809,8 +838,21 @@ class Game():
                     self.player2.isDamaged = False
                     self.player2.image = self.player2.OriginalImage
                     self.character2_icon = self.character2_img
-                    self.player2.speed = self.player2.original_speed
                     self.damaged_start2 = time.time()
+
+            if self.player.isSlow:
+                if time.time() - self.slow_start > 5:
+                    self.player.isSlow = False
+                    self.player.speed = self.player.original_speed
+                    self.slow_start = time.time()
+                
+
+            if self.player2.isSlow:
+                if time.time() - self.slow_start2 > 5:
+                    self.player2.isSlow = False
+                    self.player2.speed = self.player2.original_speed
+                    self.slow_start2 = time.time()
+               
                     
             if self.player.rect.y > C.SCREEN_HEIGHT + 250 and not self.theGameIsOver:
                 self.player.isDamaged = True
@@ -868,6 +910,7 @@ class Game():
                 player2_run_usable_image_flipped = player2_run_image_flipped
                 player2_idle_usable_image_flipped = player2_idle_image_flipped
             
+            
             if self.player.isRunning and self.player.isOnGround:
                 if self.player.facingRight:
                     player1idle_current_time = pygame.time.get_ticks()
@@ -901,8 +944,22 @@ class Game():
                         if player1idle_current_frame > 6:
                             player1idle_current_frame = 0
                         player1idle_last_time = player1idle_current_time
+<<<<<<< HEAD
                     
+=======
+>>>>>>> eda57fedbce0088fb54dc498d026cffb88d48946
                     self.player.image = player_idle_usable_image_flipped.subsurface(360 - player1idle_current_frame * 60, 0, 60, 90)
+            elif not self.player.isOnGround:
+                if not self.player.extra_shield:
+                    if self.player.facingRight:
+                        self.player.image = player_run_usable_image.subsurface(240 - 3 * 60, 0, 60, 90)
+                    else:
+                        self.player.image = player_run_usable_image_flipped.subsurface(120, 0, 60, 90)
+                if not self.player.isSlow:
+                    if self.player.facingRight:
+                        self.player.image = player_run_usable_image.subsurface(240 - 3 * 60, 0, 60, 90)
+                    else:
+                        self.player.image = player_run_usable_image_flipped.subsurface(120, 0, 60, 90)
             
             if self.player2.isRunning and self.player2.isOnGround:
                 if self.player2.facingRight:
@@ -938,8 +995,30 @@ class Game():
                             player2idle_current_frame = 0
                         player2idle_last_time = player2idle_current_time
                     self.player2.image = player2_idle_usable_image_flipped.subsurface(360 - player2idle_current_frame * 60, 0, 60, 90)
+            elif not self.player2.isOnGround:
+                if not self.player2.extra_shield:
+                    if self.player2.facingRight:
+                        self.player2.image = player2_run_usable_image.subsurface(240 - 3 * 60, 0, 60, 90)
+                    else:
+                        self.player2.image = player2_run_usable_image_flipped.subsurface(240 - 3 * 60, 0, 60, 90)
+                if not self.player2.isSlow:
+                    if self.player2.facingRight:
+                        self.player2.image = player2_run_usable_image.subsurface(240 - 3 * 60, 0, 60, 90)
+                    else:
+                        self.player2.image = player2_run_usable_image_flipped.subsurface(240 - 3 * 60, 0, 60, 90)
+
             
+            if self.player.extra_shield:
+                self.player.image.fill((125, 165, 210), special_flags=pygame.BLEND_ADD)
+
+            if self.player2.extra_shield:
+                self.player2.image.fill((125, 165, 210), special_flags=pygame.BLEND_ADD)
             
+            if self.player.isSlow:
+                self.player.image.fill((0,0,205), special_flags=pygame.BLEND_MAX)
+
+            if self.player2.isSlow:
+                self.player2.image.fill((0,0,205), special_flags=pygame.BLEND_MAX)
             
             # Checks if the player is moving
             # if self.player.direction.x > 0.03 or self.player.direction.x < -0.03 or self.player.direction.y != 0:
@@ -975,6 +1054,7 @@ class Game():
 
             self.center_and_scale_image(self.screen, self.player.weapon.original_image, player_weapon_hud_rect, self.player.weapon.character_icon_scale_factor)
             self.center_and_scale_image(self.screen, self.player2.weapon.original_image, player2_weapon_hud_rect, self.player2.weapon.character_icon_scale_factor)
+
                         
             pygame.display.flip()
                     
@@ -1044,10 +1124,9 @@ class Game():
                             self.menu_running = True
                             self.game_running = False
                             self.paused = False
-
                         if(current_selection == "settings"):
-                            self.game_running = False
-                            pass
+                            self.paused = False
+                            self.options_menu()
                         
             self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 150)
             self.draw_text("SETTINGS", settings_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
@@ -1061,8 +1140,28 @@ class Game():
     def options_menu(self):
         
         self.options_running = True
+        current_selection = "zoom"
 
         while self.options_running:
+            if(current_selection == "zoom"):
+                zoom_text_color = self.color_select
+                music_text_color = self.color_default
+                sfx_text_color = self.color_default
+            elif current_selection == "music":
+                zoom_text_color = self.color_default
+                music_text_color = self.color_select
+                sfx_text_color = self.color_default
+            elif current_selection == "sfx":
+                zoom_text_color = self.color_default
+                music_text_color = self.color_default
+                sfx_text_color = self.color_select
+
+            """
+            ZOOM
+            MUSIC
+            SFX
+            """
+
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
@@ -1070,17 +1169,86 @@ class Game():
                     # If the Esc key is pressed, then exit the main loop
                     if event.key == K_ESCAPE:
                             self.options_running = False
+                    elif event.key == K_w or event.key == K_UP:
+                        if(current_selection == "sfx"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "music"
+                        elif(current_selection == "zoom"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "sfx"
+                        elif(current_selection == "music"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "zoom"
+                    elif event.key == K_s or event.key == K_DOWN:
+                        if(current_selection == "zoom"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "music"
+                        elif(current_selection == "sfx"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "zoom"
+                        elif(current_selection == "music"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "sfx"
+                    elif event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                        if(current_selection == "sfx"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            if self.sfx_level > 0:
+                                self.sfx_level -= 0.1
+                                self.sfx_level = round(self.sfx_level, 1)
+                        if(current_selection == "music"):
+                            self.change_music_volume = True
+                            pygame.mixer.Sound.play(self.select_sound)
+                            if self.music_level > 0:
+                                self.music_level -= 0.1
+                                self.music_level = round(self.music_level, 1)
+                                pygame.mixer.music.set_volume(self.music_level)
+                    elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                        if(current_selection == "sfx"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            if self.sfx_level < 1:
+                                self.sfx_level += 0.1
+                                self.sfx_level = round(self.sfx_level, 1)
+                                pygame.mixer.music.set_volume(self.music_level)
+                        if(current_selection == "music"):
+                            self.change_music_volume = True
+                            pygame.mixer.Sound.play(self.select_sound)
+                            if self.music_level < 1:
+                                self.music_level += 0.1
+                                self.music_level = round(self.music_level, 1)
+                                pygame.mixer.music.set_volume(self.music_level)
                     elif event.key == K_RETURN:
-                            C.change_res(1366, 768)
-                            #self.level.display_surface = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.FULLSCREEN | pygame.SCALED)
-                            self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
+                        if(current_selection == "zoom"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            if self.zoom:
+                                self.zoom = False
+                            else:
+                                self.zoom = True
                 # Check for QUIT event. If QUIT, then set running to false.
                 elif event.type == QUIT:
                     self.options_running = False
             
+            self.select_sound.set_volume(self.sfx_level)
+            self.shieldbreak_sound.set_volume(self.sfx_level)
+            self.death_sound.set_volume(self.sfx_level)
+            self.chest_open_sound.set_volume(self.sfx_level)
+            self.sword_get_sound.set_volume(self.sfx_level)
+
             self.screen.fill(self.color_menu)
-            self.draw_text("OPTIONS", self.color_default, 75, C.SCREEN_WIDTH/2, 100)
-            self.draw_text("There are no options to change yet. Check back later.", self.color_default, 40, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
+            round_hud = pygame.Rect((C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/4)), (C.SCREEN_HEIGHT/2 - (C.SCREEN_HEIGHT/4 + 100)), C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 200)
+            pygame.draw.rect(self.screen, (34,34,34), round_hud)
+            self.draw_text_left_justified("Dynamic Camera", zoom_text_color, 50, C.SCREEN_WIDTH/4 + 200, C.SCREEN_HEIGHT/2 - 100)
+            self.draw_text_left_justified(str(self.zoom), zoom_text_color, 50, C.SCREEN_WIDTH/2 + 200, C.SCREEN_HEIGHT/2 - 100)
+
+            music_level = f'{self.music_level * 100:g}'
+            self.draw_text_left_justified("Music Volume", music_text_color, 50, C.SCREEN_WIDTH/4 + 200, C.SCREEN_HEIGHT/2)
+            self.draw_text_left_justified(music_level, music_text_color, 50, C.SCREEN_WIDTH/2 + 200, C.SCREEN_HEIGHT/2)
+
+            sfx_level = f'{self.sfx_level * 100:g}'
+            self.draw_text_left_justified("SFX Volume", sfx_text_color, 50, C.SCREEN_WIDTH/4 + 200, C.SCREEN_HEIGHT/2 + 100)
+            self.draw_text_left_justified(sfx_level, sfx_text_color, 50, C.SCREEN_WIDTH/2 + 200, C.SCREEN_HEIGHT/2 + 100)
+            
+            self.draw_text("OPTIONS", self.color_default, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 850)
+
             pygame.display.flip()
             
     def pregame_menu(self):
@@ -1147,7 +1315,7 @@ class Game():
                             self.pregame_running = False
                             self.isPostGame = False
                             self.theGameIsOver = False
-                            pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(0.1)
+                            pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(self.music_level)
                             self.player_rand = C.weapon_dict["shard"]
                             self.player2_rand = C.weapon_dict["shard"]
                             self.run_game()
@@ -1388,6 +1556,12 @@ class Game():
 
         chest_opened = False
         chest2_opened = False
+        
+        rarity_text_color = {
+            "Mythic": (255, 215, 30),
+            "Rare": (75, 150, 220),
+            "Common": (255, 255, 255)
+        }
 
         new_weapon_1 = self.randomize_weapon(self.player)
         self.player_rand = new_weapon_1
@@ -1402,9 +1576,8 @@ class Game():
         self.updateArmory(new_weapon_2.name, os.path.join(base_directory, "armory.json"))
         
         while self.giving_gun:
-            background_image = pygame.image.load(os.path.join(base_directory, "assets/img/menuBackground.png")).convert()
-            background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
-            self.screen.blit(background_image, (0,0))
+            gun_hud = pygame.Rect(C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/1.2)/2, C.SCREEN_HEIGHT/2 - (C.SCREEN_HEIGHT/1.2)/2, C.SCREEN_WIDTH/1.2, C.SCREEN_HEIGHT/1.2)
+            pygame.draw.rect(self.screen, (51,56,81), gun_hud)
             
             player1_chest_image = pygame.image.load(os.path.join(base_directory, "assets/img/character_animations/chest_opening.png"))
             player1_chest_image = pygame.transform.scale(player1_chest_image, (4000, 240))
@@ -1417,8 +1590,10 @@ class Game():
             player_weapon = pygame.transform.scale(player_weapon, (self.player.weapon.scaling[0]*3, self.player.weapon.scaling[1]*3))
             player2_weapon = pygame.transform.scale(player2_weapon, (self.player2.weapon.scaling[0]*3, self.player2.weapon.scaling[1]*3))
 
-            player_weapon_hud_rect = pygame.Rect(C.SCREEN_WIDTH/2 - 580, C.SCREEN_HEIGHT/2 - 250, 260, 450)
-            player2_weapon_hud_rect = pygame.Rect(C.SCREEN_WIDTH/2 + 320, C.SCREEN_HEIGHT/2 - 250, 260, 450)
+            player_weapon_hud_rect = pygame.Rect((C.SCREEN_WIDTH/2 - C.SCREEN_WIDTH/4) - 120, C.SCREEN_HEIGHT/2 - 250, 280, 430)
+            player2_weapon_hud_rect = pygame.Rect((C.SCREEN_WIDTH/2 + C.SCREEN_WIDTH/4)- 170, C.SCREEN_HEIGHT/2 - 250, 280, 430)
+            
+            
             
             if not chest_opened:
                 self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (3600,0,400,240))
@@ -1431,6 +1606,7 @@ class Game():
                     self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (4000 - (chest_current_frame*400),0,400,240))
                 else:
                     self.center_and_scale_image(self.screen, player_weapon, player_weapon_hud_rect, self.player_rand.gun_screen_scale_factor)
+                    self.draw_text(self.player.weapon.name, rarity_text_color.get(self.player.weapon.rarity), 50, C.SCREEN_WIDTH/2 - C.SCREEN_WIDTH/4 + 20, C.SCREEN_HEIGHT/2 + 175)
                     if not playedSound:
                         pygame.mixer.Sound.play(self.sword_get_sound)
                         playedSound = True
@@ -1447,6 +1623,7 @@ class Game():
                     self.screen.blit(player2_chest_image, (C.SCREEN_WIDTH/2 + 300, C.SCREEN_HEIGHT/2 + 150), ((chest2_current_frame*400),0,400,240))
                 else:
                     self.center_and_scale_image(self.screen, player2_weapon, player2_weapon_hud_rect, self.player2_rand.gun_screen_scale_factor)
+                    self.draw_text(self.player2.weapon.name, rarity_text_color.get(self.player2.weapon.rarity), 50, C.SCREEN_WIDTH/2 + C.SCREEN_WIDTH/4 - 20, C.SCREEN_HEIGHT/2 + 175)
                     if not playedSound2:
                         pygame.mixer.Sound.play(self.sword_get_sound)
                         playedSound2 = True
@@ -1454,7 +1631,12 @@ class Game():
 
             
             if chest_opened and chest2_opened:
-                self.draw_text("Press ENTER to continue.", (255, 255, 255), 50, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 100)
+                self.draw_text("Press ENTER to continue.", (255, 255, 255), 75, C.SCREEN_WIDTH/2, 200)
+            else:
+                self.draw_text("press attack to open", (255, 255, 255), 75, C.SCREEN_WIDTH/2, 200)
+
+            self.draw_text("Player 1", (255, 255, 255), 50, C.SCREEN_WIDTH/2 - C.SCREEN_WIDTH/4 + 20, 350)
+            self.draw_text("Player 2", (255, 255, 255), 50, C.SCREEN_WIDTH/2 + C.SCREEN_WIDTH/4 - 20, 350)
 
             
             for event in pygame.event.get():
@@ -1474,9 +1656,9 @@ class Game():
                             self.game_running = False
                             self.giving_gun = False
                             self.run_game()
-            
-            self.draw_text("press attack to open", (255, 255, 255), 75, C.SCREEN_WIDTH/2, 250)
-
+        
+            # pygame.draw.rect(self.screen, (255,0,0), player_weapon_hud_rect, 2)
+            # pygame.draw.rect(self.screen, (255,0,0), player2_weapon_hud_rect, 2)
             pygame.display.flip()
             
     def check_player_collisions(self):
@@ -1510,8 +1692,14 @@ class Game():
                     player.canAttack = False
 
     def player_hit(self, player, isPlayer1):
+        if isPlayer1 and self.player2.weapon.name == "Death Scythe":
+            self.player.isDamaged = True
+        elif not isPlayer1 and self.player.weapon.name == "Death Scythe":
+            self.player2.isDamaged = True
+
         if not player.isInvincible:
-            if player.isDamaged and not player.extra_shield:
+                
+            if player.isDamaged:
                 pygame.mixer.Sound.play(self.death_sound)
                 if isPlayer1:
                     self.player_two_wins += 1
@@ -1534,12 +1722,22 @@ class Game():
                         self.theGameIsOver = False
                     elif not self.theGameIsOver:
                         self.round_over(1)
-            elif player.isDamaged and player.extra_shield:
+            elif player.isDamaged:
                 pygame.mixer.Sound.play(self.shieldbreak_sound)
                 player.image = player.Damagedimage
                 player.isInvincible = True
                 player.isDamaged = True
                 player.extra_shield = False
+                if isPlayer1:
+                    self.invincibility_start = time.time()
+                    self.damaged_start = time.time()
+                else:
+                    self.invincibility_start2 = time.time()
+                    self.damaged_start2 = time.time()
+            elif player.extra_shield:
+                pygame.mixer.Sound.play(self.shieldbreak_sound)
+                player.extra_shield = False
+                player.isInvincible = True
                 if isPlayer1:
                     self.invincibility_start = time.time()
                     self.damaged_start = time.time()

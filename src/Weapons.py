@@ -5,7 +5,7 @@ import os
 base_directory = os.path.dirname(os.path.abspath(__file__))
 
 class Weapon(pygame.sprite.Sprite):
-    def __init__(self, name:str, rarity:str, type:str, weapon_img_path:str, attack_sound_path:str, attack_sound_level=0.1, x_pos_facingright=5, x_pos_facingleft=30, y_pos=-30, scaling=(30, 90), hitbox_scaling=(100, 100), slash_color=(255, 255, 255), character_icon_scale_factor=1.0, gun_screen_scale_factor=1.0, armory_screen_scale_factor=1.0, cooldown=0.7,  speed_buff=12, jump_buff=-17, extra_sheild=False, knockback=3, extra_jump=False, slow=False):
+    def __init__(self, name:str, rarity:str, type:str, weapon_img_path:str, attack_sound_path:str, attack_sound_level=0.1, x_pos_facingright=5, x_pos_facingleft=30, y_pos=-30, scaling=(30, 90), hitbox_scaling=(100, 120), slash_color=(255, 255, 255), character_icon_scale_factor=1.0, gun_screen_scale_factor=1.0, armory_screen_scale_factor=1.0, cooldown=0.7,  speed_buff=12, jump_buff=-17, extra_sheild=False, knockback=3, extra_jump=False, slow=False):
         super().__init__()
         self.image = pygame.image.load(weapon_img_path)
         self.image = pygame.transform.scale(self.image, scaling) # scale image down

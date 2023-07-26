@@ -1,9 +1,6 @@
 import pygame
-import CONSTANTS as C
-from CONSTANTS import *
-from Tile import Tile
-from Player import Player
-import sys
+from src.CONSTANTS import *
+from src.Tile import Tile
 import os
 
 base_directory = os.path.dirname(os.path.abspath(__file__))
@@ -20,12 +17,11 @@ class Level:
         self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.tile_group = pygame.sprite.Group() # collidable tiles
         self.no_collide_group = pygame.sprite.Group() # non-collidable tiles
-        self.players = pygame.sprite.Group()
         self.setup_level(level_data)
         
     def setup_level(self, layout):
        
-        TILE_SIZE = min(C.SCREEN_WIDTH // len(LEVEL_MAP[0]), C.SCREEN_HEIGHT // len(LEVEL_MAP))
+        TILE_SIZE = min(SCREEN_WIDTH // len(LEVEL_MAP[0]), SCREEN_HEIGHT // len(LEVEL_MAP))
         for row_index, row in enumerate(layout):
             for col_index, col in enumerate(row):
                 x = col_index * TILE_SIZE

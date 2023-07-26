@@ -1,6 +1,5 @@
 import pygame
-import CONSTANTS as C
-from CONSTANTS import *
+from src.CONSTANTS import *
 import os
 
 base_directory = os.path.dirname(os.path.abspath(__file__))

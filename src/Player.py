@@ -1,6 +1,6 @@
 import pygame
-import CONSTANTS as C
-from Weapons import *
+import src.CONSTANTS as C
+from src.Weapons import *
 import os
 import copy
 
@@ -56,6 +56,7 @@ class Player(pygame.sprite.Sprite):
         self.hasDash = True
         self.extra_shield = False
         self.extra_jump = False
+        self.isSlow = False
         
         self.facingRight = True
         self.isDashing = False
