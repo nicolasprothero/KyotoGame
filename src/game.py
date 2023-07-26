@@ -428,7 +428,7 @@ class Game():
         
         self.character_icon = self.character1_img
         self.character2_icon = self.character2_img
-
+        
         self.player_attack_sound = pygame.mixer.Sound(self.player.weapon.attack_sound_path)
         self.player_attack_sound.set_volume(self.sfx_level)
 
@@ -930,6 +930,17 @@ class Game():
                             player1idle_current_frame = 0
                         player1idle_last_time = player1idle_current_time
                     self.player.image = player_idle_usable_image_flipped.subsurface(360 - player1idle_current_frame * 60, 0, 60, 90)
+            elif not self.player.isOnGround:
+                if not self.player.extra_shield:
+                    if self.player.facingRight:
+                        self.player.image = player_run_usable_image.subsurface(240 - 3 * 60, 0, 60, 90)
+                    else:
+                        self.player.image = player_run_usable_image_flipped.subsurface(120, 0, 60, 90)
+                if not self.player.isSlow:
+                    if self.player.facingRight:
+                        self.player.image = player_run_usable_image.subsurface(240 - 3 * 60, 0, 60, 90)
+                    else:
+                        self.player.image = player_run_usable_image_flipped.subsurface(120, 0, 60, 90)
             
             if self.player2.isRunning and self.player2.isOnGround:
                 if self.player2.facingRight:
@@ -965,12 +976,24 @@ class Game():
                             player2idle_current_frame = 0
                         player2idle_last_time = player2idle_current_time
                     self.player2.image = player2_idle_usable_image_flipped.subsurface(360 - player2idle_current_frame * 60, 0, 60, 90)
+            elif not self.player2.isOnGround:
+                if not self.player2.extra_shield:
+                    if self.player2.facingRight:
+                        self.player2.image = player2_run_usable_image.subsurface(240 - 3 * 60, 0, 60, 90)
+                    else:
+                        self.player2.image = player2_run_usable_image_flipped.subsurface(240 - 3 * 60, 0, 60, 90)
+                if not self.player2.isSlow:
+                    if self.player2.facingRight:
+                        self.player2.image = player2_run_usable_image.subsurface(240 - 3 * 60, 0, 60, 90)
+                    else:
+                        self.player2.image = player2_run_usable_image_flipped.subsurface(240 - 3 * 60, 0, 60, 90)
+
             
             if self.player.extra_shield:
-                self.player.image.fill((125, 165, 210), special_flags=pygame.BLEND_MAX)
+                self.player.image.fill((125, 165, 210), special_flags=pygame.BLEND_ADD)
 
             if self.player2.extra_shield:
-                self.player2.image.fill((125, 165, 210), special_flags=pygame.BLEND_MAX)
+                self.player2.image.fill((125, 165, 210), special_flags=pygame.BLEND_ADD)
             
             if self.player.isSlow:
                 self.player.image.fill((0,0,205), special_flags=pygame.BLEND_MAX)
