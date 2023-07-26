@@ -1,6 +1,6 @@
 import pygame
 import os
-from Weapons import *
+from src.Weapons import *
 import json
 
 LEVEL_MAP = [

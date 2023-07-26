@@ -1,6 +1,6 @@
 import pygame
-from CONSTANTS import *
-from Tile import Tile
+from src.CONSTANTS import *
+from src.Tile import Tile
 import os
 
 base_directory = os.path.dirname(os.path.abspath(__file__))
