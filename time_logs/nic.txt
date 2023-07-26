@@ -22,7 +22,9 @@ BEFORE 6/15: Created menu system, menu interface control system, created game st
 
 6/27: 12:35PM - 4:30PM: Created powerpoint for our presentation.
 
+7/2: 4:26Pm - 6:29PM: Worked on sprites for death sycthe, speed sword, holy mantle
 
+7/4: 9:45PM - 10:45PM: Edited sprites to better work with others, Made sprites for Knockbackstick
 
 7/11: 2:35PM - 6:15PM: Created 3 new maps, created in game HUD, Player icons, Round system, Round over screen, Gun giving screen (WIP)
 
@@ -37,3 +39,9 @@ BEFORE 6/15: Created menu system, menu interface control system, created game st
 7/20: 4:38PM - 5:23PM: Fixed bug where game would restart if player pressed quit aftering finishing a game
 
 7/21: 3:20PM - 7:38PM: Create walking sprite, added in idle and walking animations, made it so animation stopped on jump
+
+7/23: 4:36PM - 7:21PM: Redid the walking and idle animations, looks more natural
+
+7/25: 6:00PM - 8:00PM: Damaged state animations added in, fixed frame timing
+
+7/26: 12:40PM - 3:01PM: Fixed damage state idle animation, redid weapon distribution screen, now in game, says weapons name and rarity, added weapon skins

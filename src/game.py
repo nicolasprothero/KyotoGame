@@ -1415,6 +1415,12 @@ class Game():
 
         chest_opened = False
         chest2_opened = False
+        
+        rarity_text_color = {
+            "Mythic": (255, 215, 30),
+            "Rare": (75, 150, 220),
+            "Common": (255, 255, 255)
+        }
 
         new_weapon_1 = self.randomize_weapon(self.player)
         self.player_rand = new_weapon_1
@@ -1429,9 +1435,8 @@ class Game():
         self.updateArmory(new_weapon_2.name, os.path.join(base_directory, "armory.json"))
         
         while self.giving_gun:
-            background_image = pygame.image.load(os.path.join(base_directory, "assets/img/menuBackground.png")).convert()
-            background_image = pygame.transform.scale(background_image, (C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
-            self.screen.blit(background_image, (0,0))
+            gun_hud = pygame.Rect(C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/1.2)/2, C.SCREEN_HEIGHT/2 - (C.SCREEN_HEIGHT/1.2)/2, C.SCREEN_WIDTH/1.2, C.SCREEN_HEIGHT/1.2)
+            pygame.draw.rect(self.screen, (51,56,81), gun_hud)
             
             player1_chest_image = pygame.image.load(os.path.join(base_directory, "assets/img/character_animations/chest_opening.png"))
             player1_chest_image = pygame.transform.scale(player1_chest_image, (4000, 240))
@@ -1458,6 +1463,7 @@ class Game():
                     self.screen.blit(player1_chest_image, (C.SCREEN_WIDTH/2 - 700, C.SCREEN_HEIGHT/2 + 150), (4000 - (chest_current_frame*400),0,400,240))
                 else:
                     self.center_and_scale_image(self.screen, player_weapon, player_weapon_hud_rect, self.player_rand.gun_screen_scale_factor)
+                    self.draw_text(self.player.weapon.name, rarity_text_color.get(self.player.weapon.rarity), 50, C.SCREEN_WIDTH/2 - C.SCREEN_WIDTH/4 + 20, C.SCREEN_HEIGHT/2 + 175)
                     if not playedSound:
                         pygame.mixer.Sound.play(self.sword_get_sound)
                         playedSound = True
@@ -1474,6 +1480,7 @@ class Game():
                     self.screen.blit(player2_chest_image, (C.SCREEN_WIDTH/2 + 300, C.SCREEN_HEIGHT/2 + 150), ((chest2_current_frame*400),0,400,240))
                 else:
                     self.center_and_scale_image(self.screen, player2_weapon, player2_weapon_hud_rect, self.player2_rand.gun_screen_scale_factor)
+                    self.draw_text(self.player2.weapon.name, rarity_text_color.get(self.player2.weapon.rarity), 50, C.SCREEN_WIDTH/2 + C.SCREEN_WIDTH/4 - 20, C.SCREEN_HEIGHT/2 + 175)
                     if not playedSound2:
                         pygame.mixer.Sound.play(self.sword_get_sound)
                         playedSound2 = True
@@ -1481,7 +1488,12 @@ class Game():
 
             
             if chest_opened and chest2_opened:
-                self.draw_text("Press ENTER to continue.", (255, 255, 255), 50, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 100)
+                self.draw_text("Press ENTER to continue.", (255, 255, 255), 75, C.SCREEN_WIDTH/2, 200)
+            else:
+                self.draw_text("press attack to open", (255, 255, 255), 75, C.SCREEN_WIDTH/2, 200)
+
+            self.draw_text("Player 1", (255, 255, 255), 50, C.SCREEN_WIDTH/2 - C.SCREEN_WIDTH/4 + 20, 350)
+            self.draw_text("Player 2", (255, 255, 255), 50, C.SCREEN_WIDTH/2 + C.SCREEN_WIDTH/4 - 20, 350)
 
             
             for event in pygame.event.get():
@@ -1501,9 +1513,7 @@ class Game():
                             self.game_running = False
                             self.giving_gun = False
                             self.run_game()
-            
-            self.draw_text("press attack to open", (255, 255, 255), 75, C.SCREEN_WIDTH/2, 250)
-
+        
             pygame.display.flip()
             
     def check_player_collisions(self):
