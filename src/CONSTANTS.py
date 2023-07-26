@@ -371,6 +371,9 @@ key_presses_2 = {
     "dash": pygame.K_COMMA,
 }
 
+base_directory = os.path.dirname(os.path.abspath(__file__))
+
+
 # dictionary for all weapons
 weapon_dict = {
     "shard": Weapon(
