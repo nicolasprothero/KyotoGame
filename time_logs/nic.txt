@@ -44,4 +44,4 @@ BEFORE 6/15: Created menu system, menu interface control system, created game st
 
 7/25: 6:00PM - 8:00PM: Damaged state animations added in, fixed frame timing
 
-7/26: 12:40PM - 3:01PM: Fixed damage state idle animation, redid weapon distribution screen, now in game, says weapons name and rarity, added weapon skins
+7/26: 12:40PM - 5:56PM: Fixed damage state idle animation, redid weapon distribution screen, now in game, says weapons name and rarity, added weapon skins, helped nathan with weapon attributes, fixed settings screen

@@ -1105,10 +1105,9 @@ class Game():
                             self.menu_running = True
                             self.game_running = False
                             self.paused = False
-
                         if(current_selection == "settings"):
-                            self.game_running = False
-                            pass
+                            self.paused = False
+                            self.options_menu()
                         
             self.draw_text("RESUME", resume_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 - 150)
             self.draw_text("SETTINGS", settings_text_color, 35, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
@@ -1226,6 +1225,9 @@ class Game():
             sfx_level = f'{self.sfx_level * 100:g}'
             self.draw_text_left_justified("SFX Volume", sfx_text_color, 50, C.SCREEN_WIDTH/4 + 200, C.SCREEN_HEIGHT/2 + 100)
             self.draw_text_left_justified(sfx_level, sfx_text_color, 50, C.SCREEN_WIDTH/2 + 200, C.SCREEN_HEIGHT/2 + 100)
+            
+            self.draw_text("OPTIONS", self.color_default, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT - 850)
+
             pygame.display.flip()
             
     def pregame_menu(self):
