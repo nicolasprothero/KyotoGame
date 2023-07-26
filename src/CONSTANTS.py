@@ -415,7 +415,7 @@ weapon_dict = {
     ),
     "dagger": Weapon(
         "Dagger",
-        "Common",
+        "Rare",
         "Slash",
         os.path.join(base_directory, "assets/img/swords/dagger.png"),
         os.path.join(base_directory, "assets/sound/swoosh.wav"),
@@ -484,7 +484,7 @@ weapon_dict = {
     ),
     "momsKnife": Weapon(
         "Mom's Knife",
-        "Rare",
+        "Common",
         "Thrust",
         os.path.join(base_directory, "assets/img/swords/moms_knife.png"),
         os.path.join(base_directory, "assets/sound/stab.mp3"),
@@ -505,9 +505,9 @@ weapon_dict = {
         3,
         False
     ),
-    "theifsTorch": Weapon(
-        "Theif's Torch",
-        "Rare",
+    "thiefsTorch": Weapon(
+        "Thief's Torch",
+        "Common",
         "Slash",
         os.path.join(base_directory, "assets/img/swords/theifs_torch.png"),
         os.path.join(base_directory, "assets/sound/swoosh.wav"),
@@ -548,7 +548,7 @@ weapon_dict = {
     ),
     "momoSword": Weapon(
         "Momotaro's Sword",
-        "Mythic",
+        "Rare",
         "Thrust",
         os.path.join(base_directory, "assets/img/swords/momotaros_sword.png"),
         os.path.join(base_directory, "assets/sound/momo_strike.mp3"),
