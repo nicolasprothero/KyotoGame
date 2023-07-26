@@ -17,8 +17,9 @@ from pygame.locals import (
 )
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, keyBinds, img, pos):
+    def __init__(self, keyBinds, img, pos, is_player_one):
         pygame.sprite.Sprite.__init__(self)
+        self.is_player_one = is_player_one
         self.keyBinds = keyBinds
         self.slash_right_image = pygame.image.load(os.path.join(base_directory, "assets/img/slash.png")).convert_alpha()
         self.slash_left_image = pygame.transform.flip(self.slash_right_image, True, False)
@@ -34,6 +35,10 @@ class Player(pygame.sprite.Sprite):
         self.image = self.OriginalImage
         
         self.rect = self.image.get_rect(topleft = pos)
+
+        #probabilities (common, rare, mythic)
+        self.probability = (0.6, 0.3, 0.1)
+        self.rounds_won = 0
 
         # player movment
         self.direction = pygame.math.Vector2(0, 0)
