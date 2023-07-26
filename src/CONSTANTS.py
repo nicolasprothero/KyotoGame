@@ -591,15 +591,24 @@ def writeToJson(data_dict, output_file):
     # Update existing_data with new keys and default "seen" value if the name does not exist
     for key in data_dict.keys():
         if data_dict[key].name not in existing_names:
-            if data_dict[key].name != "The Shard":
-                existing_data.append({"name": data_dict[key].name, "seen": 0})
-            else:
-                existing_data.append({"name": data_dict[key].name, "seen": 1})
-        for entry in existing_data:
-            if entry["name"] == "The Shard":
-                entry["seen"] = 1
+            existing_data.append({"name": data_dict[key].name, "seen": 0})
                 
     # Write the updated JSON data to the output file
     # override previous json data
     with open(output_file, 'w') as file:
         json.dump(existing_data, file, indent=4)
+
+def reset_seen_value(filename):
+    with open(filename) as f:
+        data = json.load(f)
+
+    for container in data:
+        container["seen"] = 0
+
+    with open(filename, 'w') as f:
+        json.dump(data, f, indent=4)
+
+    # with open(filename, 'w') as f:
+    #     json.dump({}, f)
+    #     writeToJson(weapon_dict, filename)
+

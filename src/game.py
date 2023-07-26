@@ -31,6 +31,7 @@ from pygame.locals import (
     K_x,
     K_PERIOD,
     K_RETURN,
+    K_DELETE,
     K_ESCAPE,
     KEYDOWN,
     QUIT,
@@ -221,6 +222,7 @@ class Game():
             
     def run_menu(self):
         # update armory
+        
         C.writeToJson(C.weapon_dict, os.path.join(base_directory, "armory.json"))
 
         current_selection = "start"
@@ -272,6 +274,11 @@ class Game():
                         elif(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
                             self.menu_running = False
+                    #reset armory with delete key
+                    elif event.key == K_DELETE:
+                        C.reset_seen_value(os.path.join(base_directory, "armory.json"))
+
+
                 # Check for QUIT event. If QUIT, then set running to false.
                 elif event.type == QUIT:
                     self.menu_running = False
@@ -1187,7 +1194,11 @@ class Game():
                             self.armory_showing = False
                             self.pregame_menu()
             self.screen.fill(self.color_menu)
-            self.draw_text("ARMORY", self.color_default, 90, C.SCREEN_WIDTH/2, 150)
+            self.draw_text("ARMORY", self.color_default, 90, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/12)
+            self.draw_text("MYTHIC", self.color_default, 70, C.SCREEN_WIDTH/6, 150)
+            self.draw_text("RARE", self.color_default, 70, C.SCREEN_WIDTH/6, C.SCREEN_HEIGHT/2 - 150)
+            self.draw_text("COMMON", self.color_default, 70, C.SCREEN_WIDTH/6, C.SCREEN_HEIGHT*3/4 - 100)
+            self.draw_armory()
 
             pygame.display.flip()
             
@@ -1301,6 +1312,7 @@ class Game():
 
         new_weapon = C.weapon_dict[random_key]
         return new_weapon
+    
     
     def gun_screen(self):
         self.giving_gun = True
@@ -1512,3 +1524,70 @@ class Game():
         # Write the updated JSON data to the output file
         with open(file, 'w') as f:
             json.dump(existing_data, f, indent=4)
+
+    def draw_armory(self):
+        #horizontal gap between images
+        x_gap = 50
+        #vertical gap between category and image
+        y_gap = 50
+        image_width, image_height = 90, 140
+        scaling_factor = 1
+
+        #mythic, rare, common cords
+        x_m, y_m = C.SCREEN_WIDTH/6 - image_width, 160
+        x_r, y_r = C.SCREEN_WIDTH/6 - image_width, C.SCREEN_HEIGHT/2 - 110
+        x_c, y_c = C.SCREEN_WIDTH/6 - image_width, C.SCREEN_HEIGHT*3/4 - 75
+
+        with open(os.path.join(base_directory, "armory.json")) as f:
+            data = json.load(f)
+
+        for container in data:
+
+            name = container.get("name")
+            weapon = C.weapon_dict["shard"]
+
+            for key in C.weapon_dict:
+                if C.weapon_dict[key].name == name:
+                    weapon = C.weapon_dict[key]
+
+            if container["seen"] == 1:
+
+                image = weapon.original_image
+            
+            elif container["seen"] == 0:
+
+                image = pygame.image.load('src/assets/img/lock.png')
+                image = pygame.transform.scale(image, (50, 50))
+            
+            if weapon.rarity == "Mythic":
+                self.center_and_scale_image(self.screen, image, pygame.Rect(x_m,y_m + y_gap,image_width, image_height), scaling_factor)
+                #self.screen.blit(image, (x_m, y_m))
+
+                x_m += image_width + x_gap
+
+                if x_m + image_width > C.SCREEN_WIDTH:
+                    x_m = x_gap
+                    y_m += image_height + x_gap
+
+            elif weapon.rarity == "Rare":
+                self.center_and_scale_image(self.screen, image, pygame.Rect(x_r,y_r + y_gap,image_width, image_height), scaling_factor)
+                #self.screen.blit(image, (x_r, y_r))
+
+                x_r += image_width + x_gap
+
+                if x_r + image_width > C.SCREEN_WIDTH:
+                    x_r = x_gap
+                    y_r += image_height + x_gap
+
+            elif weapon.rarity == "Common":
+                self.center_and_scale_image(self.screen, image, pygame.Rect(x_c,y_c + y_gap,image_width, image_height), scaling_factor)
+                #self.screen.blit(image, (x_c, y_c))
+
+                x_c += image_width + x_gap
+
+                if x_c + image_width > C.SCREEN_WIDTH:
+                    x_c = x_gap
+                    y_c += image_height + x_gap
+
+            
+            
