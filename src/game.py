@@ -293,6 +293,8 @@ class Game():
                         elif(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
                             self.menu_running = False
+                            # close the game
+                            pygame.quit()
                     #reset armory with delete key
                     elif event.key == K_DELETE:
                         C.reset_seen_value(os.path.join(base_directory, "armory.json"))
@@ -1478,15 +1480,15 @@ class Game():
             self.player_p[0] += self.player_one_wins * 0.02 - (self.player_two_wins * 0.01)
             self.player_p[1] += self.player_one_wins * 0.08 - (self.player_two_wins * 0.04)
             self.player_p[2] += self.player_one_wins * 0.05 - (self.player_two_wins * 0.1)
-            print("p1 wins: ", self.player_one_wins)
-            print("p1 odds", self.player_p[0], self.player_p[1], self.player_p[2])
+            # print("p1 wins: ", self.player_one_wins)
+            # print("p1 odds", self.player_p[0], self.player_p[1], self.player_p[2])
 
         elif player.is_player_one == False:
             self.player2_p[0]+= self.player_two_wins * 0.02 - (self.player_one_wins * 0.01)
             self.player2_p[1] += self.player_two_wins * 0.08 - (self.player_one_wins * 0.04)
             self.player2_p[2] += self.player_two_wins * 0.05 - (self.player_one_wins * 0.1)
-            print("p2 wins: ", self.player_two_wins)
-            print("p2 odds", self.player2_p[0], self.player2_p[1], self.player2_p[2])
+            # print("p2 wins: ", self.player_two_wins)
+            # print("p2 odds", self.player2_p[0], self.player2_p[1], self.player2_p[2])
 
         #rand = random.random()
         
