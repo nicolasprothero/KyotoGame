@@ -22,6 +22,8 @@ class Player(pygame.sprite.Sprite):
         self.keyBinds = keyBinds
         self.slash_right_image = pygame.image.load(os.path.join(base_directory, "assets/img/slash.png")).convert_alpha()
         self.slash_left_image = pygame.transform.flip(self.slash_right_image, True, False)
+        self.slash_right_rect = self.slash_right_image.get_rect()
+        self.slash_left_rect = self.slash_left_image.get_rect()
         
         self.OriginalImage = pygame.image.load(img).convert_alpha()
         self.OriginalImage = pygame.transform.scale(self.OriginalImage, (65, 90)) # scale image down; 13 by 18
@@ -36,6 +38,7 @@ class Player(pygame.sprite.Sprite):
         # player movment
         self.direction = pygame.math.Vector2(0, 0)
         self.speed = 12
+        self.original_speed = self.speed
         self.jump_speed = -17
         self.dash_speed = 5
         self.gravity = 0.9
@@ -66,7 +69,7 @@ class Player(pygame.sprite.Sprite):
 
         # Make the default weapon.
 
-        self.weapon = copy.copy(C.weapon_dict["defaultSword"])
+        self.weapon = copy.copy(C.weapon_dict["shard"])
 
         self.slash_right_image = pygame.transform.scale(self.slash_right_image, self.weapon.hitbox_scaling)
         self.slash_left_image = pygame.transform.scale(self.slash_left_image, self.weapon.hitbox_scaling)
@@ -151,12 +154,19 @@ class Player(pygame.sprite.Sprite):
         self.slash_right_image = pygame.transform.scale(self.slash_right_image, self.weapon.hitbox_scaling)
         self.slash_left_image = pygame.transform.scale(self.slash_left_image, self.weapon.hitbox_scaling)
 
+        self.slash_right_rect = self.slash_right_image.get_rect()
+        self.slash_left_rect = self.slash_left_image.get_rect()
+
+        self.slash_right_image.fill(self.weapon.slash_color, special_flags=pygame.BLEND_MULT)
+        self.slash_left_image.fill(self.weapon.slash_color, special_flags=pygame.BLEND_MULT)
+
         if self.weapon.get_speed_buff() != 0:
             self.speed = self.weapon.get_speed_buff()
+            self.original_speed = self.speed
         if self.weapon.get_jump_buff() != 0:
             self.jump_speed = self.weapon.get_jump_buff()
         if self.weapon.get_extra_shield():
             self.extra_shield = True
         if self.weapon.get_extra_jump():
-            self.extra_jump = True
-
+            self.extra_jump = True            
+        

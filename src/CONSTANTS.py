@@ -1,6 +1,7 @@
 import pygame
 import os
 from Weapons import *
+import json
 
 LEVEL_MAP = [
     'XXKBBBBBBBBBBBBJXXXXXXZXKBBBBBBBBBBBBJXX',
@@ -372,33 +373,39 @@ key_presses_2 = {
 
 # dictionary for all weapons
 weapon_dict = {
-    "defaultSword": Weapon(
-        "The Default Sword", 
+    "shard": Weapon(
+        "The Shard", 
         "Common",
         "Slash",
         os.path.join(base_directory, "assets/img/swords/shard.png"), 
         os.path.join(base_directory, "assets/sound/swoosh.wav"), 
-        0.1, 
+        0.5,
         5,
         30,
         -30,
         (30, 90), 
-        (100, 100)
+        (100, 120),
+        (255, 255, 255),
+        1,
+        1,
+        1,
     ),
-    "godSword": Weapon(
-        "GOD SWORD", 
+    "devSword": Weapon(
+        "Dev Sword", 
         "Mythic",
         "Slash",
-        os.path.join(base_directory, 
-        "assets/img/swords/dev_sword.png"), 
-        os.path.join(base_directory, 
-        "assets/sound/toot.mp3"), 
+        os.path.join(base_directory, "assets/img/swords/dev_sword.png"), 
+        os.path.join(base_directory, "assets/sound/toot.mp3"), 
         0.2, 
         5,
         30,
         -30,
         (30, 90), 
-        (300, 300), 
+        (300, 300),
+        (255, 255, 255),
+        1,
+        1,
+        1,
         0.2, 
         25, 
         -20, 
@@ -406,4 +413,193 @@ weapon_dict = {
         10,
         True
     ),
+    "dagger": Weapon(
+        "Dagger",
+        "Common",
+        "Slash",
+        os.path.join(base_directory, "assets/img/swords/dagger.png"),
+        os.path.join(base_directory, "assets/sound/swoosh.wav"),
+        0.1,
+        0,
+        30,
+        0,
+        (30, 50),
+        (50, 90),
+        (255, 255, 255),
+        2,
+        1.5,
+        1,
+        0.2,
+        13,
+        -17,
+        False,
+        2,
+        False
+    ),
+    "katana": Weapon(
+        "Katana",
+        "Rare",
+        "Slash",
+        os.path.join(base_directory, "assets/img/swords/katana.png"),
+        os.path.join(base_directory, "assets/sound/swoosh.wav"),
+        0.1,
+        0,
+        30,
+        -70,
+        (30, 130),
+        (200, 160),
+        (255, 255, 255),
+        0.8,
+        1,
+        1,
+        1.2,
+        14,
+        -17,
+        False,
+        1,
+        False
+    ),
+    "wingedSword": Weapon(
+        "Winged Sword",
+        "Mythic",
+        "Slash",
+        os.path.join(base_directory, "assets/img/swords/winged_sword.png"),
+        os.path.join(base_directory, "assets/sound/swoosh.wav"),
+        0.1,
+        -10,
+        15,
+        -30,
+        (60, 90),
+        (75, 120),
+        (255, 255, 255),
+        1,
+        1,
+        1,
+        0.2,
+        12,
+        -20,
+        False,
+        2,
+        True
+    ),
+    "momsKnife": Weapon(
+        "Mom's Knife",
+        "Rare",
+        "Thrust",
+        os.path.join(base_directory, "assets/img/swords/moms_knife.png"),
+        os.path.join(base_directory, "assets/sound/stab.mp3"),
+        0.1,
+        0,
+        -30,
+        40,
+        (30, 90),
+        (120, 50),
+        (255, 255, 255),
+        1,
+        1,
+        1,
+        0.7,
+        13,
+        -17,
+        False,
+        3,
+        False
+    ),
+    "theifsTorch": Weapon(
+        "Theif's Torch",
+        "Rare",
+        "Slash",
+        os.path.join(base_directory, "assets/img/swords/theifs_torch.png"),
+        os.path.join(base_directory, "assets/sound/swoosh.wav"),
+        0.1,
+        -10,
+        20,
+        -22,
+        (50, 80),
+        (100, 112),
+        (255, 109, 0),
+        1,
+        1,
+        1,
+    ),
+    "iceSword": Weapon(
+        "Ice Sword",
+        "Mythic",
+        "Slash",
+        os.path.join(base_directory, "assets/img/swords/ice_sword.png"),
+        os.path.join(base_directory, "assets/sound/swoosh.wav"),
+        0.1,
+        5,
+        30,
+        -30,
+        (30, 90),
+        (100, 120),
+        (204, 255, 255),
+        1,
+        1,
+        1,
+        0.7,
+        12,
+        -17,
+        False,
+        3,
+        False,
+        True
+    ),
+    "momoSword": Weapon(
+        "Momotaro's Sword",
+        "Mythic",
+        "Thrust",
+        os.path.join(base_directory, "assets/img/swords/momotaros_sword.png"),
+        os.path.join(base_directory, "assets/sound/momo_strike.mp3"),
+        0.1,
+        0,
+        -140,
+        35,
+        (20, 200),
+        (300, 50),
+        (255, 255, 255),
+        0.6,
+        0.8,
+        1,
+        2,
+        12,
+        -17,
+        False,
+        4,
+        False,
+        False
+    )
 }
+
+
+def writeToJson(data_dict, output_file):
+    try:
+        # Load the existing JSON data from the file if it exists
+        with open(output_file, 'r') as file:
+            existing_data = json.load(file)
+    except json.JSONDecodeError:
+        # If the file exists but is empty, set existing_data to an empty list
+        existing_data = []
+    except FileNotFoundError:
+        # If the file doesn't exist, set existing_data to an empty list
+        existing_data = []
+
+    # Create a set of existing names to keep track of names already in the JSON
+    existing_names = set(item["name"] for item in existing_data)
+
+    # Update existing_data with new keys and default "seen" value if the name does not exist
+    for key in data_dict.keys():
+        if data_dict[key].name not in existing_names:
+            if data_dict[key].name != "The Shard":
+                existing_data.append({"name": data_dict[key].name, "seen": 0})
+            else:
+                existing_data.append({"name": data_dict[key].name, "seen": 1})
+        for entry in existing_data:
+            if entry["name"] == "The Shard":
+                entry["seen"] = 1
+                
+    # Write the updated JSON data to the output file
+    # override previous json data
+    with open(output_file, 'w') as file:
+        json.dump(existing_data, file, indent=4)
