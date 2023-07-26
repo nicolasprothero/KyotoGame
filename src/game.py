@@ -44,7 +44,6 @@ class Game():
         # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
         pygame.init()
         pygame.mixer.init()
-        
 
         self.flags = pygame.SCALED | pygame.FULLSCREEN
         self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), self.flags)
@@ -96,20 +95,24 @@ class Game():
         
         self.level = Level(C.LEVEL_MAP, self.screen, os.path.join(base_directory, "assets/img/DefaultBackground.png"))
 
+        # ! Sound level defaults to 0.1
+        self.music_level = 0.2
+        self.sfx_level = 0.2
+
         self.select_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Select.wav"))
-        self.select_sound.set_volume(0.1)
+        self.select_sound.set_volume(self.sfx_level)
 
         self.shieldbreak_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/shieldbreak.mp3"))
-        self.shieldbreak_sound.set_volume(0.2) 
+        self.shieldbreak_sound.set_volume(self.sfx_level) 
 
         self.death_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Hurt_grunt.wav"))
-        self.death_sound.set_volume(0.2)
+        self.death_sound.set_volume(self.sfx_level)
         
         self.chest_open_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/chest_open.mp3'))
-        self.chest_open_sound.set_volume(0.1)
+        self.chest_open_sound.set_volume(self.sfx_level)
         
         self.sword_get_sound = pygame.mixer.Sound(os.path.join(base_directory, 'assets/sound/sword_get.wav'))
-        self.sword_get_sound.set_volume(0.1)
+        self.sword_get_sound.set_volume(self.sfx_level)
 
         self.menu_running = True
         self.game_running = False
@@ -217,7 +220,15 @@ class Game():
         text_rect = scaled_text_image.get_rect()
         text_rect.center = (x, y)
         self.screen.blit(scaled_text_image, text_rect)
-    
+
+    def draw_text_left_justified(self, text, color, size, x, y):
+        font = pygame.font.Font(os.path.join(base_directory, "assets/fonts/ThaleahFat.ttf"), size)
+        text_surface = font.render(text, True, color)
+        #scale surface
+        scaled_text_image = pygame.transform.scale(text_surface, (int(text_surface.get_width()), int(text_surface.get_height())))
+        text_rect = scaled_text_image.get_rect()
+        text_rect.topleft = (x, y)
+        self.screen.blit(scaled_text_image, text_rect)
             
     def run_menu(self):
         # update armory
@@ -268,7 +279,9 @@ class Game():
                             self.pregame_menu()
                         if(current_selection == "settings"):
                             pygame.mixer.Sound.play(self.select_sound)
-                            self.gun_screen()
+                            # TODO: change this to the settings menu
+                            self.options_menu()
+                            # self.gun_screen()
                         elif(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
                             self.menu_running = False
@@ -415,10 +428,10 @@ class Game():
         self.character2_icon = self.character2_img
 
         self.player_attack_sound = pygame.mixer.Sound(self.player.weapon.attack_sound_path)
-        self.player_attack_sound.set_volume(self.player.weapon.attack_sound_level)
+        self.player_attack_sound.set_volume(self.sfx_level)
 
         self.player2_attack_sound = pygame.mixer.Sound(self.player2.weapon.attack_sound_path)
-        self.player2_attack_sound.set_volume(self.player2.weapon.attack_sound_level)
+        self.player2_attack_sound.set_volume(self.sfx_level)
 
         # Main loop
 
@@ -605,7 +618,7 @@ class Game():
                         self.player.attackRight = False                 
                 self.player.attacking = True
                 self.player.canAttack = False
-                pygame.mixer.Sound.play(self.player_attack_sound)
+                pygame.mixer.Sound.play(self.player_attack_sound).set_volume(self.sfx_level)
                 self.attacking_start = time.time()
                 self.attack_start = time.time()
                 
@@ -621,7 +634,7 @@ class Game():
                         self.player2.attackRight = False                 
                 self.player2.attacking = True
                 self.player2.canAttack = False
-                pygame.mixer.Sound.play(self.player2_attack_sound)
+                pygame.mixer.Sound.play(self.player2_attack_sound).set_volume(self.sfx_level)
                 self.attacking_start2 = time.time()
                 self.attack_start2 = time.time()
             
@@ -1053,8 +1066,28 @@ class Game():
     def options_menu(self):
         
         self.options_running = True
+        current_selection = "zoom"
 
         while self.options_running:
+            if(current_selection == "zoom"):
+                zoom_text_color = self.color_select
+                music_text_color = self.color_default
+                sfx_text_color = self.color_default
+            elif current_selection == "music":
+                zoom_text_color = self.color_default
+                music_text_color = self.color_select
+                sfx_text_color = self.color_default
+            elif current_selection == "sfx":
+                zoom_text_color = self.color_default
+                music_text_color = self.color_default
+                sfx_text_color = self.color_select
+
+            """
+            ZOOM
+            MUSIC
+            SFX
+            """
+
             # for loop through the event queue
             for event in pygame.event.get():
                 # Check for KEYDOWN event
@@ -1062,17 +1095,81 @@ class Game():
                     # If the Esc key is pressed, then exit the main loop
                     if event.key == K_ESCAPE:
                             self.options_running = False
+                    elif event.key == K_w or event.key == K_UP:
+                        if(current_selection == "sfx"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "music"
+                        elif(current_selection == "zoom"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "sfx"
+                        elif(current_selection == "music"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "zoom"
+                    elif event.key == K_s or event.key == K_DOWN:
+                        if(current_selection == "zoom"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "music"
+                        elif(current_selection == "sfx"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "zoom"
+                        elif(current_selection == "music"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            current_selection = "sfx"
+                    elif event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                        if(current_selection == "sfx"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            if self.sfx_level > 0:
+                                self.sfx_level -= 0.1
+                                self.sfx_level = round(self.sfx_level, 1)
+                        if(current_selection == "music"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            if self.music_level > 0:
+                                self.music_level -= 0.1
+                                self.music_level = round(self.music_level, 1)
+                                pygame.mixer.music.set_volume(self.music_level)
+                    elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                        if(current_selection == "sfx"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            if self.sfx_level < 1:
+                                self.sfx_level += 0.1
+                                self.sfx_level = round(self.sfx_level, 1)
+                                pygame.mixer.music.set_volume(self.music_level)
+                        if(current_selection == "music"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            if self.music_level < 1:
+                                self.music_level += 0.1
+                                self.music_level = round(self.music_level, 1)
+                                pygame.mixer.music.set_volume(self.music_level)
                     elif event.key == K_RETURN:
-                            C.change_res(1366, 768)
-                            #self.level.display_surface = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), pygame.FULLSCREEN | pygame.SCALED)
-                            self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT))
+                        if(current_selection == "zoom"):
+                            pygame.mixer.Sound.play(self.select_sound)
+                            if self.zoom:
+                                self.zoom = False
+                            else:
+                                self.zoom = True
                 # Check for QUIT event. If QUIT, then set running to false.
                 elif event.type == QUIT:
                     self.options_running = False
             
+            self.select_sound.set_volume(self.sfx_level)
+            self.shieldbreak_sound.set_volume(self.sfx_level)
+            self.death_sound.set_volume(self.sfx_level)
+            self.chest_open_sound.set_volume(self.sfx_level)
+            self.sword_get_sound.set_volume(self.sfx_level)
+
             self.screen.fill(self.color_menu)
-            self.draw_text("OPTIONS", self.color_default, 75, C.SCREEN_WIDTH/2, 100)
-            self.draw_text("There are no options to change yet. Check back later.", self.color_default, 40, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2)
+            round_hud = pygame.Rect((C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/4)), (C.SCREEN_HEIGHT/2 - (C.SCREEN_HEIGHT/4 + 100)), C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 200)
+            pygame.draw.rect(self.screen, (34,34,34), round_hud)
+            self.draw_text_left_justified("Dynamic Camera", zoom_text_color, 50, C.SCREEN_WIDTH/4 + 200, C.SCREEN_HEIGHT/2 - 100)
+            self.draw_text_left_justified(str(self.zoom), zoom_text_color, 50, C.SCREEN_WIDTH/2 + 200, C.SCREEN_HEIGHT/2 - 100)
+
+            music_level = f'{self.music_level * 100:g}'
+            self.draw_text_left_justified("Music Volume", music_text_color, 50, C.SCREEN_WIDTH/4 + 200, C.SCREEN_HEIGHT/2)
+            self.draw_text_left_justified(music_level, music_text_color, 50, C.SCREEN_WIDTH/2 + 200, C.SCREEN_HEIGHT/2)
+
+            sfx_level = f'{self.sfx_level * 100:g}'
+            self.draw_text_left_justified("SFX Volume", sfx_text_color, 50, C.SCREEN_WIDTH/4 + 200, C.SCREEN_HEIGHT/2 + 100)
+            self.draw_text_left_justified(sfx_level, sfx_text_color, 50, C.SCREEN_WIDTH/2 + 200, C.SCREEN_HEIGHT/2 + 100)
             pygame.display.flip()
             
     def pregame_menu(self):
@@ -1139,7 +1236,7 @@ class Game():
                             self.pregame_running = False
                             self.isPostGame = False
                             self.theGameIsOver = False
-                            pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(0.1)
+                            pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(self.music_level)
                             self.player_rand = C.weapon_dict["shard"]
                             self.player2_rand = C.weapon_dict["shard"]
                             self.run_game()
