@@ -5,7 +5,7 @@
     },
     {
         "name": "Dev Sword",
-        "seen": 0
+        "seen": 1
     },
     {
         "name": "Dagger",
@@ -21,18 +21,22 @@
     },
     {
         "name": "Mom's Knife",
-        "seen": 0
+        "seen": 1
     },
     {
         "name": "Theif's Torch",
-        "seen": 0
+        "seen": 1
     },
     {
         "name": "Ice Sword",
-        "seen": 0
+        "seen": 1
     },
     {
         "name": "Momotaro's Sword",
-        "seen": 0
+        "seen": 1
+    },
+    {
+        "name": "Thief's Torch",
+        "seen": 1
     }
 ]
