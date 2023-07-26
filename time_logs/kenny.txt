@@ -12,4 +12,5 @@
 7/22 5:30pm - 9:00pm Randomize weapons in gun screen, issue with weapon assignment
 7/23 5:20pm - 8:20pm Hud images and current holding weapon match randomized weapon, adjusted player starting positions
 7/24 
-7/25 5:30pm - 
+7/25 5:30pm - 10:10pm Finalized weapon assignment, reset weapons on spawn
+7/26 12:30pm - 

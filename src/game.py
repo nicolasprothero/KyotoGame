@@ -1233,8 +1233,7 @@ class Game():
 
     def randomize_weapon(self, player):
         random_key = random.choice(list(C.weapon_dict.keys()))
-
-        while self.player.weapon == C.weapon_dict[random_key]:
+        while player.weapon == C.weapon_dict[random_key]:
             random_key = random.choice(list(C.weapon_dict.keys()))
 
         new_weapon = C.weapon_dict[random_key]
