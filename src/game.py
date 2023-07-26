@@ -99,6 +99,8 @@ class Game():
         self.music_level = 0.2
         self.sfx_level = 0.2
 
+        self.change_music_volume = False
+
         self.select_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Select.wav"))
         self.select_sound.set_volume(self.sfx_level)
 
@@ -469,6 +471,11 @@ class Game():
         alphas2 = [dec2] * 3 # store alpha levels
 
         while self.game_running:
+            # set the volume of the music to the music level
+            if self.change_music_volume:
+                pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(self.music_level)
+                self.change_music_volume = False
+
             clock.tick(60) # limit fps to 60
             pressed_keys = pygame.key.get_pressed()
             # for loop through the event queue
@@ -1120,6 +1127,7 @@ class Game():
                                 self.sfx_level -= 0.1
                                 self.sfx_level = round(self.sfx_level, 1)
                         if(current_selection == "music"):
+                            self.change_music_volume = True
                             pygame.mixer.Sound.play(self.select_sound)
                             if self.music_level > 0:
                                 self.music_level -= 0.1
@@ -1133,6 +1141,7 @@ class Game():
                                 self.sfx_level = round(self.sfx_level, 1)
                                 pygame.mixer.music.set_volume(self.music_level)
                         if(current_selection == "music"):
+                            self.change_music_volume = True
                             pygame.mixer.Sound.play(self.select_sound)
                             if self.music_level < 1:
                                 self.music_level += 0.1
