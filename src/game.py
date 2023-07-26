@@ -810,7 +810,6 @@ class Game():
             elif self.player2.rect.y > C.SCREEN_HEIGHT + 250:
                 self.player2.isDamaged = True
                 self.player_hit(self.player2, False)
-                
             
             player1_idle_image = pygame.image.load(os.path.join(base_directory, "assets/img/character_animations/character_idle.png"))
             player1_idle_image = pygame.transform.scale(player1_idle_image, (420, 90))
@@ -824,11 +823,42 @@ class Game():
             player2_run_image = pygame.image.load(os.path.join(base_directory, "assets/img/character_animations/character2_run.png"))
             player2_run_image = pygame.transform.scale(player2_run_image, (300, 90))
             
+            player_damaged_idle_image = pygame.image.load(os.path.join(base_directory, "assets/img/character_animations/character_damaged_idle.png"))
+            player_damaged_idle_image = pygame.transform.scale(player_damaged_idle_image, (420, 90))
+            
+            player_damaged_run_image = pygame.image.load(os.path.join(base_directory, "assets/img/character_animations/character_damaged_run.png"))
+            player_damaged_run_image = pygame.transform.scale(player_damaged_run_image, (300, 90))
+            
             player1_idle_image_flipped = pygame.transform.flip(player1_idle_image, True, False)
             player1_run_image_flipped = pygame.transform.flip(player1_run_image, True, False)
             
             player2_idle_image_flipped = pygame.transform.flip(player2_idle_image, True, False)
             player2_run_image_flipped = pygame.transform.flip(player2_run_image, True, False)
+                        
+            player_damaged_idle_image_flipped = pygame.transform.flip(player_damaged_idle_image, True, False)
+            player_damaged_run_image_flipped = pygame.transform.flip(player_damaged_run_image, True, False)
+            
+            if self.player.isDamaged:
+                player_run_usable_image = player_damaged_run_image
+                player_idle_usable_image = player_damaged_idle_image
+                player_run_usable_image_flipped = player_damaged_run_image_flipped
+                player_idle_usable_image_flipped = player_damaged_idle_image_flipped
+            else:
+                player_run_usable_image = player1_run_image
+                player_idle_usable_image = player1_idle_image
+                player_run_usable_image_flipped = player1_run_image_flipped
+                player_idle_usable_image_flipped = player1_idle_image_flipped
+                
+            if self.player2.isDamaged:
+                player2_run_usable_image = player_damaged_run_image
+                player2_idle_usable_image = player_damaged_idle_image
+                player2_run_usable_image_flipped = player_damaged_run_image_flipped
+                player2_idle_usable_image_flipped = player_damaged_idle_image_flipped
+            else:
+                player2_run_usable_image = player2_run_image
+                player2_idle_usable_image = player2_idle_image
+                player2_run_usable_image_flipped = player2_run_image_flipped
+                player2_idle_usable_image_flipped = player2_idle_image_flipped
             
             if self.player.isRunning and self.player.isOnGround:
                 if self.player.facingRight:
@@ -838,7 +868,7 @@ class Game():
                         if player1run_current_frame > 4:
                             player1run_current_frame = 0
                         player1idle_last_time = player1idle_current_time
-                    self.player.image = player1_run_image.subsurface(player1run_current_frame * 60, 0, 60, 90)
+                    self.player.image = player_run_usable_image.subsurface(player1run_current_frame * 60, 0, 60, 90)
                 else:
                     player1idle_current_time = pygame.time.get_ticks()
                     if player1idle_current_time - player1idle_last_time >= 45:
@@ -846,7 +876,7 @@ class Game():
                         if player1run_current_frame > 4:
                             player1run_current_frame = 0
                         player1idle_last_time = player1idle_current_time
-                    self.player.image = player1_run_image_flipped.subsurface(240 - player1run_current_frame * 60, 0, 60, 90)
+                    self.player.image = player_run_usable_image_flipped.subsurface(240 - player1run_current_frame * 60, 0, 60, 90)
             elif not self.player.isRunning and self.player.isOnGround:
                 if self.player.facingRight:
                     player1idle_current_time = pygame.time.get_ticks()
@@ -855,7 +885,7 @@ class Game():
                         if player1idle_current_frame > 6:
                             player1idle_current_frame = 0
                         player1idle_last_time = player1idle_current_time
-                    self.player.image = player1_idle_image.subsurface(player1idle_current_frame * 60, 0, 60, 90)
+                    self.player.image = player_idle_usable_image.subsurface(player1idle_current_frame * 60, 0, 60, 90)
                 else:
                     player1idle_current_time = pygame.time.get_ticks()
                     if player1idle_current_time - player1idle_last_time >= 160:
@@ -863,7 +893,8 @@ class Game():
                         if player1idle_current_frame > 6:
                             player1idle_current_frame = 0
                         player1idle_last_time = player1idle_current_time
-                    self.player.image = player1_idle_image_flipped.subsurface(360 - player1idle_current_frame * 60, 0, 60, 90)
+                    print(player1idle_current_frame)
+                    self.player.image = player_idle_usable_image_flipped.subsurface(360 - player1idle_current_frame * 60, 0, 60, 90)
             
             if self.player2.isRunning and self.player2.isOnGround:
                 if self.player2.facingRight:
@@ -873,7 +904,7 @@ class Game():
                         if player2run_current_frame > 4:
                             player2run_current_frame = 0
                         player2idle_last_time = player2idle_current_time
-                    self.player2.image = player2_run_image.subsurface(player2run_current_frame * 60, 0, 60, 90)
+                    self.player2.image = player2_run_usable_image.subsurface(player2run_current_frame * 60, 0, 60, 90)
                 else:
                     player2idle_current_time = pygame.time.get_ticks()
                     if player2idle_current_time - player2idle_last_time >= 45:
@@ -881,7 +912,7 @@ class Game():
                         if player2run_current_frame > 4:
                             player2run_current_frame = 0
                         player2idle_last_time = player2idle_current_time
-                    self.player2.image = player2_run_image_flipped.subsurface(240 - player2run_current_frame * 60, 0, 60, 90)
+                    self.player2.image = player2_run_usable_image_flipped.subsurface(240 - player2run_current_frame * 60, 0, 60, 90)
             elif not self.player2.isRunning and self.player2.isOnGround:
                 if self.player2.facingRight:
                     player2idle_current_time = pygame.time.get_ticks()
@@ -890,7 +921,7 @@ class Game():
                         if player2idle_current_frame > 6:
                             player2idle_current_frame = 0
                         player2idle_last_time = player2idle_current_time
-                    self.player2.image = player2_idle_image.subsurface(player2idle_current_frame * 60, 0, 60, 90)
+                    self.player2.image = player2_idle_usable_image.subsurface(player2idle_current_frame * 60, 0, 60, 90)
                 else:
                     player2idle_current_time = pygame.time.get_ticks()
                     if player2idle_current_time - player2idle_last_time >= 160:
@@ -898,7 +929,7 @@ class Game():
                         if player2idle_current_frame > 6:
                             player2idle_current_frame = 0
                         player2idle_last_time = player2idle_current_time
-                    self.player2.image = player2_idle_image_flipped.subsurface(360 - player2idle_current_frame * 60, 0, 60, 90)
+                    self.player2.image = player2_idle_usable_image_flipped.subsurface(360 - player2idle_current_frame * 60, 0, 60, 90)
             
             
             
