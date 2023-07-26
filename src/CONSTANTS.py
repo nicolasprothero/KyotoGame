@@ -573,6 +573,10 @@ weapon_dict = {
 }
 
 
+commonList = [weapon for weapon in weapon_dict.values() if weapon.rarity == "Common"]
+rareList = [weapon for weapon in weapon_dict.values() if weapon.rarity == "Rare"]
+mythicList = [weapon for weapon in weapon_dict.values() if weapon.rarity == "Mythic"]
+
 def writeToJson(data_dict, output_file):
     try:
         # Load the existing JSON data from the file if it exists

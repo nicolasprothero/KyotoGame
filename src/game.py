@@ -51,13 +51,14 @@ class Game():
         self.screen = pygame.display.set_mode((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), self.flags)
         self.camera = pygame.Surface((C.SCREEN_WIDTH, C.SCREEN_HEIGHT), self.flags)
 
-        
+        self.player_p = [0.6, 0.3, 0.1]
+        self.player2_p = [0.6, 0.3, 0.1]
         # Instantiate player. Right now, this is just a rectangle.
         self.players = pygame.sprite.Group()
         abs_path = os.path.join(base_directory, "assets/img/character.png")
-        self.player = Player(C.key_presses_1, abs_path, (C.SCREEN_WIDTH/6, C.SCREEN_HEIGHT/6))
+        self.player = Player(C.key_presses_1, abs_path, (C.SCREEN_WIDTH/6, C.SCREEN_HEIGHT/6), True)
         self.players.add(self.player)
-        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, C.SCREEN_HEIGHT/6))
+        self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (C.SCREEN_WIDTH*5/6, C.SCREEN_HEIGHT/6), False)
         self.players.add(self.player2)
         
         self.character1_img = pygame.image.load('src/assets/img/character_icon.png')
@@ -327,45 +328,45 @@ class Game():
             spawn_options = [1, 2]
             choice = random.choice(spawn_options)
             if choice == 1:
-                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800))
-                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800))
+                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800), True)
+                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800), False)
             elif choice == 2:
-                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
-                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300), True)
+                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300), False)
             self.players.add(self.player)
             self.player.changeWeapon(self.player_rand)
             self.players.add(self.player2)
             self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP1:
             self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300), True)
             self.players.add(self.player)
             self.player.changeWeapon(self.player_rand)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300), False)
             self.players.add(self.player2)
             self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP2:
             self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800), True)
             self.players.add(self.player)
             self.player.changeWeapon(self.player_rand)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800), False)
             self.players.add(self.player2)
             self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP3:
             self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800), True)
             self.players.add(self.player)
             self.player.changeWeapon(self.player_rand)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800), False)
             self.players.add(self.player2)
             self.player2.changeWeapon(self.player2_rand)
         elif current_map ==C.LEVEL_MAP4:
             self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300), True)
             self.players.add(self.player)
             self.player.changeWeapon(self.player_rand)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300), False)
             self.players.add(self.player2)
             self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP5:
@@ -373,45 +374,45 @@ class Game():
             spawn_options = [1, 2]
             choice = random.choice(spawn_options)
             if choice == 1:
-                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800))
-                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800))
+                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 800), True)
+                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 800), False)
             elif choice == 2:
-                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
-                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+                self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300), True)
+                self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300), False)
             self.players.add(self.player)
             self.player.changeWeapon(self.player_rand)
             self.players.add(self.player2) 
             self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP6:
             self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800))
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (400, 800), True)
             self.players.add(self.player)
             self.player.changeWeapon(self.player_rand)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800))
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1450, 800), False)
             self.players.add(self.player2)
             self.player2.changeWeapon(self.player2_rand)
         elif current_map ==C.LEVEL_MAP7:
             self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300), True)
             self.players.add(self.player)
             self.player.changeWeapon(self.player_rand)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300), False)
             self.players.add(self.player2)
             self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP8:
             self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300))
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 300), True)
             self.players.add(self.player)
             self.player.changeWeapon(self.player_rand)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300))
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 300), False)
             self.players.add(self.player2)
             self.player2.changeWeapon(self.player2_rand)
         elif current_map == C.LEVEL_MAP9:
             self.players.empty()
-            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 0))
+            self.player = Player(C.key_presses_1, os.path.join(base_directory, "assets/img/character.png"), (200, 0), True)
             self.players.add(self.player)
             self.player.changeWeapon(self.player_rand)
-            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 0))
+            self.player2 = Player(C.key_presses_2, os.path.join(base_directory, "assets/img/character2.png"), (1650, 0), False)
             self.players.add(self.player2)
             self.player2.changeWeapon(self.player2_rand)
         
@@ -900,7 +901,7 @@ class Game():
                         if player1idle_current_frame > 6:
                             player1idle_current_frame = 0
                         player1idle_last_time = player1idle_current_time
-                    print(player1idle_current_frame)
+                    
                     self.player.image = player_idle_usable_image_flipped.subsurface(360 - player1idle_current_frame * 60, 0, 60, 90)
             
             if self.player2.isRunning and self.player2.isOnGround:
@@ -1305,13 +1306,69 @@ class Game():
             pygame.display.flip()
 
     def randomize_weapon(self, player):
-        random_key = random.choice(list(C.weapon_dict.keys()))
+        weapon = player.weapon
+        if player.is_player_one == True:
 
-        while player.weapon == C.weapon_dict[random_key]:
-            random_key = random.choice(list(C.weapon_dict.keys()))
+            self.player_p[0] += self.player_one_wins * 0.02 - (self.player_two_wins * 0.01)
+            self.player_p[1] += self.player_one_wins * 0.08 - (self.player_two_wins * 0.04)
+            self.player_p[2] += self.player_one_wins * 0.05 - (self.player_two_wins * 0.1)
+            print("p1 wins: ", self.player_one_wins)
+            print("p1 odds", self.player_p[0], self.player_p[1], self.player_p[2])
 
-        new_weapon = C.weapon_dict[random_key]
-        return new_weapon
+        elif player.is_player_one == False:
+            self.player2_p[0]+= self.player_two_wins * 0.02 - (self.player_one_wins * 0.01)
+            self.player2_p[1] += self.player_two_wins * 0.08 - (self.player_one_wins * 0.04)
+            self.player2_p[2] += self.player_two_wins * 0.05 - (self.player_one_wins * 0.1)
+            print("p2 wins: ", self.player_two_wins)
+            print("p2 odds", self.player2_p[0], self.player2_p[1], self.player2_p[2])
+
+        #rand = random.random()
+        
+        weapon_classes = ["common", "rare", "mythic"]
+        probabilities1 = [self.player_p[0], self.player_p[1], self.player_p[2]]
+        probabilities2 = [self.player2_p[0], self.player2_p[1], self.player2_p[2]]
+        #randomly choose a weapon class based on probabilities
+        chosen_class = random.choices(weapon_classes, probabilities1)[0]
+        chosen_class2 = random.choices(weapon_classes, probabilities2)[0]
+
+        if player.is_player_one:
+
+            if chosen_class == "common":
+                    weapon = random.choice(C.commonList)
+                    while(weapon.name == "The Shard"):
+                        weapon = random.choice(C.commonList)
+                    
+            elif chosen_class == "rare":
+                    weapon = random.choice(C.rareList)
+                    while(weapon.name == "The Shard"):
+                        weapon = random.choice(C.rareList)
+            else:
+                    weapon = random.choice(C.mythicList)
+                    while(weapon.name == "The Shard"):
+                        weapon = random.choice(C.mythicList)
+
+        else:
+            if chosen_class2 == "common":
+                    weapon = random.choice(C.commonList)
+                    while(weapon.name == "The Shard"):
+                        weapon = random.choice(C.commonList)
+                    
+            elif chosen_class2 == "rare":
+                    weapon = random.choice(C.rareList)
+                    while(weapon.name == "The Shard"):
+                        weapon = random.choice(C.rareList)
+            else:
+                    weapon = random.choice(C.mythicList)
+                    while(weapon.name == "The Shard"):
+                        weapon = random.choice(C.mythicList)
+
+        # random_key = random.choice(list(C.weapon_dict.keys()))
+
+        # while player.weapon == C.weapon_dict[random_key]:
+        #     random_key = random.choice(list(C.weapon_dict.keys()))
+
+        # new_weapon = C.weapon_dict[random_key]
+        return weapon
     
     
     def gun_screen(self):
