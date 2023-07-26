@@ -1,11 +1,11 @@
 [
     {
         "name": "The Shard",
-        "seen": 0
+        "seen": 1
     },
     {
         "name": "Dev Sword",
-        "seen": 0
+        "seen": 1
     },
     {
         "name": "Dagger",
@@ -13,7 +13,7 @@
     },
     {
         "name": "Katana",
-        "seen": 0
+        "seen": 1
     },
     {
         "name": "Winged Sword",
@@ -21,7 +21,7 @@
     },
     {
         "name": "Mom's Knife",
-        "seen": 0
+        "seen": 1
     },
     {
         "name": "Theif's Torch",
@@ -33,6 +33,6 @@
     },
     {
         "name": "Momotaro's Sword",
-        "seen": 0
+        "seen": 1
     }
 ]
