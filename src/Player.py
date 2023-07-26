@@ -1,6 +1,6 @@
 import pygame
-import CONSTANTS as C
-from Weapons import *
+import src.CONSTANTS as C
+from src.Weapons import *
 import os
 import copy
 

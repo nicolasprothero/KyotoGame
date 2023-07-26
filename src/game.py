@@ -3,14 +3,14 @@ from distutils.spawn import spawn
 from operator import truediv
 from select import select
 from tkinter import Menu
-from Particle import Particle
+from src.Particle import Particle
 import time
 import random
 import pygame
-import CONSTANTS as C
-from Player import Player
-from Level import Level
-from Weapons import *
+import src.CONSTANTS as C
+from src.Player import Player
+from src.Level import Level
+from src.Weapons import *
 import ctypes
 import os
 import platform
