@@ -3,14 +3,14 @@ from distutils.spawn import spawn
 from operator import truediv
 from select import select
 from tkinter import Menu
-from src.Particle import Particle
+from Particle import Particle
 import time
 import random
 import pygame
-import src.CONSTANTS as C
-from src.Player import Player
-from src.Level import Level
-from src.Weapons import *
+import CONSTANTS as C
+from Player import Player
+from Level import Level
+from Weapons import *
 import ctypes
 import os
 import platform
@@ -100,7 +100,11 @@ class Game():
         self.music_level = 0.2
         self.sfx_level = 0.2
 
-        self.change_music_volume = False
+        self.player_attack_sound = pygame.mixer.Sound(self.player.weapon.attack_sound_path)
+        self.player_attack_sound.set_volume(self.player.weapon.attack_sound_level * (self.sfx_level * 3))
+
+        self.player2_attack_sound = pygame.mixer.Sound(self.player2.weapon.attack_sound_path)
+        self.player2_attack_sound.set_volume(self.player2.weapon.attack_sound_level * (self.sfx_level * 3))
 
         self.select_sound = pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/Select.wav"))
         self.select_sound.set_volume(self.sfx_level)
@@ -241,6 +245,7 @@ class Game():
     def run_menu(self):
         # update armory
         
+        
 
         current_selection = "start"
         
@@ -314,6 +319,10 @@ class Game():
             self.draw_text("PLAY", start_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (150))
             self.draw_text("OPTIONS", settings_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (300))
             self.draw_text("QUIT", quit_text_color, 80, C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + (450))
+
+            self.level_music = pygame.mixer.music.load(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))
+            pygame.mixer.music.set_volume(self.music_level)
+
             pygame.display.flip()
 
     def run_game(self):
@@ -327,7 +336,6 @@ class Game():
         damaged_image = pygame.image.load(os.path.join(base_directory, "assets/img/damaged_dash.png")).convert_alpha()
         damaged_image = pygame.transform.scale(damaged_image, (65, 90))
         damaged_image2 = pygame.transform.flip(damaged_image, True, False)
-
 
         # Setup the level        
         self.game_running = True
@@ -438,15 +446,18 @@ class Game():
         
         self.level = Level(current_map, self.screen, os.path.join(base_directory, "assets/img/DefaultBackground.png"))
 
-        
+        # FOR TESTING WEAPONS
+        # self.player.changeWeapon(C.weapon_dict["wingedSword"])
+        # self.player2.changeWeapon(C.weapon_dict["wingedSword"])
+
         self.character_icon = self.character1_img
         self.character2_icon = self.character2_img
 
         self.player_attack_sound = pygame.mixer.Sound(self.player.weapon.attack_sound_path)
-        self.player_attack_sound.set_volume(self.sfx_level)
+        self.player_attack_sound.set_volume(self.player.weapon.attack_sound_level * (self.sfx_level * 3))
 
         self.player2_attack_sound = pygame.mixer.Sound(self.player2.weapon.attack_sound_path)
-        self.player2_attack_sound.set_volume(self.sfx_level)
+        self.player2_attack_sound.set_volume(self.player2.weapon.attack_sound_level * (self.sfx_level * 3))
 
         # Main loop
 
@@ -484,10 +495,7 @@ class Game():
         alphas2 = [dec2] * 3 # store alpha levels
 
         while self.game_running:
-            # set the volume of the music to the music level
-            if self.change_music_volume:
-                pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(self.music_level)
-                self.change_music_volume = False
+            # set the volume of the music to the music level                
 
             clock.tick(60) # limit fps to 60
             pressed_keys = pygame.key.get_pressed()
@@ -638,7 +646,7 @@ class Game():
                         self.player.attackRight = False                 
                 self.player.attacking = True
                 self.player.canAttack = False
-                pygame.mixer.Sound.play(self.player_attack_sound).set_volume(self.sfx_level)
+                self.player_attack_sound.play()
                 self.attacking_start = time.time()
                 self.attack_start = time.time()
                 
@@ -654,7 +662,7 @@ class Game():
                         self.player2.attackRight = False                 
                 self.player2.attacking = True
                 self.player2.canAttack = False
-                pygame.mixer.Sound.play(self.player2_attack_sound).set_volume(self.sfx_level)
+                self.player2_attack_sound.play()
                 self.attacking_start2 = time.time()
                 self.attack_start2 = time.time()
             
@@ -1054,13 +1062,12 @@ class Game():
 
             self.center_and_scale_image(self.screen, self.player.weapon.original_image, player_weapon_hud_rect, self.player.weapon.character_icon_scale_factor)
             self.center_and_scale_image(self.screen, self.player2.weapon.original_image, player2_weapon_hud_rect, self.player2.weapon.character_icon_scale_factor)
-
                         
             pygame.display.flip()
                     
     def pause_menu(self):
         current_selection = "resume"
-        pygame.mixer.pause()
+        pygame.mixer.music.pause()
         self.paused = True
         while self.paused:
             # pause_background = pygame.Surface((C.SCREEN_WIDTH/4, C.SCREEN_HEIGHT/2))
@@ -1093,7 +1100,7 @@ class Game():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         self.paused = False
-                        pygame.mixer.unpause()
+                        pygame.mixer.music.unpause()
                     elif event.key == K_w or event.key == K_UP:
                         if(current_selection == "settings"):
                             current_selection = "resume"
@@ -1117,6 +1124,7 @@ class Game():
                     elif event.key == K_RETURN:
                         if(current_selection == "resume"):
                             pygame.mixer.Sound.play(self.select_sound)
+                            pygame.mixer.music.unpause()
                             self.paused = False
                         if(current_selection == "quit"):
                             pygame.mixer.Sound.play(self.select_sound)
@@ -1169,6 +1177,7 @@ class Game():
                     # If the Esc key is pressed, then exit the main loop
                     if event.key == K_ESCAPE:
                             self.options_running = False
+                            pygame.mixer.music.unpause()
                     elif event.key == K_w or event.key == K_UP:
                         if(current_selection == "sfx"):
                             pygame.mixer.Sound.play(self.select_sound)
@@ -1196,7 +1205,6 @@ class Game():
                                 self.sfx_level -= 0.1
                                 self.sfx_level = round(self.sfx_level, 1)
                         if(current_selection == "music"):
-                            self.change_music_volume = True
                             pygame.mixer.Sound.play(self.select_sound)
                             if self.music_level > 0:
                                 self.music_level -= 0.1
@@ -1210,7 +1218,6 @@ class Game():
                                 self.sfx_level = round(self.sfx_level, 1)
                                 pygame.mixer.music.set_volume(self.music_level)
                         if(current_selection == "music"):
-                            self.change_music_volume = True
                             pygame.mixer.Sound.play(self.select_sound)
                             if self.music_level < 1:
                                 self.music_level += 0.1
@@ -1232,6 +1239,9 @@ class Game():
             self.death_sound.set_volume(self.sfx_level)
             self.chest_open_sound.set_volume(self.sfx_level)
             self.sword_get_sound.set_volume(self.sfx_level)
+            pygame.mixer.music.set_volume(self.music_level)
+            self.player_attack_sound.set_volume(self.player.weapon.attack_sound_level * (self.sfx_level * 3))
+            self.player2_attack_sound.set_volume(self.player2.weapon.attack_sound_level * (self.sfx_level * 3))
 
             self.screen.fill(self.color_menu)
             round_hud = pygame.Rect((C.SCREEN_WIDTH/2 - (C.SCREEN_WIDTH/4)), (C.SCREEN_HEIGHT/2 - (C.SCREEN_HEIGHT/4 + 100)), C.SCREEN_WIDTH/2, C.SCREEN_HEIGHT/2 + 200)
@@ -1315,7 +1325,7 @@ class Game():
                             self.pregame_running = False
                             self.isPostGame = False
                             self.theGameIsOver = False
-                            pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(base_directory, "assets/sound/LevelMusic.mp3"))).set_volume(self.music_level)
+                            pygame.mixer.music.play(-1)
                             self.player_rand = C.weapon_dict["shard"]
                             self.player2_rand = C.weapon_dict["shard"]
                             self.run_game()
@@ -1416,6 +1426,7 @@ class Game():
             pygame.display.flip()
             
     def game_over(self):
+        pygame.mixer.music.stop()
         self.game_is_over = True
         self.round_is_over = False
         playedSound = False
@@ -1477,23 +1488,24 @@ class Game():
         weapon = player.weapon
         if player.is_player_one == True:
 
-            self.player_p[0] += self.player_one_wins * 0.02 - (self.player_two_wins * 0.01)
-            self.player_p[1] += self.player_one_wins * 0.08 - (self.player_two_wins * 0.04)
-            self.player_p[2] += self.player_one_wins * 0.05 - (self.player_two_wins * 0.1)
+            self.player_p[0] -= (self.player_one_wins / 5) * 0.3
+            self.player_p[1] += (self.player_one_wins / 5) * 0.15
+            self.player_p[2] += (self.player_one_wins / 5) * 0.05
 
         elif player.is_player_one == False:
-            self.player2_p[0]+= self.player_two_wins * 0.02 - (self.player_one_wins * 0.01)
-            self.player2_p[1] += self.player_two_wins * 0.08 - (self.player_one_wins * 0.04)
-            self.player2_p[2] += self.player_two_wins * 0.05 - (self.player_one_wins * 0.1)
+            self.player2_p[0] -= (self.player_two_wins / 5) * 0.3
+            self.player2_p[1] += (self.player_two_wins / 5) * 0.15
+            self.player2_p[2] += (self.player_two_wins / 5) * 0.05
 
-        #rand = random.random()
         
         weapon_classes = ["common", "rare", "mythic"]
-        probabilities1 = [self.player_p[0], self.player_p[1], self.player_p[2]]
-        probabilities2 = [self.player2_p[0], self.player2_p[1], self.player2_p[2]]
-        #randomly choose a weapon class based on probabilities
-        chosen_class = random.choices(weapon_classes, probabilities1)[0]
-        chosen_class2 = random.choices(weapon_classes, probabilities2)[0]
+        if player.is_player_one == True:
+            print(f"Player 1: Prob: {self.player_p} Sum = {sum(self.player_p)} Wins: {self.player_one_wins}")
+        else:
+            print(f"Player 2: Prob: {self.player2_p} Sum = {sum(self.player2_p)} Wins: {self.player_two_wins}")
+        #randomly choose a weapon class based on probabilitiess
+        chosen_class = random.choices(weapon_classes, self.player_p)[0]
+        chosen_class2 = random.choices(weapon_classes, self.player2_p)[0]
 
         if player.is_player_one:
 
@@ -1536,14 +1548,12 @@ class Game():
     
     
     def gun_screen(self):
+        pygame.mixer.music.load(os.path.join(base_directory, "assets/sound/LevelMusic2.mp3"))
         self.giving_gun = True
         chest_last_time = pygame.time.get_ticks()
         chest2_last_time = pygame.time.get_ticks()
         chest_current_frame = 0
         chest2_current_frame = 0
-        
-        self.player_one_wins = 0
-        self.player_two_wins = 0
         
         self.isPostGame = True
         
@@ -1651,10 +1661,14 @@ class Game():
                         if chest_opened and chest2_opened:
                             self.game_running = False
                             self.giving_gun = False
+                            pygame.mixer.music.play(-1)
+                            self.player_one_wins = 0
+                            self.player_two_wins = 0
                             self.run_game()
         
             # pygame.draw.rect(self.screen, (255,0,0), player_weapon_hud_rect, 2)
             # pygame.draw.rect(self.screen, (255,0,0), player2_weapon_hud_rect, 2)
+
             pygame.display.flip()
             
     def check_player_collisions(self):
@@ -1719,7 +1733,7 @@ class Game():
                     elif not self.theGameIsOver:
                         self.round_over(1)
             elif player.isDamaged:
-                pygame.mixer.Sound.play(self.shieldbreak_sound)
+                self.shieldbreak_sound.play()
                 player.image = player.Damagedimage
                 player.isInvincible = True
                 player.isDamaged = True
@@ -1731,7 +1745,7 @@ class Game():
                     self.invincibility_start2 = time.time()
                     self.damaged_start2 = time.time()
             elif player.extra_shield:
-                pygame.mixer.Sound.play(self.shieldbreak_sound)
+                self.shieldbreak_sound.play()
                 player.extra_shield = False
                 player.isInvincible = True
                 if isPlayer1:
@@ -1741,7 +1755,7 @@ class Game():
                     self.invincibility_start2 = time.time()
                     self.damaged_start2 = time.time()
             else:
-                pygame.mixer.Sound.play(self.shieldbreak_sound)
+                self.shieldbreak_sound.play()
                 player.image = player.Damagedimage
                 player.isInvincible = True
                 player.isDamaged = True

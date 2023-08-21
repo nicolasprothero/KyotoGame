@@ -1,6 +1,6 @@
 import pygame
 import os
-from src.Weapons import *
+from Weapons import *
 import json
 
 LEVEL_MAP = [
@@ -432,7 +432,7 @@ weapon_dict = {
         2,
         1.2,
         1,
-        0.2,
+        0.3,
         13,
         -17,
         False,
@@ -478,12 +478,13 @@ weapon_dict = {
         1,
         1,
         1,
-        0.2,
+        0.3,
         12,
         -20,
         False,
         2,
-        True
+        True,
+        False
     ),
     "momsKnife": Weapon(
         "Mom's Knife",

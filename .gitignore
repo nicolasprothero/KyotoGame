@@ -6,3 +6,4 @@ src/__pycache__/
 dist/
 Weaponize.egg-info/
 build/
+src/armory.json
