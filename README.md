@@ -17,11 +17,11 @@ Weaponize is a 2D platform/combat game that allows two players to duel against e
 ## Installation and Setup Instructions
 
 ### Creating the distribution package
-python setup.py sdist
+python3 setup.py sdist
 
 
 ### 1. Install the package
-pip install ./Weaponize-2.0.tar.gz
+pip install ./dist/Weaponize-2.0.tar.gz
 
 ### 2. Run the game
 weaponize

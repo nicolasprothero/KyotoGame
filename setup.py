@@ -13,7 +13,7 @@ setup(
     install_requires=[
         'pygame==2.4.0',
     ],
-    python_requires='==3.10.6',
+    python_requires='>=3.10.6',
     entry_points={
         'console_scripts': [
             'weaponize = src.main:main'
