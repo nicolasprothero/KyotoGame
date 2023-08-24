@@ -1,3 +1,7 @@
+
+![Screenshot 2023-08-23 at 10 29 20 PM](https://github.com/nicolasprothero/KyotoGame/assets/4565342/de88c63d-c575-4240-80d7-f1283f3e39f7)
+![Screenshot 2023-08-23 at 10 30 25 PM](https://github.com/nicolasprothero/KyotoGame/assets/4565342/cbe46e84-c238-4e62-8d3c-210ced4cc093)
+
 # Game Name: Weaponize
 
 ## Description
